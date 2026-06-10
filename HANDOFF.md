@@ -1,44 +1,58 @@
 # TableRAG - Developer Handoff Document
 
-**Project:** Greywiz Code (TableRAG)
-**Date:** 2026-06-08
+**Project:** engg_docs_processor_agents (TableRAG)
+**Date:** 2026-06-10
 **Purpose:** Extract tables from Markdown files (produced by MinerU/PDF-to-MD tools), generate LLM-powered descriptions, vectorize them, and provide a RAG chat interface via Streamlit.
 
 ---
 
 ## 1. Repository Structure
 
+The repository follows a modular, package-based Python structure. Python 3.3+ implicit namespace packages are utilized, so no `__init__.py` files are present.
+
 ```
-Greywiz Code/
-├── .env                        # Google API key (GOOGLE_API_KEY)
+backend/
+├── .env                        # Google API key (GOOGLE_API_KEY), Prompts, and Configs
 ├── requirements.txt            # Python dependencies
-├── main.py                     # CLI entry point (extraction + RAG query loop)
-├── app.py                      # Streamlit web UI entry point
-├── table_processor.py          # Markdown/HTML table parsing logic
-├── summarizer.py               # Gemini-based table summarization & QA
-├── vector_store.py             # FAISS vector store (embed + search)
-├── storage.py                  # Save/load extracted tables in various formats
-├── Test1_2Page.pdf             # Sample source PDF
-├── Test1_2Page_Output.md       # Sample MD file (MinerU output from the PDF above)
-├── extracted_tables/           # Output: saved table files + metadata cache
+├── main.py                     # CLI entry point (parses args -> calls routes)
+├── app.py                      # Streamlit web UI entry point (parses UI -> calls routes)
+├── restructure_justification.md# Documentation of repository reorganization
+├── assets/
+│   ├── markdown/
+│   │   ├── test1_2page_output.md # Sample MD file (MinerU output)
+│   ├── pdfs/
+│   │   └── test1_2page.pdf       # Sample source PDF
+│   ├── json/                   # For static JSON assets
+│   └── html/                   # For static HTML assets
+├── routes/
+│   └── rag_routes.py           # Core abstracted logic for processing and RAG querying
+├── src/
+│   ├── parsers/
+│   │   ├── table_processor.py  # Markdown/HTML table parsing logic
+│   │   ├── vector_store.py     # FAISS vector store (embed + search)
+│   │   └── storage.py          # Save/load extracted tables in various formats
+│   └── llm/
+│       └── providers/
+│           ├── gemini/
+│           │   └── summarizer.py # Gemini-based table summarization & QA
+│           └── qwen/           # Placeholder for future Qwen integration
+├── extracted_tables/           # Output: saved table files + metadata cache (Generated at runtime)
 │   ├── table_0.json ... table_3.json
 │   └── table_metadata.json     # Cached summaries & content hashes
-├── faiss_index/                # Output: persisted FAISS index
-│   ├── index.faiss
-│   └── index.pkl
-├── __pycache__/                # Python bytecode cache (ignorable)
-└── .vscode/                    # VS Code settings (ignorable)
+└── faiss_index/                # Output: persisted FAISS index (Generated at runtime)
+    ├── index.faiss
+    └── index.pkl
 ```
 
 ---
 
 ## 2. Complete Workflow
 
-The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute the same logic.
+The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) act solely as entry points that parse inputs and pipe them to the `backend/routes/rag_routes.py` logic. Note that all scripts should be executed from the `backend/` directory so that `src.*` modules resolve correctly.
 
 ### Stage 1: Read .md file, extract tables (with section-aware context)
 
-- **Module:** `table_processor.py`
+- **Module:** `src.parsers.table_processor` (called via `rag_routes.py`)
 - **Function:** `parse_bundles_from_md(md_path)`
 - **What it does:**
   1. Reads the entire `.md` file content.
@@ -49,45 +63,38 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
      - Body text is deduplicated against headings to avoid repetition.
   4. Parses each HTML table into a rectangular 2D grid (`list[list[str]]`), correctly handling `rowspan` and `colspan` attributes via BeautifulSoup.
 - **Output:** A list of "bundles", each being `{"context": str, "table": list[list[str]], "raw_html": str}`.
-- **Note:** The input `.md` file is expected to contain HTML `<table>` tags (this is the format produced by MinerU when converting PDFs to Markdown). It does NOT parse native Markdown pipe-tables.
 
 ### Stage 2: Generate descriptions for each table (LLM summarization)
 
-- **Module:** `summarizer.py`
+- **Module:** `src.llm.providers.gemini.summarizer` (called via `rag_routes.py`)
 - **Class:** `TableSummarizer` (uses `gemini-2.5-flash` via `google-generativeai`)
 - **Function:** `summarize_bundle(context, grid)`
 - **What it does:**
-  1. Converts the 2D grid to a text representation using pandas `DataFrame.to_string()`.
-  2. Sends a prompt to Gemini that includes BOTH the surrounding document context AND the table data.
-  3. The prompt **mandates** that the LLM:
-     - State all machine specs (wharve diameter, roller diameter, retrofit kit) in the **first sentence** of the summary.
-     - Perform unit expansion (e.g., "T/m" = Twists per meter, "T/"" = Twists per inch).
-     - List independent/dependent variables with ranges.
-     - Write in a search-optimized style matching technician queries.
+  1. Converts the 2D grid to a text representation.
+  2. Fetches the system prompt from `.env` (`SUMMARIZER_SYSTEM_PROMPT`).
+  3. Sends the prompt to Gemini that includes BOTH the surrounding document context AND the table data.
 - **Output:** A text summary string per table.
-- **This is the "agent" step** -- the LLM reads the surrounding context and the table together to produce an enriched, search-friendly description. No separate agent call is needed; context selection is handled deterministically by the parser, and relevance filtering is handled by this summarization step.
 
 ### Stage 3: Vectorization and persistent storage
 
-- **Module:** `vector_store.py`
+- **Module:** `src.parsers.vector_store` (called via `rag_routes.py`)
 - **Class:** `VectorStoreManager` (uses `gemini-embedding-2` via `langchain-google-genai`)
 - **What it does:**
   1. Wraps each summary + its metadata into a LangChain `Document`.
   2. Creates a FAISS index from these documents using Google's embedding model.
   3. Saves the FAISS index to disk (`faiss_index/`) for persistence.
-  4. On subsequent runs, loads the existing index instead of re-creating it.
-- **Caching:** A JSON metadata cache (`extracted_tables/table_metadata.json`) stores content hashes. If a table hasn't changed between runs, the cached summary is reused instead of calling the LLM again. Note: `hash()` is used which is NOT stable across Python sessions (Python randomizes hash seeds). This means the cache will miss on every new process. A production fix would use `hashlib.sha256`.
+- **Caching:** A JSON metadata cache (`extracted_tables/table_metadata.json`) stores content hashes. 
 
 ### Stage 4: RAG query (retrieve + answer)
 
-- **Module:** `vector_store.py` (search) + `summarizer.py` (answer generation)
+- **Module:** `routes.rag_routes`
+- **Function:** `query_rag()`
 - **What it does:**
   1. User provides a natural language question.
-  2. The question is embedded using the same embedding model (`gemini-embedding-2`).
-  3. FAISS similarity search retrieves the top-k most relevant table (default k=1).
-  4. The matched table file is loaded from disk (via `storage.py`).
-  5. Both the **raw table data** AND the **stored summary** (which contains machine specs, unit info, and context) are passed to Gemini (`answer_query()`) for grounded answer generation.
-- **Output:** A text answer based on both the table data and its contextual description.
+  2. `rag_routes` retrieves `RETRIEVAL_K` from `.env` (default 1) and queries the vector store.
+  3. FAISS similarity search retrieves the top-k most relevant table.
+  4. Both the **raw table data** AND the **stored summary** are passed to Gemini (`answer_query()` using `.env` `QA_SYSTEM_PROMPT`) for grounded answer generation.
+- **Output:** A dictionary containing the answer text and source tables.
 
 ### Stage 5: UI (Streamlit)
 
@@ -95,14 +102,20 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
 - **What it does:**
   1. Sidebar with settings (input file, storage format, output dir, index path, re-process button).
   2. On first load: processes tables if no existing FAISS index is found, otherwise loads the index.
-  3. Chat interface: user types a question, the app retrieves the relevant table, generates an answer, and displays both the answer and the source table in an expander.
-  4. Chat history is maintained in `st.session_state`.
+  3. Chat interface: user types a question, the app retrieves the relevant table via `rag_routes.py`, generates an answer, and displays both the answer and the source table in an expander.
 
 ---
 
 ## 3. Module-by-Module Reference
 
-### table_processor.py
+### routes/rag_routes.py (Core Abstraction Layer)
+
+| Function | Purpose |
+|---|---|
+| `process_documents(...)` | Complete pipeline for extracting, caching, summarizing, and vector indexing documents. |
+| `query_rag(...)` | Retrieves top-k matching tables and queries the LLM for the final answer. |
+
+### src/parsers/table_processor.py
 
 | Function | Purpose |
 |---|---|
@@ -112,7 +125,7 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
 | `extract_tables_from_md(md_path)` | Return raw HTML strings of all `<table>` elements (not used by main pipeline) |
 | `parse_bundles_from_md(md_path)` | **Primary function.** Returns list of `{context, table, raw_html}` bundles |
 
-### summarizer.py
+### src/llm/providers/gemini/summarizer.py
 
 | Function | Purpose |
 |---|---|
@@ -120,7 +133,7 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
 | `summarize_bundle(context, grid)` | Generate an enriched, search-optimized summary of a table + its surrounding context |
 | `answer_query(query, context_table)` | Answer a user question using a table as context |
 
-### vector_store.py
+### src/parsers/vector_store.py
 
 | Function | Purpose |
 |---|---|
@@ -130,7 +143,7 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
 | `save_local(folder_path)` | Persist FAISS index to disk |
 | `load_local(folder_path)` | Load FAISS index from disk |
 
-### storage.py
+### src/parsers/storage.py
 
 | Class | Format | Purpose |
 |---|---|---|
@@ -140,39 +153,20 @@ The pipeline has 5 stages. Both `main.py` (CLI) and `app.py` (Streamlit) execute
 | `XMLStorage` | `.xml` | Save/load tables as XML |
 | `get_storage(format_type)` | -- | Factory function returning the appropriate storage class |
 
-### postgres_builder.py (UNUSED)
-
-A standalone module for ingesting parsed tables into PostgreSQL with auto-inferred schemas. It imports `parse_tables_from_md` which **does not exist** in `table_processor.py` (the actual function is `extract_tables_from_md`), so this module would crash on import. It is not imported by `main.py` or `app.py`.
-
 ---
 
-## 4. Unnecessary / Dead Files
-
-| File/Directory | Verdict | Reason |
-|---|---|---|
-| `postgres_builder.py` | **REMOVE** | Not used by the pipeline. Has a broken import (`parse_tables_from_md` doesn't exist). 706 lines of dead code. Would need a PostgreSQL server anyway. |
-| `Test1_2Page.pdf` | **Optional** | The original source PDF. Not read by any code -- only the `.md` output matters. Keep for reference if desired. |
-| `__pycache__/` | **REMOVE** | Auto-generated bytecode. Add to `.gitignore`. |
-| `.vscode/` | **Optional** | Editor config. Not project-critical. |
-| `extracted_tables/` | **Generated output** | Recreated on each run. Can be gitignored. |
-| `faiss_index/` | **Generated output** | Recreated on each run. Can be gitignored. |
-
-**Core files to keep:** `main.py`, `app.py`, `table_processor.py`, `summarizer.py`, `vector_store.py`, `storage.py`, `.env`, `requirements.txt`, `Test1_2Page_Output.md` (sample data).
-
----
-
-## 5. How to Run
+## 4. How to Run
 
 ### Prerequisites
 
-- Python 3.10+ (tested with 3.12 based on pycache files)
+- Python 3.10+ (tested with 3.12)
 - A valid Google AI API key (Gemini access)
 
 ### Setup
 
 ```bash
-# 1. Clone / copy the repo
-cd "Greywiz Code"
+# 1. Clone / copy the repo and navigate to backend
+cd backend
 
 # 2. Create and activate a virtual environment
 python -m venv venv
@@ -188,15 +182,17 @@ pip install -r requirements.txt
 
 ### Run via CLI
 
+**IMPORTANT:** Always run the commands from the `backend/` directory to ensure package imports (`from src.parsers...`) resolve correctly.
+
 ```bash
 # Process the sample file and enter interactive Q&A mode
-python main.py --input Test1_2Page_Output.md --format json
+python main.py --input assets/markdown/test1_2page_output.md --format json
 
 # Or run a single query
-python main.py --input Test1_2Page_Output.md --query "What is the twist value for gear B=80 and D=91?"
+python main.py --input assets/markdown/test1_2page_output.md --query "What is the twist value for gear B=80 and D=91?"
 
 # Options:
-#   --input    Path to the .md file (default: Test1_2Page_Output.md)
+#   --input    Path to the .md file (default: assets/markdown/test1_2page_output.md)
 #   --format   Storage format: md, json, html, xml (default: md)
 #   --output_dir  Where to save extracted tables (default: extracted_tables)
 #   --query    Single query to run (if omitted, enters interactive loop)
@@ -223,7 +219,7 @@ del extracted_tables\table_metadata.json
 
 ---
 
-## 6. Dependencies (requirements.txt)
+## 5. Dependencies (requirements.txt)
 
 | Package | Used For |
 |---|---|
@@ -239,46 +235,24 @@ del extracted_tables\table_metadata.json
 | `lxml` | XML parser backend for pandas |
 | `tabulate` | Markdown table rendering (`df.to_markdown()`) |
 | `streamlit` | Web UI |
-| `psycopg` | **UNUSED** -- only needed by `postgres_builder.py`. Remove if that file is removed. |
+
+*(Note: `psycopg` may be present in `requirements.txt` from a legacy unused file. It can be safely removed or ignored.)*
 
 ---
 
-## 7. Known Issues & Caveats
+## 6. Known Issues & Caveats
 
-1. **Hash instability:** The caching mechanism in `main.py` and `app.py` uses Python's built-in `hash()`, which is randomized per process (PYTHONHASHSEED). The cache will almost never hit on a fresh run. Replace with `hashlib.sha256(content_to_hash.encode()).hexdigest()` for stable caching.
+1. **Hash instability:** The caching mechanism in `rag_routes.py` uses Python's built-in `hash()`, which is randomized per process (PYTHONHASHSEED). The cache will almost never hit on a fresh run. Replace with `hashlib.sha256(content_to_hash.encode()).hexdigest()` for stable caching.
 
 2. **FAISS index staleness:** If the index already exists on disk, the system loads it and skips re-processing even if the source `.md` file changed. The user must manually delete the `faiss_index/` directory to force a rebuild.
 
 3. **Single-file input:** The pipeline processes one `.md` file at a time. There is no batch/directory processing.
 
-4. **Top-1 retrieval only:** Both CLI and Streamlit retrieve only the single best-matching table (`k=1`). For multi-table queries, this would need to be increased.
-
-5. **`storage_format` bug in `app.py`:** The `get_tools()` function is decorated with `@st.cache_resource`, but it captures `storage_format` from the outer scope at the time of first call. Changing the format in the sidebar won't update the cached `storage` object unless the cache is manually invalidated.
-
-6. **No error handling for API failures:** Neither `summarizer.py` nor `vector_store.py` has try/except around API calls. A network failure or quota exhaustion will crash the app.
-
-7. **Broken import in postgres_builder.py:** Line 13 imports `parse_tables_from_md` which does not exist in `table_processor.py` (the actual function name is `extract_tables_from_md`).
+4. **`storage_format` bug in `app.py`:** The `get_tools()` function is decorated with `@st.cache_resource`, but it captures `storage_format` from the outer scope at the time of first call. Changing the format in the sidebar won't update the cached `storage` object unless the cache is manually invalidated.
 
 ---
 
-## 8. Mapping to Ideal Workflow
-
-Below is how the current codebase maps to each stage of the intended workflow:
-
-| Ideal Workflow Step | Status | Implementation |
-|---|---|---|
-| Read .md file, extract tables | **Done** | `table_processor.py :: parse_bundles_from_md()` -- parses HTML tables from MD, handles rowspan/colspan |
-| Agent identifies relevant context + generates descriptions | **Done** | `summarizer.py :: summarize_bundle()` -- sends table + surrounding text context to Gemini, generates search-optimized summary with unit expansion |
-| Vectorization, persistent storage + cache | **Done** | `vector_store.py` -- uses `gemini-embedding-2` embeddings + FAISS, saves to disk. Cache via JSON metadata file (but hash is unstable, see Known Issues #1) |
-| Streamlit UI for user prompt input | **Done** | `app.py` -- full chat interface with sidebar config, source table display |
-| Prompt vectorized, compared with embeddings, retrieve relevant table | **Done** | `vector_store.py :: search()` -- embeds the query and runs FAISS similarity search |
-| Pass retrieved table to LLM as context for answer | **Done** | `summarizer.py :: answer_query()` -- retrieved table content is sent to Gemini with the user's question |
-
-**All core functionalities are addressed.** The pipeline is end-to-end functional for the described use case.
-
----
-
-## 9. Architecture Diagram
+## 7. Architecture Diagram
 
 ```
                         +-----------------+
@@ -296,7 +270,7 @@ Below is how the current codebase maps to each stage of the intended workflow:
                     +------------+-----------+
                                  |
                [2] summarize_bundle(context, grid)
-                     (Gemini 2.5 Flash LLM)
+                 (Uses SUMMARIZER_SYSTEM_PROMPT from .env)
                                  |
                     +------------v-----------+
                     | List of Summaries      |
@@ -314,7 +288,7 @@ Below is how the current codebase maps to each stage of the intended workflow:
                                  |  User asks a question
                                  |  (via CLI or Streamlit)
                                  |
-           [4] search(query, k=1) --> top matching Document
+           [4] search(query, k=RETRIEVAL_K) --> top matching Document
                                  |
                     +------------v-----------+
                     | Load matched table     |
@@ -322,7 +296,7 @@ Below is how the current codebase maps to each stage of the intended workflow:
                     +------------+-----------+
                                  |
            [5] answer_query(question, table_content)
-                     (Gemini 2.5 Flash LLM)
+                  (Uses QA_SYSTEM_PROMPT from .env)
                                  |
                     +------------v-----------+
                     | Final answer to user   |
@@ -331,39 +305,13 @@ Below is how the current codebase maps to each stage of the intended workflow:
 
 ---
 
-## 10. Recommended Cleanup (for the testing dev)
-
-Before starting testing, run these cleanup steps:
-
-```bash
-# 1. Delete dead module
-del postgres_builder.py
-
-# 2. Remove psycopg from requirements.txt (only needed by postgres_builder.py)
-# Edit requirements.txt and remove the line: psycopg>=3.1.0
-
-# 3. Clean generated artifacts
-rmdir /s /q __pycache__
-rmdir /s /q faiss_index
-rmdir /s /q extracted_tables
-
-# 4. Add a .gitignore
-echo __pycache__/ > .gitignore
-echo faiss_index/ >> .gitignore
-echo extracted_tables/ >> .gitignore
-echo .env >> .gitignore
-echo *.pyc >> .gitignore
-```
-
----
-
-## 11. Quick Smoke Test
+## 8. Quick Smoke Test
 
 After setup, run this to verify the full pipeline works:
 
 ```bash
 # This should: extract 4 tables, summarize each via Gemini, build FAISS index, then answer the query.
-python main.py --input Test1_2Page_Output.md --format json --query "What twist per meter do I get with gear D=91 and B=80?"
+python main.py --input assets/markdown/test1_2page_output.md --format json --query "What twist per meter do I get with gear D=91 and B=80?"
 ```
 
 **Expected behavior:**
