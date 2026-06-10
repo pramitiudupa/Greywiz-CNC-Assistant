@@ -4,3 +4,7 @@ __pycache__/
 faiss_index/
 extracted_tables/
 *.pkl
+.venv/
+.pyenv/
+pyenv/
+venv/
