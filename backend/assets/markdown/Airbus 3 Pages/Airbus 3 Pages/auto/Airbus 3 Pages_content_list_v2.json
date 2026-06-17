@@ -1,0 +1,340 @@
+[
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                55,
+                106,
+                222,
+                126
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/f84a4b871eec4f6029b168daa89c06653d88679b18dede2429206986a5fae61a.jpg"
+                },
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                243,
+                143,
+                816,
+                450
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/45641b567498903ba4134d7f01f16c676e4ffadb7fd099e6038f8f67d26b64ec.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [
+                    {
+                        "type": "text",
+                        "content": "NOTE:"
+                    }
+                ],
+                "html": "<table><tr><td rowspan=3 colspan=2>A/C CONFIGURATION</td><td rowspan=1 colspan=4>MRW</td><td rowspan=1 colspan=2>41000kg(90 389 Ib)</td><td rowspan=2 colspan=2>A/C JACKEDFDL= 4.60 m (15.09 ft)</td></tr><tr><td rowspan=1 colspan=2>FWD CG (17%)</td><td rowspan=1 colspan=2>AFT CG (36.8%)</td><td rowspan=1 colspan=2>CG (26.5%)</td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>f</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>ft</td><td rowspan=1 colspan=1>m</td><td rowspan=1 colspan=1>ft</td><td rowspan=1 colspan=1>m</td><td rowspan=1 colspan=1>ft</td></tr><tr><td rowspan=6 colspan=1>DOORS</td><td rowspan=1 colspan=1>D1</td><td rowspan=1 colspan=1>3.38</td><td rowspan=1 colspan=1>11.09</td><td rowspan=1 colspan=1>3.45</td><td rowspan=1 colspan=1>11.32</td><td rowspan=1 colspan=1>3.48</td><td rowspan=1 colspan=1>11.42</td><td rowspan=1 colspan=1>4.13</td><td rowspan=1 colspan=1>13.55</td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>3.87</td><td rowspan=1 colspan=1>12.70</td><td rowspan=1 colspan=1>3.88</td><td rowspan=1 colspan=1>12.73</td><td rowspan=1 colspan=1>3.98</td><td rowspan=1 colspan=1>13.06</td><td rowspan=1 colspan=1>4.54</td><td rowspan=1 colspan=1>14.89</td></tr><tr><td rowspan=1 colspan=1>D4</td><td rowspan=1 colspan=1>3.60</td><td rowspan=1 colspan=1>11.81</td><td rowspan=1 colspan=1>3.50</td><td rowspan=1 colspan=1>11.48</td><td rowspan=1 colspan=1>3.70</td><td rowspan=1 colspan=1>12.14</td><td rowspan=1 colspan=1>4.13</td><td rowspan=1 colspan=1>13.55</td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>1.98</td><td rowspan=1 colspan=1>6.50</td><td rowspan=1 colspan=1>2.04</td><td rowspan=1 colspan=1>6.69</td><td rowspan=1 colspan=1>2.09</td><td rowspan=1 colspan=1>6.86</td><td rowspan=1 colspan=1>2.71</td><td rowspan=1 colspan=1>8.89</td></tr><tr><td rowspan=1 colspan=1>C2</td><td rowspan=1 colspan=1>2.12</td><td rowspan=1 colspan=1>6.96</td><td rowspan=1 colspan=1>2.07</td><td rowspan=1 colspan=1>6.79</td><td rowspan=1 colspan=1>2.22</td><td rowspan=1 colspan=1>7.28</td><td rowspan=1 colspan=1>2.71</td><td rowspan=1 colspan=1>8.89</td></tr><tr><td rowspan=1 colspan=1>C3</td><td rowspan=1 colspan=1>2.19</td><td rowspan=1 colspan=1>7.19</td><td rowspan=1 colspan=1>2.11</td><td rowspan=1 colspan=1>6.92</td><td rowspan=1 colspan=1>2.29</td><td rowspan=1 colspan=1>7.51</td><td rowspan=1 colspan=1>2.75</td><td rowspan=1 colspan=1>9.02</td></tr><tr><td rowspan=6 colspan=1>FUSELAGE</td><td rowspan=1 colspan=1>F1</td><td rowspan=1 colspan=1>1.72</td><td rowspan=1 colspan=1>5.64</td><td rowspan=1 colspan=1>1.76</td><td rowspan=1 colspan=1>5.77</td><td rowspan=1 colspan=1>1.82</td><td rowspan=1 colspan=1>5.97</td><td rowspan=1 colspan=1>2.43</td><td rowspan=1 colspan=1>7.97</td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>1.84</td><td rowspan=1 colspan=1>6.04</td><td rowspan=1 colspan=1>1.79</td><td rowspan=1 colspan=1>5.87</td><td rowspan=1 colspan=1>1.95</td><td rowspan=1 colspan=1>6.40</td><td rowspan=1 colspan=1>2.43</td><td rowspan=1 colspan=1>7.97</td></tr><tr><td rowspan=1 colspan=1>F3</td><td rowspan=1 colspan=1>5.86</td><td rowspan=1 colspan=1>19.23</td><td rowspan=1 colspan=1>5.90</td><td rowspan=1 colspan=1>19.36</td><td rowspan=1 colspan=1>5.97</td><td rowspan=1 colspan=1>19.59</td><td rowspan=1 colspan=1>6.58</td><td rowspan=1 colspan=1>21.59</td></tr><tr><td rowspan=1 colspan=1>F4</td><td rowspan=1 colspan=1>5.99</td><td rowspan=1 colspan=1>19.65</td><td rowspan=1 colspan=1>5.93</td><td rowspan=1 colspan=1>19.46</td><td rowspan=1 colspan=1>6.09</td><td rowspan=1 colspan=1>19.98</td><td rowspan=1 colspan=1>6.58</td><td rowspan=1 colspan=1>21.59</td></tr><tr><td rowspan=1 colspan=1>BF1</td><td rowspan=1 colspan=1>1.62</td><td rowspan=1 colspan=1>5.31</td><td rowspan=1 colspan=1>1.60</td><td rowspan=1 colspan=1>5.25</td><td rowspan=1 colspan=1>1.72</td><td rowspan=1 colspan=1>5.64</td><td rowspan=1 colspan=1>2.26</td><td rowspan=1 colspan=1>7.41</td></tr><tr><td rowspan=1 colspan=1>CP1</td><td rowspan=1 colspan=1>4.17</td><td rowspan=1 colspan=1>13.68</td><td rowspan=1 colspan=1>4.27</td><td rowspan=1 colspan=1>14.01</td><td rowspan=1 colspan=1>4.28</td><td rowspan=1 colspan=1>14.04</td><td rowspan=1 colspan=1>4.96</td><td rowspan=1 colspan=1>16.27</td></tr><tr><td rowspan=2 colspan=1>WINGS</td><td rowspan=1 colspan=1>W1</td><td rowspan=1 colspan=1>6.70</td><td rowspan=1 colspan=1>21.98</td><td rowspan=1 colspan=1>6.65</td><td rowspan=1 colspan=1>21.82</td><td rowspan=1 colspan=1>6.80</td><td rowspan=1 colspan=1>22.31</td><td rowspan=1 colspan=1>7.25</td><td rowspan=1 colspan=1>23.79</td></tr><tr><td rowspan=1 colspan=1>W2</td><td rowspan=1 colspan=1>4.05</td><td rowspan=1 colspan=1>13.29</td><td rowspan=1 colspan=1>4.01</td><td rowspan=1 colspan=1>13.16</td><td rowspan=1 colspan=1>4.16</td><td rowspan=1 colspan=1>13.65</td><td rowspan=1 colspan=1>4.65</td><td rowspan=1 colspan=1>15.26</td></tr><tr><td rowspan=3 colspan=1>TAILPLANE</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>5.46</td><td rowspan=1 colspan=1>17.91</td><td rowspan=1 colspan=1>5.32</td><td rowspan=1 colspan=1>17.45</td><td rowspan=1 colspan=1>5.56</td><td rowspan=1 colspan=1>18.24</td><td rowspan=1 colspan=1>5.93</td><td rowspan=1 colspan=1>19.46</td></tr><tr><td rowspan=1 colspan=1>AP</td><td rowspan=1 colspan=1>4.74</td><td rowspan=1 colspan=1>15.55</td><td rowspan=1 colspan=1>4.59</td><td rowspan=1 colspan=1>15.06</td><td rowspan=1 colspan=1>4.84</td><td rowspan=1 colspan=1>15.88</td><td rowspan=1 colspan=1>5.20</td><td rowspan=1 colspan=1>17.06</td></tr><tr><td rowspan=1 colspan=1>VT</td><td rowspan=1 colspan=1>11.98</td><td rowspan=1 colspan=1>39.30</td><td rowspan=1 colspan=1>11.83</td><td rowspan=1 colspan=1>38.81</td><td rowspan=1 colspan=1>12.08</td><td rowspan=1 colspan=1>39.63</td><td rowspan=1 colspan=1>12.45</td><td rowspan=1 colspan=1>40.85</td></tr><tr><td rowspan=2 colspan=1>ENGINE/NACELLE</td><td rowspan=1 colspan=1>N1 (CFMLEAP-1A)</td><td rowspan=1 colspan=1>0.46</td><td rowspan=1 colspan=1>1.51</td><td rowspan=1 colspan=1>0.47</td><td rowspan=1 colspan=1>1.54</td><td rowspan=1 colspan=1>0.56</td><td rowspan=1 colspan=1>1.84</td><td rowspan=1 colspan=1>1.13</td><td rowspan=1 colspan=1>3.71</td></tr><tr><td rowspan=1 colspan=1>N1(PW1100G)</td><td rowspan=1 colspan=1>0.46</td><td rowspan=1 colspan=1>1.51</td><td rowspan=1 colspan=1>0.47</td><td rowspan=1 colspan=1>1.54</td><td rowspan=1 colspan=1>0.56</td><td rowspan=1 colspan=1>1.84</td><td rowspan=1 colspan=1>1.13</td><td rowspan=1 colspan=1>3.71</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                209,
+                453,
+                872,
+                760
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "PASSENGER AND CARGO DOOR GROUND CLEARANCES ARE MEASURED FROM THE CENTER OF THE DOOR SILL AND FROM FLOOR LEVEL. N_AC_020300_1_0320101_01_02"
+                    }
+                ]
+            },
+            "bbox": [
+                187,
+                772,
+                892,
+                803
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "Page 4 Dec 01/20"
+                    }
+                ]
+            },
+            "bbox": [
+                841,
+                925,
+                936,
+                960
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                433,
+                17,
+                566,
+                44
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "AIRCRAFT CHARACTERISTICS - AIRPORT AND MAINTENANCE PLANNING"
+                    }
+                ]
+            },
+            "bbox": [
+                215,
+                50,
+                782,
+                68
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "Ground Clearances FIGURE-2-3-0-991-032-A01"
+                    }
+                ]
+            },
+            "bbox": [
+                392,
+                813,
+                604,
+                846
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "2-3-0"
+                    }
+                ]
+            },
+            "bbox": [
+                589,
+                934,
+                678,
+                963
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "**ON A/C A320-200"
+                    }
+                ]
+            },
+            "bbox": [
+                55,
+                106,
+                228,
+                126
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/cd36c5c9908d22a308f264d1bf303f1f37690337f4b203261226e3f021a81975.jpg"
+                },
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                205,
+                149,
+                877,
+                448
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/6aa33cb8eeb70dbd083afdf2efe2e9566432f2dbd182703e118d9eac29bf35ad.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td rowspan=1 colspan=8>FLAPS EXTENDEDCFM 56 ENGINE</td></tr><tr><td rowspan=2 colspan=2>DESCRIPTION</td><td rowspan=1 colspan=2>A/C IN MAINTENANCECONFIGURATIONMID CG</td><td rowspan=1 colspan=2>MAXIMUM RAMPWEIGHT FWD CG</td><td rowspan=1 colspan=2>MAXIMUM RAMPWEIGHT AFT CG</td></tr><tr><td rowspan=1 colspan=1>m</td><td rowspan=1 colspan=1>f</td><td rowspan=1 colspan=1>m</td><td rowspan=1 colspan=1>f</td><td rowspan=1 colspan=1>m</td><td rowspan=1 colspan=1>f</td></tr><tr><td rowspan=1 colspan=1>FLAP 1 INBD</td><td rowspan=1 colspan=1>A</td><td rowspan=1 colspan=1>2.09</td><td rowspan=1 colspan=1>6.86</td><td rowspan=1 colspan=1>1.99</td><td rowspan=1 colspan=1>6.53</td><td rowspan=1 colspan=1>1.96</td><td rowspan=1 colspan=1>6.43</td></tr><tr><td rowspan=1 colspan=1>FLAP 1OUTBD</td><td rowspan=1 colspan=1>B</td><td rowspan=1 colspan=1>2.82</td><td rowspan=1 colspan=1>9.25</td><td rowspan=1 colspan=1>2.71</td><td rowspan=1 colspan=1>8.89</td><td rowspan=1 colspan=1>2.69</td><td rowspan=1 colspan=1>8.83</td></tr><tr><td rowspan=1 colspan=1>FLAP 2 INBD</td><td rowspan=1 colspan=1>C</td><td rowspan=1 colspan=1>2.86</td><td rowspan=1 colspan=1>9.38</td><td rowspan=1 colspan=1>2.75</td><td rowspan=1 colspan=1>9.02</td><td rowspan=1 colspan=1>2.72</td><td rowspan=1 colspan=1>8.92</td></tr><tr><td rowspan=1 colspan=1>FLAP 2 OUTBD</td><td rowspan=1 colspan=1>D</td><td rowspan=1 colspan=1>3.68</td><td rowspan=1 colspan=1>12.07</td><td rowspan=1 colspan=1>3.56</td><td rowspan=1 colspan=1>11.68</td><td rowspan=1 colspan=1>3.52</td><td rowspan=1 colspan=1>11.55</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                223,
+                544,
+                857,
+                727
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "N_AC_020300_1_0160101_01_01"
+                    }
+                ]
+            },
+            "bbox": [
+                709,
+                788,
+                892,
+                803
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": []
+            },
+            "bbox": [
+                433,
+                17,
+                566,
+                44
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "AIRCRAFT CHARACTERISTICS - AIRPORT AND MAINTENANCE PLANNING"
+                    }
+                ]
+            },
+            "bbox": [
+                214,
+                50,
+                782,
+                68
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "Ground Clearances Trailing Edge Flaps - Extended FIGURE-2-3-0-991-016-A01"
+                    }
+                ]
+            },
+            "bbox": [
+                379,
+                812,
+                619,
+                864
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "2-3-0"
+                    }
+                ]
+            },
+            "bbox": [
+                589,
+                934,
+                678,
+                963
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "Page 5"
+                    }
+                ]
+            },
+            "bbox": [
+                872,
+                925,
+                936,
+                941
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "Dec 01/20"
+                    }
+                ]
+            },
+            "bbox": [
+                841,
+                943,
+                936,
+                960
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "@A320 AIRCRAFT CHARACTERISTICS - AIRPORT AND MAINTENANCE PLANNING **ON A/C A320-200 B A FLAP TRACKS EXTENDED CFM 56 ENGINE DESCRIPTION A/C IN MAINTENANCE<sub>CONFIGURATION</sub> <sup>MAXIMUM</sup> <sup>RAMP</sup><sub>WEIGHT</sub> <sub>FWD</sub> <sub>CG</sub> <sup>MAXIMUM</sup> <sup>RAMP</sup><sub>WEIGHT</sub> <sub>AFT</sub> <sub>CG</sub> m ft m ft m ft FLAP TRACK 2 A 2.18 7.15 2.08 6.82 2.05 6.73 FLAP TRACK 3 B 2.66 8.73 2.55 8.37 2.52 8.27 FLAP TRACK 4 C 3.10 10.17 2.99 9.81 2.95 9.68 N_AC_020300_1_0410101_01_00 Ground Clearances Flap Tracks - Extended FIGURE-2-3-0-991-041-A01 2-3-0 <sup>Page</sup> <sup>6</sup>Dec 01/20"
+                    }
+                ]
+            },
+            "bbox": [
+                0,
+                0,
+                1000,
+                998
+            ]
+        }
+    ]
+]

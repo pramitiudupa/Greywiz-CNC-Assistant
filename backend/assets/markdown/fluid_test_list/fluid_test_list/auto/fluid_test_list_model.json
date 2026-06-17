@@ -1,0 +1,172 @@
+[
+    {
+        "layout_dets": [
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.9451,
+                "bbox": [
+                    239,
+                    211,
+                    623,
+                    244
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.6189,
+                "bbox": [
+                    696,
+                    242,
+                    933,
+                    319
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.8145,
+                "bbox": [
+                    238,
+                    355,
+                    915,
+                    390
+                ],
+                "index": 3
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9885,
+                "bbox": [
+                    214,
+                    396,
+                    1474,
+                    1970
+                ],
+                "index": 4,
+                "html": "<table><tr><td rowspan=20 colspan=1></td><td rowspan=1 colspan=5></td></tr><tr><td rowspan=1 colspan=2>Testfiuid</td><td rowspan=1 colspan=1>Specification</td><td rowspan=1 colspan=1>Temperature</td><td rowspan=1 colspan=1>Notes</td></tr><tr><td rowspan=3 colspan=1>Fuels</td><td rowspan=1 colspan=1>Aviation turbine</td><td rowspan=1 colspan=1>Def Stan 91-91orDef Stan91-87</td><td rowspan=1 colspan=1>70℃±2℃</td><td rowspan=1 colspan=1>AVTURF35AVTURFSIIF34（JP8)8</td></tr><tr><td rowspan=1 colspan=1>Fuel Oils</td><td rowspan=1 colspan=1>ISO1817 LiquidF</td><td rowspan=1 colspan=1>70℃±2℃</td><td rowspan=1 colspan=1>Simulates diesel fuel,domestic heating and similarlight furnace oils</td></tr><tr><td rowspan=1 colspan=1>Gasoline</td><td rowspan=1 colspan=1>ISO 1817LiquidB</td><td rowspan=1 colspan=1>40℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=5 colspan=1>Hydraulic fluids</td><td rowspan=1 colspan=1>Mineral based</td><td rowspan=1 colspan=1>Def Stan 91-48（see Note1）</td><td rowspan=1 colspan=1>50℃±2℃</td><td rowspan=1 colspan=1>OM15</td></tr><tr><td rowspan=2 colspan=1>Phosphate esterbased (synthetic)</td><td rowspan=1 colspan=1>DTD900/4881D</td><td rowspan=1 colspan=1>100℃±5℃</td><td rowspan=1 colspan=1>OX 20 Skydrol500B4</td></tr><tr><td rowspan=1 colspan=1>ISO1817 Liquid 103</td><td rowspan=1 colspan=1>70C±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Silicone Based</td><td rowspan=1 colspan=1>Dimethyl silicone,20mm/s（CST）AT 25CNATOS1716</td><td rowspan=1 colspan=1>70°℃±2℃</td><td rowspan=1 colspan=1>Thisreplaces S1714which is no longeravailable</td></tr><tr><td rowspan=1 colspan=1>Non Mineral Based(synthetic)</td><td rowspan=1 colspan=1>80%2-Ethoxyethanol(Ethylene GlycolMonoethyl Ether)toBS2713and20%Castor OtoBS 7207 byvolume</td><td rowspan=1 colspan=1>100℃±5℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=2 colspan=1>Lubricating oils</td><td rowspan=1 colspan=1>Mineral based</td><td rowspan=1 colspan=1>SAEJ1899Grade50</td><td rowspan=1 colspan=1>100℃±5℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Esterbased(synthetic)</td><td rowspan=1 colspan=1>ISO 1817 Liquid101</td><td rowspan=1 colspan=1>150℃±5℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=3 colspan=1>Solventsandcleaning fluids</td><td rowspan=1 colspan=1>Propan-2-ol(isopropylalcohol)</td><td rowspan=1 colspan=1>BS1595</td><td rowspan=1 colspan=1>50°C±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Detergent cleaningfluidminimum pH10</td><td rowspan=1 colspan=1>MIL-C-43616</td><td rowspan=1 colspan=1>20℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Cleaning Fluid</td><td rowspan=1 colspan=1>Aliphatic hydrocarbonsolvent</td><td rowspan=1 colspan=1>20℃±2℃</td><td rowspan=1 colspan=1>Lotoxane</td></tr><tr><td rowspan=2 colspan=1>De-icing andantifreezefluids</td><td rowspan=1 colspan=1>Kilfrost ABC</td><td rowspan=1 colspan=1>DTD900/4907</td><td rowspan=1 colspan=1>50°℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>50%inhibited potassiumacetate in water</td><td rowspan=1 colspan=1>20℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Sullage</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>4±0.1%formaldehydeplus1±0.1%Cresylicacid (mixed isomersgeneral purposereagent)and 95%water</td><td rowspan=1 colspan=1>23℃±2℃</td><td rowspan=1 colspan=1>(see Note 2）</td></tr><tr><td rowspan=1 colspan=1>Salt water</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>3.5%NaCl</td><td rowspan=1 colspan=1>50℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>De-ionisedwater</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>50°℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=6>NOTE1NATO H-515may be used as analternative.</td></tr><tr><td rowspan=1 colspan=6>NOTE2 If diffculty is experienced in producing asolution,pure m-cresolmay be used</td></tr><tr><td rowspan=1 colspan=6>NOTE 3 Some test temperatures exceed the critical flash point temperature Expert advice shall be sought ontheconduct ofthesetests.</td></tr><tr><td rowspan=1 colspan=6>NOTE4 Tests at elevated temperatures shall be caried out at the temperatures shown or the cable ratedtemperature which ever is the lowest unless otherwise specified in the product standard for the purpose of shorttermexposureassessment</td></tr><tr><td rowspan=1 colspan=6>Note 5 Exposure periods shallbe 24 hours unless otherwise specified in the product standard</td></tr><tr><td rowspan=1 colspan=6>Note6AVTUR basedfuelsF34andF35arenotaoceptableforembarkation on HM Ships</td></tr></table>"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    234,
+                    203,
+                    627,
+                    246
+                ],
+                "score": 0.951,
+                "text": "DEFSTAN61-12Part0Issue 3"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    741,
+                    239,
+                    889,
+                    281
+                ],
+                "score": 0.991,
+                "text": "AnnexA"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    692,
+                    271,
+                    938,
+                    322
+                ],
+                "score": 0.983,
+                "text": "FluidTestList"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    234,
+                    351,
+                    918,
+                    391
+                ],
+                "score": 0.947,
+                "text": "Table 3A:Fluid Test List-Aircraft and Ground Applications"
+            }
+        ],
+        "page_info": {
+            "page_no": 0,
+            "width": 1654,
+            "height": 2339
+        }
+    },
+    {
+        "layout_dets": [
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.9458,
+                "bbox": [
+                    1085,
+                    201,
+                    1475,
+                    235
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.9421,
+                "bbox": [
+                    302,
+                    385,
+                    877,
+                    418
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9886,
+                "bbox": [
+                    295,
+                    426,
+                    1526,
+                    1216
+                ],
+                "index": 3,
+                "html": "<table><tr><td rowspan=1 colspan=5></td></tr><tr><td rowspan=1 colspan=2>Testfluid</td><td rowspan=1 colspan=1>Specification</td><td rowspan=1 colspan=1>Temperature</td><td rowspan=1 colspan=1>Notes</td></tr><tr><td rowspan=1 colspan=1>Fuel Oil</td><td rowspan=1 colspan=1>Dieso</td><td rowspan=1 colspan=1>NATO F-76 DEF STAN91-4/lssue5（or DERV)</td><td rowspan=1 colspan=1>20±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Aviation TurbineFuel</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>NATOF-44AVCAT/FSII（JP5）</td><td rowspan=1 colspan=1>70℃±2℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=2 colspan=1>Hydraulic Fluid</td><td rowspan=2 colspan=1>Petroleum based</td><td rowspan=2 colspan=1>OX 30Def Stan91-35Water/Glycol based OX40 Def Stan 91-110</td><td rowspan=1 colspan=1>50±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>50±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=2 colspan=1>Lubricating Oil</td><td rowspan=1 colspan=1>Detergent Mineral</td><td rowspan=1 colspan=1>OMD-113</td><td rowspan=1 colspan=1>50±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Synthetic esterbase</td><td rowspan=1 colspan=1>OX-28(DERD2499)</td><td rowspan=1 colspan=1>50±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=2 colspan=1>Water</td><td rowspan=1 colspan=1>Water</td><td rowspan=1 colspan=1>Deionized</td><td rowspan=1 colspan=1>50±3℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>Salt water</td><td rowspan=1 colspan=1>Deionized with 3/% NaC</td><td rowspan=1 colspan=1>50±3°℃</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=5>Note 1 For marine cable tests it is normal to conduct long term exposure tests 7 days for cores and 28 days forouter jackets or sheathes</td></tr><tr><td rowspan=1 colspan=5>Note 2 Tests at elevated temperatures shall be caried out at the temperatures shown or the cable ratedtemperature which everis the lowest unless otherwise specified in the product standard for the purpose of shorttermexposureassessment</td></tr></table>"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1083,
+                    198,
+                    1477,
+                    236
+                ],
+                "score": 0.969,
+                "text": "DEFSTAN61-12Part0Issue3"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    299,
+                    380,
+                    878,
+                    419
+                ],
+                "score": 0.954,
+                "text": "Table3B-Fluids Test List -Marine Applications"
+            }
+        ],
+        "page_info": {
+            "page_no": 1,
+            "width": 1654,
+            "height": 2339
+        }
+    }
+]

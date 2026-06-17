@@ -66,10 +66,6 @@ def parse_html_table(html_str: str) -> list[list[str]]:
     return rectangularize(grid)
 
 
-def extract_tables_from_md(md_path: str | Path) -> list[str]:
-    content = Path(md_path).read_text(encoding="utf-8")
-    return TABLE_PATTERN.findall(content)
-
 
 def _update_active_headings(active_headings: list[str], text: str) -> list[str]:
     """

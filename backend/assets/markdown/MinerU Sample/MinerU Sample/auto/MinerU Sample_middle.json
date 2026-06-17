@@ -1,0 +1,351 @@
+{
+    "pdf_info": [
+        {
+            "preproc_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        70,
+                        143,
+                        540,
+                        694
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.9908,
+                            "bbox": [
+                                70,
+                                143,
+                                540,
+                                694
+                            ],
+                            "index": 3,
+                            "type": "table_body",
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        143,
+                                        540,
+                                        694
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                70,
+                                                143,
+                                                540,
+                                                694
+                                            ],
+                                            "type": "table",
+                                            "html": "<table><tr><td rowspan=1 colspan=1>ID</td><td rowspan=1 colspan=1>Name</td><td rowspan=1 colspan=1> Language</td><td rowspan=1 colspan=1>City</td><td rowspan=1 colspan=1>ValueA</td><td rowspan=1 colspan=1>ValueB</td><td rowspan=1 colspan=1> Sample Text</td></tr><tr><td rowspan=1 colspan=1>001</td><td rowspan=1 colspan=1>Arun</td><td rowspan=1 colspan=1>English</td><td rowspan=1 colspan=1>Bengaluru</td><td rowspan=1 colspan=1>125</td><td rowspan=1 colspan=1>98.4</td><td rowspan=1 colspan=1>Hello World</td></tr><tr><td rowspan=1 colspan=1>002</td><td rowspan=1 colspan=1>Priya</td><td rowspan=1 colspan=1>dd</td><td rowspan=1 colspan=1>Delhi</td><td rowspan=1 colspan=1>238</td><td rowspan=1 colspan=1>77.1</td><td rowspan=1 colspan=1>Egg</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>Wei</td><td rowspan=1 colspan=1>中文</td><td rowspan=1 colspan=1>Shanghai</td><td rowspan=1 colspan=1>512</td><td rowspan=1 colspan=1>65.9</td><td rowspan=1 colspan=1>你好世界</td></tr><tr><td rowspan=1 colspan=1>04</td><td rowspan=1 colspan=1>Sora</td><td rowspan=1 colspan=1>日本語</td><td rowspan=1 colspan=1>Tokyo</td><td rowspan=1 colspan=1>184</td><td rowspan=1 colspan=1>91.2</td><td rowspan=1 colspan=1>んちは世界</td></tr><tr><td rowspan=1 colspan=1>005</td><td rowspan=1 colspan=1>Min-jun</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>Seoul</td><td rowspan=1 colspan=1>329</td><td rowspan=1 colspan=1>88.7</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>006</td><td rowspan=1 colspan=1>Fatima</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>Dubai</td><td rowspan=1 colspan=1>451</td><td rowspan=1 colspan=1>73.5</td><td rowspan=1 colspan=1>LlL.y</td></tr><tr><td rowspan=1 colspan=1>87</td><td rowspan=1 colspan=1>Claire</td><td rowspan=1 colspan=1>Francais</td><td rowspan=1 colspan=1>Paris</td><td rowspan=1 colspan=1>276</td><td rowspan=1 colspan=1>95.8</td><td rowspan=1 colspan=1> Bonjour le monde</td></tr><tr><td rowspan=1 colspan=1>8</td><td rowspan=1 colspan=1>Lukas</td><td rowspan=1 colspan=1>Deutsch</td><td rowspan=1 colspan=1>Berlin</td><td rowspan=1 colspan=1>394</td><td rowspan=1 colspan=1>69.3</td><td rowspan=1 colspan=1> Hallo Welt</td></tr><tr><td rowspan=1 colspan=1>。</td><td rowspan=1 colspan=1>Marco</td><td rowspan=1 colspan=1>Italiano</td><td rowspan=1 colspan=1>Rome</td><td rowspan=1 colspan=1>167</td><td rowspan=1 colspan=1>84.1</td><td rowspan=1 colspan=1>Ciao mondo</td></tr><tr><td rowspan=1 colspan=1>010</td><td rowspan=1 colspan=1>Sofia</td><td rowspan=1 colspan=1>Espanol</td><td rowspan=1 colspan=1>Madrid</td><td rowspan=1 colspan=1>289</td><td rowspan=1 colspan=1>92.6</td><td rowspan=1 colspan=1> Hola mundo</td></tr><tr><td rowspan=1 colspan=1>011</td><td rowspan=1 colspan=1>Joao</td><td rowspan=1 colspan=1>Portugues</td><td rowspan=1 colspan=1>Lisbon</td><td rowspan=1 colspan=1>503</td><td rowspan=1 colspan=1>81.4</td><td rowspan=1 colspan=1> Ola mundo</td></tr><tr><td rowspan=1 colspan=1>012</td><td rowspan=1 colspan=1>lvan</td><td rowspan=1 colspan=1>PyccKn</td><td rowspan=1 colspan=1>Moscow</td><td rowspan=1 colspan=1>344</td><td rowspan=1 colspan=1>76.8</td><td rowspan=1 colspan=1>puBeT MNp</td></tr><tr><td rowspan=1 colspan=1>63</td><td rowspan=1 colspan=1>Eleni</td><td rowspan=1 colspan=1>EXnviká</td><td rowspan=1 colspan=1>Athens</td><td rowspan=1 colspan=1>215</td><td rowspan=1 colspan=1>89.5</td><td rowspan=1 colspan=1>「εia gou k6gue</td></tr></table>",
+                                            "image_path": "e009b5324352dd10656218832ed2ef84fd1d7be5eb5f3a3066049a7240facba3.jpg"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "score": 0.9908
+                }
+            ],
+            "page_idx": 0,
+            "page_size": [
+                612,
+                792
+            ],
+            "discarded_blocks": [
+                {
+                    "score": 0.6701,
+                    "bbox": [
+                        69,
+                        71,
+                        273,
+                        86
+                    ],
+                    "index": 1,
+                    "type": "header",
+                    "lines": [
+                        {
+                            "bbox": [
+                                71,
+                                72,
+                                273,
+                                86
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        71,
+                                        72,
+                                        273,
+                                        86
+                                    ],
+                                    "type": "text",
+                                    "content": "This is a sample table just to test MinerU.",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "score": 0.571,
+                    "bbox": [
+                        69,
+                        100,
+                        191,
+                        115
+                    ],
+                    "index": 2,
+                    "type": "header",
+                    "lines": [
+                        {
+                            "bbox": [
+                                70,
+                                99,
+                                191,
+                                115
+                            ],
+                            "spans": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        99,
+                                        191,
+                                        115
+                                    ],
+                                    "type": "text",
+                                    "content": "Copyright Greywiz 2026",
+                                    "score": 1.0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "para_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        70,
+                        143,
+                        540,
+                        694
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.9908,
+                            "bbox": [
+                                70,
+                                143,
+                                540,
+                                694
+                            ],
+                            "index": 3,
+                            "type": "table_body",
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        143,
+                                        540,
+                                        694
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                70,
+                                                143,
+                                                540,
+                                                694
+                                            ],
+                                            "type": "table",
+                                            "html": "<table><tr><td colspan=\"1\" rowspan=\"1\">ID</td><td colspan=\"1\" rowspan=\"1\">Name</td><td colspan=\"1\" rowspan=\"1\"> Language</td><td colspan=\"1\" rowspan=\"1\">City</td><td colspan=\"1\" rowspan=\"1\">ValueA</td><td colspan=\"1\" rowspan=\"1\">ValueB</td><td colspan=\"1\" rowspan=\"1\"> Sample Text</td></tr><tr><td colspan=\"1\" rowspan=\"1\">001</td><td colspan=\"1\" rowspan=\"1\">Arun</td><td colspan=\"1\" rowspan=\"1\">English</td><td colspan=\"1\" rowspan=\"1\">Bengaluru</td><td colspan=\"1\" rowspan=\"1\">125</td><td colspan=\"1\" rowspan=\"1\">98.4</td><td colspan=\"1\" rowspan=\"1\">Hello World</td></tr><tr><td colspan=\"1\" rowspan=\"1\">002</td><td colspan=\"1\" rowspan=\"1\">Priya</td><td colspan=\"1\" rowspan=\"1\">dd</td><td colspan=\"1\" rowspan=\"1\">Delhi</td><td colspan=\"1\" rowspan=\"1\">238</td><td colspan=\"1\" rowspan=\"1\">77.1</td><td colspan=\"1\" rowspan=\"1\">Egg</td></tr><tr><td colspan=\"1\" rowspan=\"1\">3</td><td colspan=\"1\" rowspan=\"1\">Wei</td><td colspan=\"1\" rowspan=\"1\">中文</td><td colspan=\"1\" rowspan=\"1\">Shanghai</td><td colspan=\"1\" rowspan=\"1\">512</td><td colspan=\"1\" rowspan=\"1\">65.9</td><td colspan=\"1\" rowspan=\"1\">你好世界</td></tr><tr><td colspan=\"1\" rowspan=\"1\">04</td><td colspan=\"1\" rowspan=\"1\">Sora</td><td colspan=\"1\" rowspan=\"1\">日本語</td><td colspan=\"1\" rowspan=\"1\">Tokyo</td><td colspan=\"1\" rowspan=\"1\">184</td><td colspan=\"1\" rowspan=\"1\">91.2</td><td colspan=\"1\" rowspan=\"1\">んちは世界</td></tr><tr><td colspan=\"1\" rowspan=\"1\">005</td><td colspan=\"1\" rowspan=\"1\">Min-jun</td><td colspan=\"1\" rowspan=\"1\"></td><td colspan=\"1\" rowspan=\"1\">Seoul</td><td colspan=\"1\" rowspan=\"1\">329</td><td colspan=\"1\" rowspan=\"1\">88.7</td><td colspan=\"1\" rowspan=\"1\"></td></tr><tr><td colspan=\"1\" rowspan=\"1\">006</td><td colspan=\"1\" rowspan=\"1\">Fatima</td><td colspan=\"1\" rowspan=\"1\"></td><td colspan=\"1\" rowspan=\"1\">Dubai</td><td colspan=\"1\" rowspan=\"1\">451</td><td colspan=\"1\" rowspan=\"1\">73.5</td><td colspan=\"1\" rowspan=\"1\">LlL.y</td></tr><tr><td colspan=\"1\" rowspan=\"1\">87</td><td colspan=\"1\" rowspan=\"1\">Claire</td><td colspan=\"1\" rowspan=\"1\">Francais</td><td colspan=\"1\" rowspan=\"1\">Paris</td><td colspan=\"1\" rowspan=\"1\">276</td><td colspan=\"1\" rowspan=\"1\">95.8</td><td colspan=\"1\" rowspan=\"1\"> Bonjour le monde</td></tr><tr><td colspan=\"1\" rowspan=\"1\">8</td><td colspan=\"1\" rowspan=\"1\">Lukas</td><td colspan=\"1\" rowspan=\"1\">Deutsch</td><td colspan=\"1\" rowspan=\"1\">Berlin</td><td colspan=\"1\" rowspan=\"1\">394</td><td colspan=\"1\" rowspan=\"1\">69.3</td><td colspan=\"1\" rowspan=\"1\"> Hallo Welt</td></tr><tr><td colspan=\"1\" rowspan=\"1\">。</td><td colspan=\"1\" rowspan=\"1\">Marco</td><td colspan=\"1\" rowspan=\"1\">Italiano</td><td colspan=\"1\" rowspan=\"1\">Rome</td><td colspan=\"1\" rowspan=\"1\">167</td><td colspan=\"1\" rowspan=\"1\">84.1</td><td colspan=\"1\" rowspan=\"1\">Ciao mondo</td></tr><tr><td colspan=\"1\" rowspan=\"1\">010</td><td colspan=\"1\" rowspan=\"1\">Sofia</td><td colspan=\"1\" rowspan=\"1\">Espanol</td><td colspan=\"1\" rowspan=\"1\">Madrid</td><td colspan=\"1\" rowspan=\"1\">289</td><td colspan=\"1\" rowspan=\"1\">92.6</td><td colspan=\"1\" rowspan=\"1\"> Hola mundo</td></tr><tr><td colspan=\"1\" rowspan=\"1\">011</td><td colspan=\"1\" rowspan=\"1\">Joao</td><td colspan=\"1\" rowspan=\"1\">Portugues</td><td colspan=\"1\" rowspan=\"1\">Lisbon</td><td colspan=\"1\" rowspan=\"1\">503</td><td colspan=\"1\" rowspan=\"1\">81.4</td><td colspan=\"1\" rowspan=\"1\"> Ola mundo</td></tr><tr><td colspan=\"1\" rowspan=\"1\">012</td><td colspan=\"1\" rowspan=\"1\">lvan</td><td colspan=\"1\" rowspan=\"1\">PyccKn</td><td colspan=\"1\" rowspan=\"1\">Moscow</td><td colspan=\"1\" rowspan=\"1\">344</td><td colspan=\"1\" rowspan=\"1\">76.8</td><td colspan=\"1\" rowspan=\"1\">puBeT MNp</td></tr><tr><td colspan=\"1\" rowspan=\"1\">63</td><td colspan=\"1\" rowspan=\"1\">Eleni</td><td colspan=\"1\" rowspan=\"1\">EXnviká</td><td colspan=\"1\" rowspan=\"1\">Athens</td><td colspan=\"1\" rowspan=\"1\">215</td><td colspan=\"1\" rowspan=\"1\">89.5</td><td colspan=\"1\" rowspan=\"1\">「εia gou k6gue</td></tr><tr><td colspan=\"1\" rowspan=\"1\">014</td><td colspan=\"1\" rowspan=\"1\">Cem</td><td colspan=\"1\" rowspan=\"1\">Turkce</td><td colspan=\"1\" rowspan=\"1\">Istanbul</td><td colspan=\"1\" rowspan=\"1\">478</td><td colspan=\"1\" rowspan=\"1\">71.2</td><td colspan=\"1\" rowspan=\"1\">Merhaba Dunya</td></tr><tr><td colspan=\"1\" rowspan=\"1\">015</td><td colspan=\"1\" rowspan=\"1\">Anna</td><td colspan=\"1\" rowspan=\"1\">Polski</td><td colspan=\"1\" rowspan=\"1\">Warsaw</td><td colspan=\"1\" rowspan=\"1\">302</td><td colspan=\"1\" rowspan=\"1\">86.3</td><td colspan=\"1\" rowspan=\"1\"> Witaj swiecie</td></tr><tr><td colspan=\"1\" rowspan=\"1\">016</td><td colspan=\"1\" rowspan=\"1\">Linh</td><td colspan=\"1\" rowspan=\"1\">Tieng Viet</td><td colspan=\"1\" rowspan=\"1\">Hanoi</td><td colspan=\"1\" rowspan=\"1\">198</td><td colspan=\"1\" rowspan=\"1\">90.7</td><td colspan=\"1\" rowspan=\"1\"> Xin chao thé gioi</td></tr><tr><td colspan=\"1\" rowspan=\"1\">017</td><td colspan=\"1\" rowspan=\"1\">Niran</td><td colspan=\"1\" rowspan=\"1\">mne</td><td colspan=\"1\" rowspan=\"1\">Bangkok</td><td colspan=\"1\" rowspan=\"1\">427</td><td colspan=\"1\" rowspan=\"1\">68.4</td><td colspan=\"1\" rowspan=\"1\">N2ian</td></tr><tr><td colspan=\"1\" rowspan=\"1\">018</td><td colspan=\"1\" rowspan=\"1\">Rizky</td><td colspan=\"1\" rowspan=\"1\">BahasaIndonesia</td><td colspan=\"1\" rowspan=\"1\">Jakarta</td><td colspan=\"1\" rowspan=\"1\">365</td><td colspan=\"1\" rowspan=\"1\">83.9</td><td colspan=\"1\" rowspan=\"1\">Halo Dunia</td></tr><tr><td colspan=\"1\" rowspan=\"1\">6</td><td colspan=\"1\" rowspan=\"1\">Johan</td><td colspan=\"1\" rowspan=\"1\">Svenska</td><td colspan=\"1\" rowspan=\"1\">Stockholm</td><td colspan=\"1\" rowspan=\"1\">241</td><td colspan=\"1\" rowspan=\"1\">94.2</td><td colspan=\"1\" rowspan=\"1\">Hej varlden</td></tr><tr><td colspan=\"1\" rowspan=\"1\">020</td><td colspan=\"1\" rowspan=\"1\">Aino</td><td colspan=\"1\" rowspan=\"1\">Suomi</td><td colspan=\"1\" rowspan=\"1\">Helsinki</td><td colspan=\"1\" rowspan=\"1\">556</td><td colspan=\"1\" rowspan=\"1\">79.6</td><td colspan=\"1\" rowspan=\"1\">Hei maailma</td></tr><tr><td colspan=\"1\" rowspan=\"1\">021</td><td colspan=\"1\" rowspan=\"1\">Omar</td><td colspan=\"1\" rowspan=\"1\"></td><td colspan=\"1\" rowspan=\"1\">Cairo</td><td colspan=\"1\" rowspan=\"1\">318</td><td colspan=\"1\" rowspan=\"1\">87.1</td><td colspan=\"1\" rowspan=\"1\">SgsSui</td></tr><tr><td colspan=\"1\" rowspan=\"1\">022</td><td colspan=\"1\" rowspan=\"1\">Kavya</td><td colspan=\"1\" rowspan=\"1\">Ba</td><td colspan=\"1\" rowspan=\"1\">Mysuru</td><td colspan=\"1\" rowspan=\"1\">472</td><td colspan=\"1\" rowspan=\"1\">75.8</td><td colspan=\"1\" rowspan=\"1\">aaa</td></tr><tr><td colspan=\"1\" rowspan=\"1\">3</td><td colspan=\"1\" rowspan=\"1\">Meera</td><td colspan=\"1\" rowspan=\"1\"></td><td colspan=\"1\" rowspan=\"1\">Chennai</td><td colspan=\"1\" rowspan=\"1\">207</td><td colspan=\"1\" rowspan=\"1\">96.5</td><td colspan=\"1\" rowspan=\"1\"></td></tr><tr><td colspan=\"1\" rowspan=\"1\">024</td><td colspan=\"1\" rowspan=\"1\">Harsh</td><td colspan=\"1\" rowspan=\"1\">8d</td><td colspan=\"1\" rowspan=\"1\">Ahmedabad</td><td colspan=\"1\" rowspan=\"1\">386</td><td colspan=\"1\" rowspan=\"1\">82.3</td><td colspan=\"1\" rowspan=\"1\">eaa</td></tr><tr><td colspan=\"1\" rowspan=\"1\">025</td><td colspan=\"1\" rowspan=\"1\">Arjun</td><td colspan=\"1\" rowspan=\"1\">Deo</td><td colspan=\"1\" rowspan=\"1\">Kochi</td><td colspan=\"1\" rowspan=\"1\">149</td><td colspan=\"1\" rowspan=\"1\">93.4</td><td colspan=\"1\" rowspan=\"1\">mmmoo</td></tr><tr><td colspan=\"1\" rowspan=\"1\">6</td><td colspan=\"1\" rowspan=\"1\">Tenzin</td><td colspan=\"1\" rowspan=\"1\">Tibetan</td><td colspan=\"1\" rowspan=\"1\">Lhasa</td><td colspan=\"1\" rowspan=\"1\">524</td><td colspan=\"1\" rowspan=\"1\">67.8</td><td colspan=\"1\" rowspan=\"1\">21′{'９2</td></tr><tr><td colspan=\"1\" rowspan=\"1\">027</td><td colspan=\"1\" rowspan=\"1\">Nur</td><td colspan=\"1\" rowspan=\"1\">Bahasa Melayu</td><td colspan=\"1\" rowspan=\"1\">KualaLumpur</td><td colspan=\"1\" rowspan=\"1\">293</td><td colspan=\"1\" rowspan=\"1\">88.9</td><td colspan=\"1\" rowspan=\"1\">Halo Dunia</td></tr><tr><td colspan=\"1\" rowspan=\"1\">028</td><td colspan=\"1\" rowspan=\"1\">Zoltan</td><td colspan=\"1\" rowspan=\"1\">Magyar</td><td colspan=\"1\" rowspan=\"1\">Budapest</td><td colspan=\"1\" rowspan=\"1\">441</td><td colspan=\"1\" rowspan=\"1\">72.7</td><td colspan=\"1\" rowspan=\"1\">Hell6 vilag</td></tr><tr><td colspan=\"1\" rowspan=\"1\">029</td><td colspan=\"1\" rowspan=\"1\">Petra</td><td colspan=\"1\" rowspan=\"1\">Cestina</td><td colspan=\"1\" rowspan=\"1\">Prague</td><td colspan=\"1\" rowspan=\"1\">356</td><td colspan=\"1\" rowspan=\"1\">85.6</td><td colspan=\"1\" rowspan=\"1\">Ahoj svete</td></tr><tr><td colspan=\"1\" rowspan=\"1\">030</td><td colspan=\"1\" rowspan=\"1\">Maja</td><td colspan=\"1\" rowspan=\"1\">Hrvatski</td><td colspan=\"1\" rowspan=\"1\">Zagreb</td><td colspan=\"1\" rowspan=\"1\">182</td><td colspan=\"1\" rowspan=\"1\">97.1</td><td colspan=\"1\" rowspan=\"1\">Pozdrav svijete</td></tr><tr><td colspan=\"1\" rowspan=\"1\">031</td><td colspan=\"1\" rowspan=\"1\">Noor</td><td colspan=\"1\" rowspan=\"1\">s</td><td colspan=\"1\" rowspan=\"1\">Lahore</td><td colspan=\"1\" rowspan=\"1\">509</td><td colspan=\"1\" rowspan=\"1\">70.4</td><td colspan=\"1\" rowspan=\"1\">E</td></tr><tr><td colspan=\"1\" rowspan=\"1\">032</td><td colspan=\"1\" rowspan=\"1\">Yakov</td><td colspan=\"1\" rowspan=\"1\">n2y</td><td colspan=\"1\" rowspan=\"1\"> Jerusalem</td><td colspan=\"1\" rowspan=\"1\">267</td><td colspan=\"1\" rowspan=\"1\">91.8</td><td colspan=\"1\" rowspan=\"1\">D7Iy DI7U</td></tr><tr><td colspan=\"1\" rowspan=\"1\">033</td><td colspan=\"1\" rowspan=\"1\">Dawa</td><td colspan=\"1\" rowspan=\"1\">Nepali</td><td colspan=\"1\" rowspan=\"1\">Kathmandu</td><td colspan=\"1\" rowspan=\"1\">423</td><td colspan=\"1\" rowspan=\"1\">78.2</td><td colspan=\"1\" rowspan=\"1\">当智</td></tr><tr><td colspan=\"1\" rowspan=\"1\">034</td><td colspan=\"1\" rowspan=\"1\">Sonam</td><td colspan=\"1\" rowspan=\"1\">Dzongkha</td><td colspan=\"1\" rowspan=\"1\">Thimphu</td><td colspan=\"1\" rowspan=\"1\">311</td><td colspan=\"1\" rowspan=\"1\">86.9</td><td colspan=\"1\" rowspan=\"1\">三山n</td></tr><tr><td colspan=\"1\" rowspan=\"1\">035</td><td colspan=\"1\" rowspan=\"1\">Asha</td><td colspan=\"1\" rowspan=\"1\">A</td><td colspan=\"1\" rowspan=\"1\">Varanasi</td><td colspan=\"1\" rowspan=\"1\">538</td><td colspan=\"1\" rowspan=\"1\">74.3</td><td colspan=\"1\" rowspan=\"1\"></td></tr><tr><td colspan=\"1\" rowspan=\"1\">036</td><td colspan=\"1\" rowspan=\"1\">Boris</td><td colspan=\"1\" rowspan=\"1\">6bnrapckn</td><td colspan=\"1\" rowspan=\"1\">Sofia</td><td colspan=\"1\" rowspan=\"1\">224</td><td colspan=\"1\" rowspan=\"1\">95.0</td><td colspan=\"1\" rowspan=\"1\">3ApaBen CBAT</td></tr><tr><td colspan=\"1\" rowspan=\"1\">037</td><td colspan=\"1\" rowspan=\"1\">Andrei</td><td colspan=\"1\" rowspan=\"1\">Romana</td><td colspan=\"1\" rowspan=\"1\">Bucharest</td><td colspan=\"1\" rowspan=\"1\">398</td><td colspan=\"1\" rowspan=\"1\">80.5</td><td colspan=\"1\" rowspan=\"1\"> Salut lume</td></tr><tr><td colspan=\"1\" rowspan=\"1\">038</td><td colspan=\"1\" rowspan=\"1\">Nika</td><td colspan=\"1\" rowspan=\"1\">gs3ggm</td><td colspan=\"1\" rowspan=\"1\">Tbilisi</td><td colspan=\"1\" rowspan=\"1\">285</td><td colspan=\"1\" rowspan=\"1\">89.7</td><td colspan=\"1\" rowspan=\"1\">a3x3αu38333</td></tr><tr><td colspan=\"1\" rowspan=\"1\">039</td><td colspan=\"1\" rowspan=\"1\">Ali</td><td colspan=\"1\" rowspan=\"1\">ce</td><td colspan=\"1\" rowspan=\"1\">Tehran</td><td colspan=\"1\" rowspan=\"1\">463</td><td colspan=\"1\" rowspan=\"1\">73.1</td><td colspan=\"1\" rowspan=\"1\">EV</td></tr><tr><td colspan=\"1\" rowspan=\"1\">040</td><td colspan=\"1\" rowspan=\"1\">Chandra</td><td colspan=\"1\" rowspan=\"1\">Bece</td><td colspan=\"1\" rowspan=\"1\">Hyderabad</td><td colspan=\"1\" rowspan=\"1\">172</td><td colspan=\"1\" rowspan=\"1\">98.8</td><td colspan=\"1\" rowspan=\"1\">28小0088o80</td></tr></table>",
+                                            "image_path": "e009b5324352dd10656218832ed2ef84fd1d7be5eb5f3a3066049a7240facba3.jpg"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 3,
+                    "score": 0.9908
+                }
+            ]
+        },
+        {
+            "preproc_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        69,
+                        72,
+                        540,
+                        717
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.99,
+                            "bbox": [
+                                69,
+                                72,
+                                540,
+                                717
+                            ],
+                            "index": 1,
+                            "type": "table_body",
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        69,
+                                        72,
+                                        540,
+                                        717
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                69,
+                                                72,
+                                                540,
+                                                717
+                                            ],
+                                            "type": "table",
+                                            "html": "<table><tr><td rowspan=1 colspan=1>014</td><td rowspan=1 colspan=1>Cem</td><td rowspan=1 colspan=1>Turkce</td><td rowspan=1 colspan=1>Istanbul</td><td rowspan=1 colspan=1>478</td><td rowspan=1 colspan=1>71.2</td><td rowspan=1 colspan=1>Merhaba Dunya</td></tr><tr><td rowspan=1 colspan=1>015</td><td rowspan=1 colspan=1>Anna</td><td rowspan=1 colspan=1>Polski</td><td rowspan=1 colspan=1>Warsaw</td><td rowspan=1 colspan=1>302</td><td rowspan=1 colspan=1>86.3</td><td rowspan=1 colspan=1> Witaj swiecie</td></tr><tr><td rowspan=1 colspan=1>016</td><td rowspan=1 colspan=1>Linh</td><td rowspan=1 colspan=1>Tieng Viet</td><td rowspan=1 colspan=1>Hanoi</td><td rowspan=1 colspan=1>198</td><td rowspan=1 colspan=1>90.7</td><td rowspan=1 colspan=1> Xin chao thé gioi</td></tr><tr><td rowspan=1 colspan=1>017</td><td rowspan=1 colspan=1>Niran</td><td rowspan=1 colspan=1>mne</td><td rowspan=1 colspan=1>Bangkok</td><td rowspan=1 colspan=1>427</td><td rowspan=1 colspan=1>68.4</td><td rowspan=1 colspan=1>N2ian</td></tr><tr><td rowspan=1 colspan=1>018</td><td rowspan=1 colspan=1>Rizky</td><td rowspan=1 colspan=1>BahasaIndonesia</td><td rowspan=1 colspan=1>Jakarta</td><td rowspan=1 colspan=1>365</td><td rowspan=1 colspan=1>83.9</td><td rowspan=1 colspan=1>Halo Dunia</td></tr><tr><td rowspan=1 colspan=1>6</td><td rowspan=1 colspan=1>Johan</td><td rowspan=1 colspan=1>Svenska</td><td rowspan=1 colspan=1>Stockholm</td><td rowspan=1 colspan=1>241</td><td rowspan=1 colspan=1>94.2</td><td rowspan=1 colspan=1>Hej varlden</td></tr><tr><td rowspan=1 colspan=1>020</td><td rowspan=1 colspan=1>Aino</td><td rowspan=1 colspan=1>Suomi</td><td rowspan=1 colspan=1>Helsinki</td><td rowspan=1 colspan=1>556</td><td rowspan=1 colspan=1>79.6</td><td rowspan=1 colspan=1>Hei maailma</td></tr><tr><td rowspan=1 colspan=1>021</td><td rowspan=1 colspan=1>Omar</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>Cairo</td><td rowspan=1 colspan=1>318</td><td rowspan=1 colspan=1>87.1</td><td rowspan=1 colspan=1>SgsSui</td></tr><tr><td rowspan=1 colspan=1>022</td><td rowspan=1 colspan=1>Kavya</td><td rowspan=1 colspan=1>Ba</td><td rowspan=1 colspan=1>Mysuru</td><td rowspan=1 colspan=1>472</td><td rowspan=1 colspan=1>75.8</td><td rowspan=1 colspan=1>aaa</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>Meera</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>Chennai</td><td rowspan=1 colspan=1>207</td><td rowspan=1 colspan=1>96.5</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>024</td><td rowspan=1 colspan=1>Harsh</td><td rowspan=1 colspan=1>8d</td><td rowspan=1 colspan=1>Ahmedabad</td><td rowspan=1 colspan=1>386</td><td rowspan=1 colspan=1>82.3</td><td rowspan=1 colspan=1>eaa</td></tr><tr><td rowspan=1 colspan=1>025</td><td rowspan=1 colspan=1>Arjun</td><td rowspan=1 colspan=1>Deo</td><td rowspan=1 colspan=1>Kochi</td><td rowspan=1 colspan=1>149</td><td rowspan=1 colspan=1>93.4</td><td rowspan=1 colspan=1>mmmoo</td></tr><tr><td rowspan=1 colspan=1>6</td><td rowspan=1 colspan=1>Tenzin</td><td rowspan=1 colspan=1>Tibetan</td><td rowspan=1 colspan=1>Lhasa</td><td rowspan=1 colspan=1>524</td><td rowspan=1 colspan=1>67.8</td><td rowspan=1 colspan=1>21′{&#x27;９2</td></tr><tr><td rowspan=1 colspan=1>027</td><td rowspan=1 colspan=1>Nur</td><td rowspan=1 colspan=1>Bahasa Melayu</td><td rowspan=1 colspan=1>KualaLumpur</td><td rowspan=1 colspan=1>293</td><td rowspan=1 colspan=1>88.9</td><td rowspan=1 colspan=1>Halo Dunia</td></tr><tr><td rowspan=1 colspan=1>028</td><td rowspan=1 colspan=1>Zoltan</td><td rowspan=1 colspan=1>Magyar</td><td rowspan=1 colspan=1>Budapest</td><td rowspan=1 colspan=1>441</td><td rowspan=1 colspan=1>72.7</td><td rowspan=1 colspan=1>Hell6 vilag</td></tr><tr><td rowspan=1 colspan=1>029</td><td rowspan=1 colspan=1>Petra</td><td rowspan=1 colspan=1>Cestina</td><td rowspan=1 colspan=1>Prague</td><td rowspan=1 colspan=1>356</td><td rowspan=1 colspan=1>85.6</td><td rowspan=1 colspan=1>Ahoj svete</td></tr></table>",
+                                            "image_path": "b51ee4d9eaa1e5b31e38c5278cb318c7bac611a1852b4342a6120d3fbee4c2ce.jpg"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "score": 0.99
+                }
+            ],
+            "page_idx": 1,
+            "page_size": [
+                612,
+                792
+            ],
+            "discarded_blocks": [],
+            "para_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        69,
+                        72,
+                        540,
+                        717
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.99,
+                            "bbox": [
+                                69,
+                                72,
+                                540,
+                                717
+                            ],
+                            "index": 1,
+                            "type": "table_body",
+                            "lines": [],
+                            "lines_deleted": true
+                        }
+                    ],
+                    "index": 1,
+                    "score": 0.99
+                }
+            ]
+        },
+        {
+            "preproc_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        70,
+                        71,
+                        540,
+                        515
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.9908,
+                            "bbox": [
+                                70,
+                                71,
+                                540,
+                                515
+                            ],
+                            "index": 1,
+                            "type": "table_body",
+                            "lines": [
+                                {
+                                    "bbox": [
+                                        70,
+                                        71,
+                                        540,
+                                        515
+                                    ],
+                                    "spans": [
+                                        {
+                                            "bbox": [
+                                                70,
+                                                71,
+                                                540,
+                                                515
+                                            ],
+                                            "type": "table",
+                                            "html": "<table><tr><td rowspan=1 colspan=1>030</td><td rowspan=1 colspan=1>Maja</td><td rowspan=1 colspan=1>Hrvatski</td><td rowspan=1 colspan=1>Zagreb</td><td rowspan=1 colspan=1>182</td><td rowspan=1 colspan=1>97.1</td><td rowspan=1 colspan=1>Pozdrav svijete</td></tr><tr><td rowspan=1 colspan=1>031</td><td rowspan=1 colspan=1>Noor</td><td rowspan=1 colspan=1>s</td><td rowspan=1 colspan=1>Lahore</td><td rowspan=1 colspan=1>509</td><td rowspan=1 colspan=1>70.4</td><td rowspan=1 colspan=1>E</td></tr><tr><td rowspan=1 colspan=1>032</td><td rowspan=1 colspan=1>Yakov</td><td rowspan=1 colspan=1>n2y</td><td rowspan=1 colspan=1> Jerusalem</td><td rowspan=1 colspan=1>267</td><td rowspan=1 colspan=1>91.8</td><td rowspan=1 colspan=1>D7Iy DI7U</td></tr><tr><td rowspan=1 colspan=1>033</td><td rowspan=1 colspan=1>Dawa</td><td rowspan=1 colspan=1>Nepali</td><td rowspan=1 colspan=1>Kathmandu</td><td rowspan=1 colspan=1>423</td><td rowspan=1 colspan=1>78.2</td><td rowspan=1 colspan=1>当智</td></tr><tr><td rowspan=1 colspan=1>034</td><td rowspan=1 colspan=1>Sonam</td><td rowspan=1 colspan=1>Dzongkha</td><td rowspan=1 colspan=1>Thimphu</td><td rowspan=1 colspan=1>311</td><td rowspan=1 colspan=1>86.9</td><td rowspan=1 colspan=1>三山n</td></tr><tr><td rowspan=1 colspan=1>035</td><td rowspan=1 colspan=1>Asha</td><td rowspan=1 colspan=1>A</td><td rowspan=1 colspan=1>Varanasi</td><td rowspan=1 colspan=1>538</td><td rowspan=1 colspan=1>74.3</td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>036</td><td rowspan=1 colspan=1>Boris</td><td rowspan=1 colspan=1>6bnrapckn</td><td rowspan=1 colspan=1>Sofia</td><td rowspan=1 colspan=1>224</td><td rowspan=1 colspan=1>95.0</td><td rowspan=1 colspan=1>3ApaBen CBAT</td></tr><tr><td rowspan=1 colspan=1>037</td><td rowspan=1 colspan=1>Andrei</td><td rowspan=1 colspan=1>Romana</td><td rowspan=1 colspan=1>Bucharest</td><td rowspan=1 colspan=1>398</td><td rowspan=1 colspan=1>80.5</td><td rowspan=1 colspan=1> Salut lume</td></tr><tr><td rowspan=1 colspan=1>038</td><td rowspan=1 colspan=1>Nika</td><td rowspan=1 colspan=1>gs3ggm</td><td rowspan=1 colspan=1>Tbilisi</td><td rowspan=1 colspan=1>285</td><td rowspan=1 colspan=1>89.7</td><td rowspan=1 colspan=1>a3x3αu38333</td></tr><tr><td rowspan=1 colspan=1>039</td><td rowspan=1 colspan=1>Ali</td><td rowspan=1 colspan=1>ce</td><td rowspan=1 colspan=1>Tehran</td><td rowspan=1 colspan=1>463</td><td rowspan=1 colspan=1>73.1</td><td rowspan=1 colspan=1>EV</td></tr><tr><td rowspan=1 colspan=1>040</td><td rowspan=1 colspan=1>Chandra</td><td rowspan=1 colspan=1>Bece</td><td rowspan=1 colspan=1>Hyderabad</td><td rowspan=1 colspan=1>172</td><td rowspan=1 colspan=1>98.8</td><td rowspan=1 colspan=1>28小0088o80</td></tr></table>",
+                                            "image_path": "9f40d990478324fee9ea2315527402921020fc32399026900e82a096355fa8f0.jpg"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "index": 1,
+                    "score": 0.9908
+                }
+            ],
+            "page_idx": 2,
+            "page_size": [
+                612,
+                792
+            ],
+            "discarded_blocks": [],
+            "para_blocks": [
+                {
+                    "type": "table",
+                    "bbox": [
+                        70,
+                        71,
+                        540,
+                        515
+                    ],
+                    "blocks": [
+                        {
+                            "score": 0.9908,
+                            "bbox": [
+                                70,
+                                71,
+                                540,
+                                515
+                            ],
+                            "index": 1,
+                            "type": "table_body",
+                            "lines": [],
+                            "lines_deleted": true
+                        }
+                    ],
+                    "index": 1,
+                    "score": 0.9908
+                }
+            ]
+        }
+    ],
+    "_backend": "pipeline",
+    "_version_name": "3.2.3"
+}
