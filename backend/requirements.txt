@@ -13,5 +13,5 @@ streamlit>=1.30.0
 mineru[all]
 
 # Gemini provider (only needed if LLM_PROVIDER=gemini)
-google-generativeai>=0.5.0
+google-genai>=0.3.0
 langchain-google-genai>=1.0.0

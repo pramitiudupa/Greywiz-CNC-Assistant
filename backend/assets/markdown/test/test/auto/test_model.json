@@ -1,0 +1,2363 @@
+[
+    {
+        "layout_dets": [
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.4693,
+                "bbox": [
+                    380,
+                    1050,
+                    459,
+                    1999
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.4592,
+                "bbox": [
+                    270,
+                    336,
+                    376,
+                    1996
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 13,
+                "label": "header_image",
+                "score": 0.8252,
+                "bbox": [
+                    1278,
+                    227,
+                    1469,
+                    274
+                ],
+                "index": 3
+            },
+            {
+                "cls_id": 2,
+                "label": "aside_text",
+                "score": 0.5847,
+                "bbox": [
+                    185,
+                    335,
+                    216,
+                    615
+                ],
+                "index": 4
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.6683,
+                "bbox": [
+                    228,
+                    1040,
+                    265,
+                    1296
+                ],
+                "index": 5
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9828,
+                "bbox": [
+                    463,
+                    335,
+                    1412,
+                    1992
+                ],
+                "index": 6,
+                "html": "<table><tr><td>sI. No.</td><td>Name of the related Party</td><td>Nature of Relationship</td><td>Nature of contracts/ arrangements /transactions</td><td>Amount in crore</td><td>Duration of the contract/ arrangement/ transactions</td><td>Salient terms of contracts or arrangements or transactions including the value, if any</td><td>Amount paid as advance, f any</td></tr><tr><td rowspan=\"6\">1</td><td rowspan=\"6\">Tata Motors Limited</td><td rowspan=\"6\">Holding Company</td><td>a) Sale of services /goods Inter Corporate Deposits (ICD) placed</td><td>468.40 1124.50</td><td>Ongoing, subject to termination Ongoing, subject to termination</td><td>Not Applicable Not Applicable</td><td></td></tr><tr><td>during the year</td><td></td><td></td><td></td><td></td></tr><tr><td>ICD&#x27;s repaid during the</td><td>901.00|id:)</td><td>Ongoing, subject to termination</td><td>Not Applicable</td><td></td></tr><tr><td>year IcD&#x27;s outstanding</td><td>250.00id</td><td>Ongoing, subject to termination</td><td>Not Applicable</td><td></td></tr><tr><td>receivable Interest income on</td><td>12.41</td><td>Ongoing, subject to termination</td><td>Interest rate ranging from 6% to 7.75%</td><td></td></tr><tr><td>ICD&#x27;s Dividend paid</td><td></td><td>Not Applicable</td><td>Not Applicable</td><td></td></tr><tr><td>2</td><td>Tata Technologies Europe Limited</td><td>Indirect Subsidiary</td><td>g) Purchase of services a) Sale of services/goods</td><td>1.78 142.83</td><td>Ongoing, subject to termination Ongoing, subject to termination</td><td>Not Applicable Not Applicable</td><td></td></tr><tr><td>3</td><td>Escenda Engineering AB</td><td>Company Indirect Subsidiary</td><td>a) Sale of services/goods</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td>Company</td><td>b) Purchase of services</td><td>9.80</td><td>Ongoing, subject to termination Ongoing, subject to termination</td><td>Not Applicable Not Applicable</td><td></td></tr><tr><td>4</td><td>Tata Technologies Pte Limited</td><td>Subsidiary Company</td><td>a) Sale of services/goods</td><td>52.71</td><td>Ongoing, subject to termination</td><td>Not Applicable</td><td></td></tr><tr><td>5</td><td>Tata Technologies (Thailand) Limited</td><td>Indirect Subsidiary Company</td><td>a) Sale of services/goods</td><td>5.70</td><td>Ongoing, subject to termination</td><td>Not Applicable</td><td></td></tr><tr><td>6</td><td>Tata Technologies Inc</td><td>Indirect Subsidiary</td><td>a) Sale of services/goods</td><td>133.64</td><td>Ongoing, subject to termination</td><td>Not Applicable</td><td></td></tr><tr><td>7</td><td>Tata Technologies SRL,</td><td>Company Indirect Subsidiary</td><td>b) Purchase of services a) Sale of services/goods</td><td>0.19 1.90</td><td>Ongoing, subject to termination Ongoing, subject to termination</td><td>Not Applicable Not Applicable</td><td></td></tr><tr><td>8</td><td>Romania Tata Manufacturing</td><td>Company Indirect Subsidiary</td><td>b) Purchase of services a) Sale of services/goods</td><td>1.23</td><td>Ongoing,ubject to termination Ongoing, subject to termination</td><td>Not Applicable Not Applicable</td><td></td></tr><tr><td>9</td><td>Technologies (Shanghai) Limited Concorde Motors (India)</td><td>Company</td><td></td><td></td><td>Not Applicable</td><td></td><td></td></tr></table>"
+            },
+            {
+                "cls_id": 8,
+                "label": "footer",
+                "score": 0.8637,
+                "bbox": [
+                    1174,
+                    2081,
+                    1423,
+                    2113
+                ],
+                "index": 7
+            },
+            {
+                "cls_id": 16,
+                "label": "number",
+                "score": 0.7801,
+                "bbox": [
+                    1422,
+                    2082,
+                    1467,
+                    2112
+                ],
+                "index": 8
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    410,
+                    1971,
+                    454,
+                    2000
+                ],
+                "score": 0.997,
+                "text": "2"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    390,
+                    1975,
+                    418,
+                    1998
+                ],
+                "score": 0.994,
+                "text": "1"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1281,
+                    228,
+                    1468,
+                    276
+                ],
+                "score": 0.821,
+                "text": "T TATA"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1176,
+                    2081,
+                    1423,
+                    2115
+                ],
+                "score": 0.985,
+                "text": "2020-2021 Annual Report"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1411,
+                    2080,
+                    1469,
+                    2120
+                ],
+                "score": 0.851,
+                "text": "|25"
+            }
+        ],
+        "page_info": {
+            "page_no": 0,
+            "width": 1654,
+            "height": 2339
+        }
+    },
+    {
+        "layout_dets": [
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.5962,
+                "bbox": [
+                    186,
+                    227,
+                    603,
+                    274
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.7995,
+                "bbox": [
+                    1270,
+                    336,
+                    1304,
+                    746
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.5654,
+                "bbox": [
+                    1323,
+                    1807,
+                    1383,
+                    1999
+                ],
+                "index": 3
+            },
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.7548,
+                "bbox": [
+                    1219,
+                    1266,
+                    1261,
+                    1996
+                ],
+                "index": 4
+            },
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.7441,
+                "bbox": [
+                    1141,
+                    1370,
+                    1178,
+                    1996
+                ],
+                "index": 5
+            },
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.9875,
+                "bbox": [
+                    186,
+                    335,
+                    1141,
+                    1992
+                ],
+                "index": 6
+            },
+            {
+                "cls_id": 16,
+                "label": "number",
+                "score": 0.7942,
+                "bbox": [
+                    187,
+                    2079,
+                    228,
+                    2108
+                ],
+                "index": 7
+            },
+            {
+                "cls_id": 8,
+                "label": "footer",
+                "score": 0.8468,
+                "bbox": [
+                    232,
+                    2078,
+                    483,
+                    2111
+                ],
+                "index": 8
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    233,
+                    2081,
+                    481,
+                    2110
+                ],
+                "score": 0.981,
+                "text": "Engineering a better world"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    183,
+                    2075,
+                    239,
+                    2117
+                ],
+                "score": 0.916,
+                "text": "261"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    228,
+                    602,
+                    274
+                ],
+                "score": 0.935,
+                "text": "TATA TECHNOLOGIES"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1231,
+                    1972,
+                    1250,
+                    1999
+                ],
+                "score": 0.967,
+                "text": "1"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1143,
+                    1367,
+                    1177,
+                    2002
+                ],
+                "score": 0.513,
+                "text": "Kuedo a g pandpe u o upun n mo s un "
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    195,
+                    350,
+                    225,
+                    434
+                ],
+                "score": 0.837,
+                "text": "qunouy"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    270,
+                    360,
+                    302,
+                    419
+                ],
+                "score": 0.783,
+                "text": "Aue"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    217,
+                    438,
+                    253,
+                    802
+                ],
+                "score": 0.542,
+                "text": "ue ! anen a upnu soneen 10"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    335,
+                    602,
+                    376,
+                    808
+                ],
+                "score": 0.513,
+                "text": "ed %  saa"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    495,
+                    804,
+                    537,
+                    1181
+                ],
+                "score": 0.572,
+                "text": "  s 00"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    604,
+                    811,
+                    646,
+                    1134
+                ],
+                "score": 0.588,
+                "text": "  s "
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    397,
+                    847,
+                    440,
+                    1179
+                ],
+                "score": 0.513,
+                "text": "  0"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    606,
+                    1116,
+                    640,
+                    1177
+                ],
+                "score": 0.576,
+                "text": "∠0"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    497,
+                    1233,
+                    533,
+                    1489
+                ],
+                "score": 0.607,
+                "text": "(e"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    975,
+                    1235,
+                    1016,
+                    1491
+                ],
+                "score": 0.557,
+                "text": "(e"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    397,
+                    1299,
+                    438,
+                    1491
+                ],
+                "score": 0.545,
+                "text": "("
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    461,
+                    1300,
+                    499,
+                    1489
+                ],
+                "score": 0.705,
+                "text": "p!ed puap!n!a (p"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1067,
+                    1375,
+                    1099,
+                    1461
+                ],
+                "score": 0.827,
+                "text": "spoo6"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    574,
+                    1450,
+                    603,
+                    1485
+                ],
+                "score": 0.529,
+                "text": "σ"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    301,
+                    1507,
+                    337,
+                    1687
+                ],
+                "score": 0.518,
+                "text": "Aue!p!sans mll"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    852,
+                    1505,
+                    894,
+                    1689
+                ],
+                "score": 0.515,
+                "text": "Auelp!sns mlla"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    499,
+                    1715,
+                    535,
+                    1937
+                ],
+                "score": 0.512,
+                "text": "pa Sup W"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    941,
+                    1728,
+                    977,
+                    1937
+                ],
+                "score": 0.593,
+                "text": " ()"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    191,
+                    1943,
+                    251,
+                    1995
+                ],
+                "score": 0.588,
+                "text": "\\\\a}$"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    302,
+                    1948,
+                    331,
+                    1989
+                ],
+                "score": 0.78,
+                "text": "10"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    499,
+                    1954,
+                    529,
+                    1987
+                ],
+                "score": 0.982,
+                "text": "11"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    608,
+                    1952,
+                    638,
+                    1989
+                ],
+                "score": 0.959,
+                "text": "12"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    671,
+                    1952,
+                    701,
+                    1989
+                ],
+                "score": 0.655,
+                "text": "13"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    734,
+                    1948,
+                    763,
+                    1991
+                ],
+                "score": 0.934,
+                "text": "4"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    791,
+                    1946,
+                    825,
+                    1991
+                ],
+                "score": 0.732,
+                "text": "15"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    856,
+                    1952,
+                    886,
+                    1991
+                ],
+                "score": 0.968,
+                "text": "16"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    916,
+                    1952,
+                    946,
+                    1989
+                ],
+                "score": 0.908,
+                "text": "17"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1041,
+                    1952,
+                    1069,
+                    1987
+                ],
+                "score": 0.953,
+                "text": "19"
+            }
+        ],
+        "page_info": {
+            "page_no": 1,
+            "width": 1654,
+            "height": 2339
+        }
+    },
+    {
+        "layout_dets": [
+            {
+                "cls_id": 13,
+                "label": "header_image",
+                "score": 0.9294,
+                "bbox": [
+                    1280,
+                    229,
+                    1466,
+                    273
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.7775,
+                "bbox": [
+                    1187,
+                    341,
+                    1467,
+                    368
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 6,
+                "label": "doc_title",
+                "score": 0.8491,
+                "bbox": [
+                    667,
+                    379,
+                    986,
+                    409
+                ],
+                "index": 3
+            },
+            {
+                "cls_id": 6,
+                "label": "doc_title",
+                "score": 0.9132,
+                "bbox": [
+                    281,
+                    424,
+                    1371,
+                    493
+                ],
+                "index": 4
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8773,
+                "bbox": [
+                    184,
+                    498,
+                    665,
+                    526
+                ],
+                "index": 5
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9855,
+                "bbox": [
+                    244,
+                    530,
+                    1468,
+                    722
+                ],
+                "index": 6
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.9067,
+                "bbox": [
+                    185,
+                    727,
+                    559,
+                    754
+                ],
+                "index": 7
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9144,
+                "bbox": [
+                    247,
+                    757,
+                    1064,
+                    786
+                ],
+                "index": 8
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.523,
+                "bbox": [
+                    249,
+                    789,
+                    563,
+                    816
+                ],
+                "index": 9
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9853,
+                "bbox": [
+                    253,
+                    826,
+                    1462,
+                    1030
+                ],
+                "index": 10,
+                "html": "<table><tr><td rowspan=1 colspan=1>sI.No.</td><td rowspan=1 colspan=1>Name of Director</td><td rowspan=1 colspan=1>Designation / Nature of Directorship</td><td rowspan=1 colspan=1>Number of meetingsof CSR Committeeheld during the year</td><td rowspan=1 colspan=1>Number of meetings ofCSR Committee attendedduring the year</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>Mr. P B Balaji*</td><td rowspan=1 colspan=1>Chairman, Non-Executive,Non-Independent Director</td><td rowspan=1 colspan=1>Two</td><td rowspan=1 colspan=1>One</td></tr><tr><td rowspan=1 colspan=1>2</td><td rowspan=1 colspan=1>Mr. Ajoyendra Mukherjee#</td><td rowspan=1 colspan=1>Member, Independent Director</td><td rowspan=1 colspan=1>Two</td><td rowspan=1 colspan=1>NA</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>Mr. Warren Harris</td><td rowspan=1 colspan=1>Member, Managing Director</td><td rowspan=1 colspan=1>Two</td><td rowspan=1 colspan=1>Two</td></tr></table>"
+            },
+            {
+                "cls_id": 24,
+                "label": "vision_footnote",
+                "score": 0.6577,
+                "bbox": [
+                    249,
+                    1031,
+                    977,
+                    1058
+                ],
+                "index": 11
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9264,
+                "bbox": [
+                    249,
+                    1061,
+                    848,
+                    1088
+                ],
+                "index": 12
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.921,
+                "bbox": [
+                    184,
+                    1092,
+                    1465,
+                    1145
+                ],
+                "index": 13
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.5078,
+                "bbox": [
+                    246,
+                    1148,
+                    1403,
+                    1209
+                ],
+                "index": 14
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8863,
+                "bbox": [
+                    247,
+                    1209,
+                    1463,
+                    1262
+                ],
+                "index": 15
+            },
+            {
+                "cls_id": 16,
+                "label": "number",
+                "score": 0.8759,
+                "bbox": [
+                    1422,
+                    2083,
+                    1465,
+                    2110
+                ],
+                "index": 16
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9596,
+                "bbox": [
+                    185,
+                    1265,
+                    1466,
+                    1347
+                ],
+                "index": 17
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9646,
+                "bbox": [
+                    184,
+                    1350,
+                    1466,
+                    1434
+                ],
+                "index": 18
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9361,
+                "bbox": [
+                    185,
+                    1438,
+                    788,
+                    1467
+                ],
+                "index": 19
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.5224,
+                "bbox": [
+                    248,
+                    1469,
+                    406,
+                    1497
+                ],
+                "index": 20
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9198,
+                "bbox": [
+                    185,
+                    1499,
+                    995,
+                    1531
+                ],
+                "index": 21
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9684,
+                "bbox": [
+                    246,
+                    1562,
+                    1243,
+                    1621
+                ],
+                "index": 22
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8829,
+                "bbox": [
+                    248,
+                    1625,
+                    860,
+                    1683
+                ],
+                "index": 23
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9143,
+                "bbox": [
+                    248,
+                    1688,
+                    820,
+                    1718
+                ],
+                "index": 24
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.4589,
+                "bbox": [
+                    311,
+                    1721,
+                    438,
+                    1748
+                ],
+                "index": 25
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9487,
+                "bbox": [
+                    184,
+                    1752,
+                    808,
+                    1782
+                ],
+                "index": 26
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9863,
+                "bbox": [
+                    315,
+                    1798,
+                    1462,
+                    1972
+                ],
+                "index": 27,
+                "html": "<table><tr><td rowspan=3 colspan=1>Total Amountspent for theFinancial Year(inz)</td><td rowspan=1 colspan=5>Amount Unspent (in ₹)</td></tr><tr><td rowspan=1 colspan=2>Total Amount transferred to UnspentCSR Account as per section 135(6).</td><td rowspan=1 colspan=3>Amount transferred to any fund specified underSchedule Vll as per second proviso to section 135(5).</td></tr><tr><td rowspan=1 colspan=1>Amount</td><td rowspan=1 colspan=1>Date of Transfer</td><td rowspan=1 colspan=1>Name of the Fund</td><td rowspan=1 colspan=1>Amount</td><td rowspan=1 colspan=1>Date of Transfer</td></tr><tr><td rowspan=1 colspan=1>58,397,286</td><td rowspan=1 colspan=1>Not applicable</td><td rowspan=1 colspan=1>Not applicable</td><td rowspan=1 colspan=1>Not applicable</td><td rowspan=1 colspan=1>Not applicable</td><td rowspan=1 colspan=1>Not applicable</td></tr></table>"
+            },
+            {
+                "cls_id": 8,
+                "label": "footer",
+                "score": 0.9331,
+                "bbox": [
+                    1176,
+                    2083,
+                    1420,
+                    2112
+                ],
+                "index": 28
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1281,
+                    227,
+                    1469,
+                    276
+                ],
+                "score": 0.811,
+                "text": "T TATA"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1175,
+                    2081,
+                    1423,
+                    2115
+                ],
+                "score": 0.968,
+                "text": "2020-2021 Annual Report"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1188,
+                    337,
+                    1467,
+                    371
+                ],
+                "score": 0.981,
+                "text": "Annexure VI - Board's Report"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    670,
+                    381,
+                    983,
+                    408
+                ],
+                "score": 0.983,
+                "text": "TATA TECHNOLOGIES LIMITED"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    280,
+                    421,
+                    1372,
+                    464
+                ],
+                "score": 0.903,
+                "text": "AnnUAL REPORT ON CORPORATE SOCIAL RESPONSIBILITY (CSR) ACTIVITIES"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    593,
+                    459,
+                    1057,
+                    495
+                ],
+                "score": 0.953,
+                "text": "OF THE C0MPANY IN FY 2020-21"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    187,
+                    500,
+                    210,
+                    526
+                ],
+                "score": 0.687,
+                "text": "1."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    244,
+                    492,
+                    665,
+                    535
+                ],
+                "score": 0.96,
+                "text": "Brief outline on CSR Policy of the Company"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    531,
+                    1465,
+                    559
+                ],
+                "score": 0.979,
+                "text": "At Tata Technologies, our Corporate Sustainability vision is to co-create sustainable value for our key stakeholders through"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    556,
+                    1467,
+                    583
+                ],
+                "score": 0.99,
+                "text": "engineering and technology innovation. Our mission is to make a positive impact on the communities where the company does"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    579,
+                    1468,
+                    606
+                ],
+                "score": 0.977,
+                "text": "business and on our internal and external stakeholders by enhancing the quality of life, committing to environmental enrichment"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    600,
+                    1468,
+                    631
+                ],
+                "score": 0.975,
+                "text": "and fostering innovation. Thereby, making it better for the planet, better for people, better for progress, better now and better for the"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    247,
+                    621,
+                    1468,
+                    656
+                ],
+                "score": 0.972,
+                "text": "future. We shall strategicall integrate the endeavour to achieve operational sustainability with societal development by leveraging"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    647,
+                    1468,
+                    679
+                ],
+                "score": 0.984,
+                "text": "our core competencies, resources, technology and employee volunteers. We shall be proactive towards the welfare of our key"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    670,
+                    1465,
+                    701
+                ],
+                "score": 0.986,
+                "text": "stakeholders – the underprivileged and marginalized communities, socially and economically disadvantaged groups and the society"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    694,
+                    334,
+                    726
+                ],
+                "score": 0.984,
+                "text": "at large."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    187,
+                    726,
+                    228,
+                    756
+                ],
+                "score": 0.979,
+                "text": "2."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    232,
+                    723,
+                    559,
+                    758
+                ],
+                "score": 0.972,
+                "text": "Composition of CSR Committee"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    755,
+                    1064,
+                    788
+                ],
+                "score": 0.966,
+                "text": "As on March 31, 2021, the CSR Committee comprises of the following Board members:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    1498,
+                    995,
+                    1535
+                ],
+                "score": 0.969,
+                "text": "7. (a) Two percent of average net profit of the company as per section 135(5)."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    252,
+                    788,
+                    563,
+                    820
+                ],
+                "score": 0.961,
+                "text": "Composition of CSR Committee:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    251,
+                    1029,
+                    974,
+                    1060
+                ],
+                "score": 0.984,
+                "text": "*Appointed as a member and Chairman of the Committee w.e.f. July 27, 2020"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    1059,
+                    847,
+                    1092
+                ],
+                "score": 0.976,
+                "text": "#Appointed as member of the Committee w.e.f. March 30, 2021"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    185,
+                    1092,
+                    216,
+                    1122
+                ],
+                "score": 0.993,
+                "text": "3."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    1090,
+                    1467,
+                    1123
+                ],
+                "score": 0.977,
+                "text": "Provide the web-link where Composition of CSR committee, CSR Policy and CSR projects approved by the Board are disclosed on"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    247,
+                    1112,
+                    520,
+                    1149
+                ],
+                "score": 0.981,
+                "text": "the website of the company"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    1266,
+                    214,
+                    1291
+                ],
+                "score": 0.996,
+                "text": "4."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1263,
+                    1468,
+                    1296
+                ],
+                "score": 0.971,
+                "text": "Impact assessment of csR projects carried out in pursuance of sub-rule (3) of rule 8 of the Companies (Corporate Social"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1287,
+                    887,
+                    1320
+                ],
+                "score": 0.964,
+                "text": "Responsibility Policy) Rules, 2014, if applicable (attach the report)."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1317,
+                    400,
+                    1351
+                ],
+                "score": 0.972,
+                "text": "Not Applicable."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    185,
+                    1351,
+                    216,
+                    1381
+                ],
+                "score": 0.987,
+                "text": "5."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1350,
+                    1466,
+                    1382
+                ],
+                "score": 0.985,
+                "text": "Details of the amount available for set off in pursuance of sub-rule (3) of rule 7 of the Companies (Corporate Social responsibility"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    246,
+                    1369,
+                    1004,
+                    1410
+                ],
+                "score": 0.897,
+                "text": "Policy) Rules, 2014 and amount required for set of for the financial year, if any."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1404,
+                    401,
+                    1438
+                ],
+                "score": 0.974,
+                "text": "Not Applicable."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1141,
+                    1403,
+                    1181
+                ],
+                "score": 0.963,
+                "text": "The weblink provided below shows the composition of CSR committee, CSR Policy and CsR projects approved by the Board."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    251,
+                    1178,
+                    1020,
+                    1210
+                ],
+                "score": 0.989,
+                "text": "Web link: https://www.tatatechnologies.com/in/about-us/corporate-sustainability/"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    246,
+                    1204,
+                    1467,
+                    1243
+                ],
+                "score": 0.976,
+                "text": "Policy Link: https://www.tatatechnologies.com/wp-content/uploads/2017/05/CSR-POLICY-28-June-2014-for-Website-Upload 001."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    246,
+                    1229,
+                    295,
+                    1269
+                ],
+                "score": 0.977,
+                "text": "pdf"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1413,
+                    2079,
+                    1470,
+                    2124
+                ],
+                "score": 0.837,
+                "text": "127"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    1440,
+                    225,
+                    1466
+                ],
+                "score": 0.97,
+                "text": "6."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    243,
+                    1436,
+                    788,
+                    1469
+                ],
+                "score": 0.986,
+                "text": "Average net profit of the company as per section 135(5)."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1687,
+                    820,
+                    1722
+                ],
+                "score": 0.975,
+                "text": "(d) Total CSR obligation for the financial year (7a+7b-7c)"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    1471,
+                    402,
+                    1497
+                ],
+                "score": 0.966,
+                "text": "2,906,519,546"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    244,
+                    1556,
+                    1248,
+                    1601
+                ],
+                "score": 0.959,
+                "text": "(b) Surplus arising out of the CSR projects or programmes or activities of the previous financial years."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    309,
+                    1590,
+                    356,
+                    1626
+                ],
+                "score": 0.908,
+                "text": "Nil."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1622,
+                    861,
+                    1660
+                ],
+                "score": 0.941,
+                "text": "(c) Amount required to be set off for the financial year, f any."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    310,
+                    1656,
+                    354,
+                    1686
+                ],
+                "score": 0.974,
+                "text": "Nil."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    1754,
+                    225,
+                    1781
+                ],
+                "score": 0.98,
+                "text": "8."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    239,
+                    1751,
+                    807,
+                    1786
+                ],
+                "score": 0.972,
+                "text": "(a) CSR amount spent or unspent for the financial year:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    311,
+                    1720,
+                    437,
+                    1749
+                ],
+                "score": 0.981,
+                "text": "58,130,391"
+            }
+        ],
+        "page_info": {
+            "page_no": 2,
+            "width": 1654,
+            "height": 2339
+        }
+    },
+    {
+        "layout_dets": [
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.6522,
+                "bbox": [
+                    187,
+                    228,
+                    601,
+                    273
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 7,
+                "label": "figure_title",
+                "score": 0.9049,
+                "bbox": [
+                    185,
+                    1149,
+                    215,
+                    1936
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9886,
+                "bbox": [
+                    231,
+                    339,
+                    1044,
+                    1992
+                ],
+                "index": 3,
+                "html": "<table><tr><td rowspan=1 colspan=1>(1)</td><td rowspan=1 colspan=1>(2)</td><td rowspan=1 colspan=1>(3)</td><td rowspan=1 colspan=1>(4)</td><td rowspan=1 colspan=2>(5)</td><td rowspan=1 colspan=1>(6)</td><td rowspan=1 colspan=1>(7)</td><td rowspan=1 colspan=1>(8)</td><td rowspan=1 colspan=1>(9)</td><td rowspan=1 colspan=1>(10)</td><td rowspan=1 colspan=2>(11)</td></tr><tr><td rowspan=2 colspan=1>si.No.</td><td rowspan=2 colspan=1>Name of the Project</td><td rowspan=2 colspan=1>Item fromthelist ofactivities InSchedule VIlto the Act.</td><td rowspan=2 colspan=1>LocalArea(Yes/N0)</td><td rowspan=1 colspan=2>Location of the Project</td><td rowspan=2 colspan=1>ProjectDuration</td><td rowspan=2 colspan=1>AmountAllocated forthe Project(in)</td><td rowspan=2 colspan=1>Amount spentin the currentfinancial Year(in)</td><td rowspan=2 colspan=1>Amounttransferred toUnspent CSR A/Cfor the projectas per Section135(6) (in)</td><td rowspan=2 colspan=1>Mode ofImplementation- Direct(Yes /No)</td><td rowspan=1 colspan=2>Mode of mplementation- Through implementingAgency</td></tr><tr><td rowspan=1 colspan=1>State</td><td rowspan=1 colspan=1>District</td><td rowspan=1 colspan=1>Name</td><td rowspan=1 colspan=1>CSRRegiNo.</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>STEM Education(Science-Technology-Engineering-Mathematics)</td><td rowspan=1 colspan=1>SCH VI (i)</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra</td><td rowspan=1 colspan=1>Pune Ahmednagar,Nasik, Raigad</td><td rowspan=1 colspan=1>3 years</td><td rowspan=1 colspan=1>11,756,100</td><td rowspan=1 colspan=1>11,756,100</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>IISER andISF</td><td rowspan=1 colspan=1>In process</td></tr><tr><td rowspan=1 colspan=1>2</td><td rowspan=1 colspan=1>Empowerment Via ducation(Women Empowerment&amp;Technical Education)</td><td rowspan=1 colspan=1>SCH I)8(d)</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra</td><td rowspan=1 colspan=1>Pune Ahmednagar,Nasik, Rigad</td><td rowspan=1 colspan=1>3 years</td><td rowspan=1 colspan=1>10,00000</td><td rowspan=1 colspan=1>10,000,000</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>LPF</td><td rowspan=1 colspan=1>CSR0000090</td></tr><tr><td rowspan=1 colspan=1>3</td><td rowspan=1 colspan=1>Ready Engineer(Employability enhancementprogram through inovation)</td><td rowspan=1 colspan=1>SCH VIl()</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra&amp; Karnataka</td><td rowspan=1 colspan=1>Aurangabad,Belgaum,Kolhapur,Solapur etc.</td><td rowspan=1 colspan=1>3 year</td><td rowspan=1 colspan=1>3,890,700</td><td rowspan=1 colspan=1>3,890,700</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td></tr><tr><td rowspan=1 colspan=1>4</td><td rowspan=1 colspan=1>Indian Institute ofInformation and Technology,Ranchi(Industry partnerunder PPP Project)</td><td rowspan=1 colspan=1>SCH VI()</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Jharkhand</td><td rowspan=1 colspan=1>Ranchi</td><td rowspan=1 colspan=1>3 year</td><td rowspan=1 colspan=1>14,000,000</td><td rowspan=1 colspan=1>14,000,00</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>WIT Ranchi In</td><td rowspan=1 colspan=1>Process</td></tr><tr><td rowspan=1 colspan=1>5</td><td rowspan=1 colspan=1>Integrated Ruraldevelopment Project(Education,livelihd,Environment, Agricultureetc.)</td><td rowspan=1 colspan=1>SCH VI ),(iv) 8 )</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra</td><td rowspan=1 colspan=1>Osmanabad</td><td rowspan=1 colspan=1>3 year</td><td rowspan=1 colspan=1>6,014,765</td><td rowspan=1 colspan=1>6,014,765</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>AILSG   InRCPN</td><td rowspan=1 colspan=1>Process</td></tr><tr><td rowspan=1 colspan=1>6</td><td rowspan=1 colspan=1>Pune Urban CulturalMapping Project</td><td rowspan=1 colspan=1>SCH VI()</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra</td><td rowspan=1 colspan=1>Pune</td><td rowspan=1 colspan=1>3 year</td><td rowspan=1 colspan=1>7,000,0000</td><td rowspan=1 colspan=1>7,000,000</td><td rowspan=1 colspan=1>Nil</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>Sahapedia In</td><td rowspan=1 colspan=1>Process</td></tr><tr><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>Total</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1>55,581,429</td><td rowspan=1 colspan=1>55,581,429</td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td><td rowspan=1 colspan=1></td></tr></table>"
+            },
+            {
+                "cls_id": 16,
+                "label": "number",
+                "score": 0.8492,
+                "bbox": [
+                    188,
+                    2079,
+                    222,
+                    2108
+                ],
+                "index": 4
+            },
+            {
+                "cls_id": 8,
+                "label": "footer",
+                "score": 0.9081,
+                "bbox": [
+                    232,
+                    2079,
+                    482,
+                    2110
+                ],
+                "index": 5
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    233,
+                    2081,
+                    481,
+                    2110
+                ],
+                "score": 0.981,
+                "text": "Engineering a better world"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    184,
+                    2076,
+                    226,
+                    2117
+                ],
+                "score": 0.997,
+                "text": "28"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    228,
+                    601,
+                    275
+                ],
+                "score": 0.917,
+                "text": "TATA TECHNOLOGIES"
+            }
+        ],
+        "page_info": {
+            "page_no": 3,
+            "width": 1654,
+            "height": 2339
+        }
+    },
+    {
+        "layout_dets": [
+            {
+                "cls_id": 12,
+                "label": "header",
+                "score": 0.5498,
+                "bbox": [
+                    1279,
+                    229,
+                    1467,
+                    274
+                ],
+                "index": 1
+            },
+            {
+                "cls_id": 2,
+                "label": "aside_text",
+                "score": 0.6792,
+                "bbox": [
+                    189,
+                    1754,
+                    217,
+                    1779
+                ],
+                "index": 2
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9473,
+                "bbox": [
+                    310,
+                    339,
+                    848,
+                    370
+                ],
+                "index": 3
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9469,
+                "bbox": [
+                    310,
+                    379,
+                    913,
+                    411
+                ],
+                "index": 4
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9414,
+                "bbox": [
+                    311,
+                    420,
+                    642,
+                    451
+                ],
+                "index": 5
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9454,
+                "bbox": [
+                    311,
+                    460,
+                    689,
+                    492
+                ],
+                "index": 6
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9508,
+                "bbox": [
+                    311,
+                    501,
+                    854,
+                    532
+                ],
+                "index": 7
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9442,
+                "bbox": [
+                    311,
+                    543,
+                    705,
+                    573
+                ],
+                "index": 8
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9474,
+                "bbox": [
+                    311,
+                    583,
+                    888,
+                    614
+                ],
+                "index": 9
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9436,
+                "bbox": [
+                    312,
+                    624,
+                    627,
+                    653
+                ],
+                "index": 10
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8535,
+                "bbox": [
+                    248,
+                    665,
+                    1134,
+                    696
+                ],
+                "index": 11
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.7327,
+                "bbox": [
+                    312,
+                    705,
+                    451,
+                    735
+                ],
+                "index": 12
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9883,
+                "bbox": [
+                    189,
+                    751,
+                    1461,
+                    1000
+                ],
+                "index": 13,
+                "html": "<table><tr><td rowspan=1 colspan=1>(1)</td><td rowspan=1 colspan=1>(2)</td><td rowspan=1 colspan=1>(3)</td><td rowspan=1 colspan=1>(4)</td><td rowspan=1 colspan=2>(5)</td><td rowspan=1 colspan=1>(6)</td><td rowspan=1 colspan=1>(7)</td><td rowspan=1 colspan=2>(8)</td></tr><tr><td rowspan=2 colspan=1>sINo.</td><td rowspan=2 colspan=1>Name of theProject</td><td rowspan=2 colspan=1>Item from the listof activities InSchedule VIll tothe Act.</td><td rowspan=2 colspan=1>LocalArea(Yes / No)</td><td rowspan=1 colspan=2>Location of the Project</td><td rowspan=2 colspan=1>Amountspent for theProject(in)</td><td rowspan=2 colspan=1>Mode ofImplementation- Direct(Yes /No)</td><td rowspan=1 colspan=2>Mode of Implementation- Through implementingAgency</td></tr><tr><td rowspan=1 colspan=1>State</td><td rowspan=1 colspan=1>District</td><td rowspan=1 colspan=1>Name</td><td rowspan=1 colspan=1>CSR Regi. No.</td></tr><tr><td rowspan=1 colspan=1>1</td><td rowspan=1 colspan=1>Disaster ReliefSupport andVolunteering</td><td rowspan=1 colspan=1>SCH VII () (i) (iv))</td><td rowspan=1 colspan=1>Yes</td><td rowspan=1 colspan=1>Maharashtra</td><td rowspan=1 colspan=1>Pune</td><td rowspan=1 colspan=1>2,815,857</td><td rowspan=1 colspan=1>No</td><td rowspan=1 colspan=1>SMDF, LPF,NextGen, AF.</td><td rowspan=1 colspan=1>CSR00001973</td></tr></table>"
+            },
+            {
+                "cls_id": 24,
+                "label": "vision_footnote",
+                "score": 0.52,
+                "bbox": [
+                    250,
+                    1011,
+                    725,
+                    1041
+                ],
+                "index": 14
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8697,
+                "bbox": [
+                    312,
+                    1051,
+                    451,
+                    1080
+                ],
+                "index": 15
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.5045,
+                "bbox": [
+                    249,
+                    1092,
+                    798,
+                    1164
+                ],
+                "index": 16
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8774,
+                "bbox": [
+                    249,
+                    1173,
+                    854,
+                    1204
+                ],
+                "index": 17
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.7467,
+                "bbox": [
+                    312,
+                    1214,
+                    463,
+                    1244
+                ],
+                "index": 18
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8279,
+                "bbox": [
+                    249,
+                    1256,
+                    625,
+                    1286
+                ],
+                "index": 19
+            },
+            {
+                "cls_id": 21,
+                "label": "table",
+                "score": 0.9874,
+                "bbox": [
+                    317,
+                    1302,
+                    1462,
+                    1578
+                ],
+                "index": 20,
+                "html": "<table><tr><td rowspan=1 colspan=1>SI. No.</td><td rowspan=1 colspan=1>Particulars</td><td rowspan=1 colspan=1>Amount (inz)</td></tr><tr><td rowspan=1 colspan=1>(i)</td><td rowspan=1 colspan=1>Two percent of average net profit of the company as per section 135(5)</td><td rowspan=1 colspan=1>58,130,391</td></tr><tr><td rowspan=1 colspan=1>(i)</td><td rowspan=1 colspan=1>Total amount spent for the Financial Year</td><td rowspan=1 colspan=1>58,397,286</td></tr><tr><td rowspan=1 colspan=1>(i)</td><td rowspan=1 colspan=1>Excess amount spent for the financial year [(i-(i]</td><td rowspan=1 colspan=1>266,895</td></tr><tr><td rowspan=1 colspan=1>(iv)</td><td rowspan=1 colspan=1>Surplus arising out ofthe CRprojects or programmes or activities of the previous financialyears, if any</td><td rowspan=1 colspan=1>Nil</td></tr><tr><td rowspan=1 colspan=1>(v)</td><td rowspan=1 colspan=1>Amount available for set of in succeeding financial years [(i)-(iv)]</td><td rowspan=1 colspan=1>266,895</td></tr></table>"
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.6609,
+                "bbox": [
+                    186,
+                    1590,
+                    985,
+                    1620
+                ],
+                "index": 21
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8976,
+                "bbox": [
+                    313,
+                    1630,
+                    459,
+                    1660
+                ],
+                "index": 22
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8775,
+                "bbox": [
+                    249,
+                    1671,
+                    1297,
+                    1703
+                ],
+                "index": 23
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9627,
+                "bbox": [
+                    246,
+                    1753,
+                    1465,
+                    1809
+                ],
+                "index": 24
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.7654,
+                "bbox": [
+                    250,
+                    1819,
+                    396,
+                    1849
+                ],
+                "index": 25
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.841,
+                "bbox": [
+                    185,
+                    1859,
+                    1354,
+                    1930
+                ],
+                "index": 26
+            },
+            {
+                "cls_id": 8,
+                "label": "footer",
+                "score": 0.9377,
+                "bbox": [
+                    1176,
+                    2083,
+                    1419,
+                    2112
+                ],
+                "index": 27
+            },
+            {
+                "cls_id": 16,
+                "label": "number",
+                "score": 0.893,
+                "bbox": [
+                    1423,
+                    2083,
+                    1465,
+                    2111
+                ],
+                "index": 28
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1280,
+                    227,
+                    1468,
+                    275
+                ],
+                "score": 0.769,
+                "text": "T TATA"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1175,
+                    2081,
+                    1423,
+                    2115
+                ],
+                "score": 0.968,
+                "text": "2020-2021 Annual Report"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1010,
+                    724,
+                    1045
+                ],
+                "score": 0.983,
+                "text": "(d) Amount spent in Administrative Overheads"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    313,
+                    424,
+                    342,
+                    447
+                ],
+                "score": 0.944,
+                "text": "ii"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    373,
+                    419,
+                    639,
+                    450
+                ],
+                "score": 0.99,
+                "text": "ISF: India STEM Foundation"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    311,
+                    624,
+                    626,
+                    655
+                ],
+                "score": 0.962,
+                "text": "vii. AF:Annamrita Foundation"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    187,
+                    1587,
+                    986,
+                    1624
+                ],
+                "score": 0.968,
+                "text": "9. (a) Details of Unspent CSR amount for the preceding three financial years:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    184,
+                    1854,
+                    1355,
+                    1895
+                ],
+                "score": 0.962,
+                "text": "11. Specify the reason(s), if the company has failed to spend two per cent of the average net profit as per section 135(5)."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    250,
+                    1897,
+                    396,
+                    1932
+                ],
+                "score": 0.977,
+                "text": "Not Applicable"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    245,
+                    1748,
+                    1469,
+                    1787
+                ],
+                "score": 0.962,
+                "text": " In case of creation or acquisition of capital asset, furnish the details relating to the asset so created or acquired through csR spent"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1777,
+                    640,
+                    1809
+                ],
+                "score": 0.979,
+                "text": " in the financial year (asset-wise details)."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    1414,
+                    2079,
+                    1469,
+                    2121
+                ],
+                "score": 0.906,
+                "text": "|29"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    313,
+                    384,
+                    332,
+                    406
+                ],
+                "score": 0.943,
+                "text": "i."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    376,
+                    381,
+                    911,
+                    409
+                ],
+                "score": 0.986,
+                "text": "IISER: Indian Institute of Science Education and Research"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    312,
+                    505,
+                    356,
+                    530
+                ],
+                "score": 0.983,
+                "text": "iv."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    358,
+                    501,
+                    853,
+                    533
+                ],
+                "score": 0.929,
+                "text": "AllLSG: All India Institute of Local Self Government"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    313,
+                    586,
+                    347,
+                    613
+                ],
+                "score": 0.835,
+                "text": "vi."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    373,
+                    583,
+                    888,
+                    615
+                ],
+                "score": 0.993,
+                "text": "SMDF: Sumant Moolgaonkar Development Foundation"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1090,
+                    800,
+                    1128
+                ],
+                "score": 0.967,
+                "text": "(e) Amount spent on Impact Assessment,if applicable"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    311,
+                    1131,
+                    460,
+                    1166
+                ],
+                "score": 0.99,
+                "text": "Not Applicable"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    247,
+                    1667,
+                    1298,
+                    1707
+                ],
+                "score": 0.975,
+                "text": "(b) Details of csR amount spent in the financial year for ongoing projects of the preceding financial year(s):"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    1171,
+                    856,
+                    1209
+                ],
+                "score": 0.972,
+                "text": "(f) Total amount spent for the Financial Year (8b+8c+8d+8e)"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    188,
+                    1753,
+                    221,
+                    1788
+                ],
+                "score": 0.955,
+                "text": "10"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    313,
+                    340,
+                    846,
+                    368
+                ],
+                "score": 0.985,
+                "text": "List of Implementing Agencies mentioned in above table:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    314,
+                    464,
+                    344,
+                    488
+                ],
+                "score": 0.728,
+                "text": "ii."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    373,
+                    461,
+                    687,
+                    491
+                ],
+                "score": 0.969,
+                "text": "LPF: Lila Poonawalla Foundation"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    314,
+                    549,
+                    337,
+                    570
+                ],
+                "score": 0.97,
+                "text": "V."
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    375,
+                    543,
+                    703,
+                    574
+                ],
+                "score": 0.966,
+                "text": "RCPN: Rotary Club of Poona North"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    252,
+                    1251,
+                    625,
+                    1289
+                ],
+                "score": 0.946,
+                "text": "(g) Excess amount for set off,if any"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    248,
+                    664,
+                    1137,
+                    698
+                ],
+                "score": 0.984,
+                "text": "(c) Details of CSR amount spent against other than ongoing projects for the financial year:"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    311,
+                    705,
+                    451,
+                    737
+                ],
+                "score": 0.963,
+                "text": "INR 2,815,857"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    312,
+                    1052,
+                    451,
+                    1081
+                ],
+                "score": 0.976,
+                "text": "INR 2,919,864"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    313,
+                    1217,
+                    461,
+                    1243
+                ],
+                "score": 0.985,
+                "text": "INR 58,397,286"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    312,
+                    1629,
+                    458,
+                    1661
+                ],
+                "score": 0.99,
+                "text": "Not Applicable"
+            },
+            {
+                "label": "ocr_text",
+                "bbox": [
+                    249,
+                    1818,
+                    396,
+                    1850
+                ],
+                "score": 0.983,
+                "text": "Not Applicable"
+            }
+        ],
+        "page_info": {
+            "page_no": 4,
+            "width": 1654,
+            "height": 2339
+        }
+    }
+]

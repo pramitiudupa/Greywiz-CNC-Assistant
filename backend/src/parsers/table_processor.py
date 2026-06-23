@@ -7,7 +7,6 @@ from typing import Iterable
 from bs4 import BeautifulSoup
 
 
-TABLE_PATTERN = re.compile(r"<table\b.*?</table>", re.DOTALL | re.IGNORECASE)
 WHITESPACE_PATTERN = re.compile(r"\s+")
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+", re.MULTILINE)
 
@@ -105,8 +104,6 @@ def parse_bundles_from_md(md_path: str | Path) -> list[dict]:
       - Each bundle's context = active headings + body text (deduplicated).
     """
     content = Path(md_path).read_text(encoding="utf-8")
-
-    # Split content by table tags but keep the tags
     parts = re.split(r"(<table\b.*?</table>)", content, flags=re.DOTALL | re.IGNORECASE)
 
     bundles = []
@@ -119,13 +116,11 @@ def parse_bundles_from_md(md_path: str | Path) -> list[dict]:
             grid = parse_html_table(part)
             if grid:
                 if pending_text.strip():
-                    # Fresh text block before this table — update state
                     active_headings = _update_active_headings(active_headings, pending_text)
                     body = _strip_heading_lines(pending_text)
                     if body:
                         last_body_text = body
 
-                # Assemble context: headings + body text
                 heading_block = "\n".join(active_headings)
                 if heading_block:
                     full_context = heading_block + "\n\n" + last_body_text

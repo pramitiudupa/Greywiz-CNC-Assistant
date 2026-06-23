@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import platform
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -112,12 +113,13 @@ class MinerUConverter:
         else:
             output_dir = Path(output_dir).resolve()
 
-        # Use the PDF stem as the subdirectory name — reprocessing the same
-        # PDF overwrites the previous run instead of creating duplicates.
-        pdf_stem = pdf_path.stem
+        pdf_stem = re.sub(r"[^\w\-]", "_", pdf_path.stem)
         run_dir = output_dir / pdf_stem
         if run_dir.exists():
-            shutil.rmtree(run_dir)
+            if "assets" in str(run_dir) and "markdown" in str(run_dir):
+                shutil.rmtree(run_dir)
+            else:
+                raise RuntimeError(f"Safety check failed: {run_dir} is not inside assets/markdown")
         run_dir.mkdir(parents=True, exist_ok=True)
 
         print_func(f"[MinerU] Converting: {pdf_path.name}")
@@ -168,7 +170,7 @@ class MinerUConverter:
 
         convenience_path = output_dir / f"{pdf_stem}.md"
         shutil.copy2(md_file, convenience_path)
-        print_func(f"[MinerU] ✅ Markdown saved to: {convenience_path}")
+        print_func(f"[MinerU] Markdown saved to: {convenience_path}")
 
 
         images_dir = md_file.parent / "images"

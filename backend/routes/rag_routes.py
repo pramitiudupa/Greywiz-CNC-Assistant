@@ -22,26 +22,19 @@ def process_documents(
     Process MD document, extract bundles, vectorize table JSON directly,
     and create FAISS index.
 
-    Tables are embedded as JSON chunks — no LLM summarization step.
+    Tables are embedded as JSON chunks - no LLM summarization step.
     The table JSON string is stored as the Document page_content so it
     can be returned directly to the LLM at query time.
 
     Returns True if successful.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
-    cache_file = output_dir / "table_metadata.json"
-    cached_data = {}
     
-    if cache_file.exists():
-        with open(cache_file, "r", encoding="utf-8") as f:
-            cached_data = json.load(f)
-
     print_func(f"[*] Extracting bundles from {input_path}...")
     bundles = parse_bundles_from_md(input_path)
     
     chunks = []
     metadatas = []
-    new_cache = {}
     
     print_func(f"[*] Found {len(bundles)} bundles. Processing...")
     for i, bundle in enumerate(bundles):
@@ -51,30 +44,20 @@ def process_documents(
         
 
         table_json = json.dumps(grid, ensure_ascii=False)
-        chunk_text = f"CONTEXT:\n{context}\n\nTABLE (JSON):\n{table_json}"
+        chunk_text = f"<context>\nCONTEXT:\n{context}\n\nTABLE (JSON):\n{table_json}\n</context>"
         
-        content_hash = hashlib.sha256(chunk_text.encode()).hexdigest()
-        
-        if table_id in cached_data and cached_data[table_id].get("content_hash") == content_hash:
-            print_func(f"    - Using cached chunk for bundle {i}...")
-        else:
-            file_path = output_dir / table_id
-            storage.save(grid, file_path)
-            print_func(f"    - Vectorizing bundle {i} directly...")
+        file_path = output_dir / table_id
+        storage.save(grid, file_path)
+        print_func(f"    - Vectorizing bundle {i} directly...")
         
         chunks.append(chunk_text)
         metadata = {
             "table_id": table_id,
             "file_path": str((output_dir / f"{table_id}").with_suffix(f'.{storage_format}')),
             "original_index": i,
-            "content_hash": content_hash,
             "context_snippet": context[:200]
         }
         metadatas.append(metadata)
-        new_cache[table_id] = metadata
-
-    with open(cache_file, "w", encoding="utf-8") as f:
-        json.dump(new_cache, f, indent=4)
 
     print_func("[*] Creating FAISS index...")
     vector_mgr.create_index(chunks, metadatas)
@@ -86,14 +69,14 @@ def query_rag(
     query_text: str,
     summarizer,
     vector_mgr: VectorStoreManager,
+    k_val: int = 1,
     print_func=print
 ) -> Dict[str, Any]:
     """
     Search the vector store and generate an answer for the query.
     Retrieves top-k matching table chunks directly from the vector store
-    (no file reads needed — the chunk IS the table content).
+    (no file reads needed - the chunk IS the table content).
     """
-    k_val = int(os.getenv("RETRIEVAL_K", "1"))
     
     print_func(f"\n[Query]: {query_text}")
     results = vector_mgr.search(query_text, k=k_val)
@@ -111,7 +94,7 @@ def query_rag(
         print_func(f"[*] Retrieved chunk {i+1}/{len(results)}: {table_id}")
         
         all_table_sections.append(
-            f"=== Table {i+1}: {table_id} ===\n{chunk_content}"
+            f"=== Table {i+1}: {table_id} ===\n<context>\n{chunk_content}\n</context>"
         )
     
     combined_tables = "\n\n".join(all_table_sections)
@@ -180,7 +163,7 @@ def process_pdf_to_rag(
     )
 
     elapsed = time.time() - start_time
-    print_func(f"[Pipeline] ✅ Complete in {elapsed:.1f}s — Markdown at: {md_path}")
+    print_func(f"[Pipeline] Complete in {elapsed:.1f}s - Markdown at: {md_path}")
 
     return {
         "md_path": md_path,

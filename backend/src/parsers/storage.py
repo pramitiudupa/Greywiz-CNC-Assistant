@@ -45,4 +45,7 @@ def get_storage(format_type: str) -> TableStorage:
         'html': HTMLStorage(),
         'xml': XMLStorage()
     }
-    return formats.get(format_type.lower(), MarkdownStorage())
+    format_lower = format_type.lower()
+    if format_lower not in formats:
+        raise ValueError(f"Unknown storage format: {format_type}")
+    return formats[format_lower]

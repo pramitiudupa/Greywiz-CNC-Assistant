@@ -20,7 +20,7 @@ def main():
                         help="Base directory for per-document storage")
     parser.add_argument("--query", type=str, help="Single query to run (optional)")
     parser.add_argument("--provider", type=str, default=None, choices=["ollama", "gemini"],
-                        help="LLM provider (default: from LLM_PROVIDER env var, then ollama)")
+                        help="LLM provider (default: from LLM_PROVIDER env var, then gemini)")
     args = parser.parse_args()
 
     if not args.pdf and not args.input:
@@ -37,9 +37,9 @@ def main():
     summarizer = get_summarizer(provider=args.provider)
     vector_mgr = VectorStoreManager(provider=args.provider)
 
-    provider_label = (args.provider or os.getenv("LLM_PROVIDER", "ollama")).upper()
+    provider_label = (args.provider or os.getenv("LLM_PROVIDER", "gemini")).upper()
     print(f"[*] Using LLM provider: {provider_label}")
-    print(f"[*] Document: {doc_name} → {doc_dir}")
+    print(f"[*] Document: {doc_name} -> {doc_dir}")
 
     if faiss_index_path.exists() and not args.pdf:
         print("[*] Loading existing FAISS index...")
@@ -69,7 +69,8 @@ def main():
         )
 
     def run_rag(query_text):
-        res = query_rag(query_text, summarizer, vector_mgr, print_func=print)
+        k_val = int(os.getenv("RETRIEVAL_K", "1"))
+        res = query_rag(query_text, summarizer, vector_mgr, k_val=k_val, print_func=print)
         if "answer" in res and res["answer"] != "No relevant tables found.":
             print(f"\n[Answer]:\n{res['answer']}\n")
 
