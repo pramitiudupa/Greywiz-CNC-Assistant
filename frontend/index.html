@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TableWIZ | AI Document Intelligence</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Add Lucide for icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Outfit", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"]
+            },
+            colors: {
+              wiz: {
+                bg: "#05070e",
+                panel: "#0b101d",
+                panel_hover: "#141c2f",
+                border: "#1e293b",
+                text: "#f8fafc",
+                muted: "#94a3b8",
+                primary: "#3b82f6",
+                primary_glow: "rgba(59, 130, 246, 0.15)",
+                success: "#10b981",
+                danger: "#ef4444"
+              }
+            },
+            backgroundImage: {
+              'glow-gradient': 'radial-gradient(circle at top right, rgba(29, 78, 216, 0.15), transparent 40%), radial-gradient(circle at bottom left, rgba(76, 29, 149, 0.15), transparent 40%)',
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      body {
+        background: #05070e;
+        color: #f8fafc;
+        -webkit-font-smoothing: antialiased;
+      }
+      .glass-panel {
+        background: rgba(11, 16, 29, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(30, 41, 59, 0.8);
+      }
+      .scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .scrollbar::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 999px;
+      }
+      .scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+      }
+      /* Source table dropdown */
+      .source-dropdown summary {
+        cursor: pointer;
+        list-style: none;
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        margin-top: 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #94a3b8;
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(30, 41, 59, 0.6);
+        transition: all 0.2s ease;
+      }
+      .source-dropdown summary::-webkit-details-marker { display: none; }
+      .source-dropdown summary::marker { display: none; }
+      .source-dropdown summary:hover {
+        background: rgba(30, 41, 59, 0.7);
+        color: #f8fafc;
+      }
+      .source-dropdown summary .chevron-icon {
+        transition: transform 0.2s ease;
+      }
+      .source-dropdown[open] summary .chevron-icon {
+        transform: rotate(90deg);
+      }
+      .source-dropdown .source-content {
+        margin-top: 8px;
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(5, 7, 14, 0.5);
+        border: 1px solid rgba(30, 41, 59, 0.5);
+        font-size: 12px;
+        line-height: 1.6;
+        color: #cbd5e1;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: 'JetBrains Mono', monospace;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen overflow-hidden font-sans bg-wiz-bg bg-glow-gradient">
+    <div class="flex h-screen w-full">
+      
+      <!-- Sidebar -->
+      <aside class="flex w-[280px] flex-col border-r border-wiz-border bg-wiz-bg/80 backdrop-blur p-4">
+        
+        <!-- Brand -->
+        <div class="flex items-center gap-3 px-2 mb-8">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary/20 text-wiz-primary border border-wiz-primary/30">
+            <i data-lucide="sparkles" class="h-4 w-4"></i>
+          </div>
+          <div>
+            <h1 class="text-sm font-bold tracking-wide">TableWIZ</h1>
+            <p class="text-[10px] text-wiz-muted tracking-wider">AI Document Intelligence</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="space-y-1 mb-8">
+          <button id="nav-chat" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors bg-wiz-primary/10 text-wiz-primary border border-wiz-primary/20">
+            <i data-lucide="message-square" class="h-4 w-4"></i>
+            Grounded chat workspace
+          </button>
+          <button id="nav-home" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-wiz-muted transition-colors hover:bg-wiz-panel_hover hover:text-wiz-text">
+            <i data-lucide="home" class="h-4 w-4"></i>
+            Home
+          </button>
+        </nav>
+
+        <!-- Document List (Sidebar) -->
+        <div class="flex flex-col flex-1 min-h-0">
+          <h2 class="px-3 text-[11px] font-semibold tracking-wider text-wiz-muted mb-2">Documents</h2>
+          <div id="sidebar-doc-list" class="scrollbar flex-1 overflow-y-auto space-y-0.5">
+            <!-- Sidebar documents populated by JS -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 relative overflow-hidden flex flex-col">
+        
+        <!-- HOME VIEW -->
+        <div id="home-view" class="absolute inset-0 flex p-8 gap-8 overflow-y-auto scrollbar">
+          
+          <!-- Upload Section -->
+          <div class="flex-1 max-w-xl flex flex-col gap-6">
+            <div class="glass-panel rounded-2xl p-8 flex flex-col gap-8 h-full min-h-[400px]">
+              <div>
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-wiz-primary/10 text-wiz-primary border border-wiz-primary/20 mb-4">
+                  <i data-lucide="upload-cloud" class="h-6 w-6"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Upload document</h2>
+                <p class="text-sm text-wiz-muted leading-relaxed">
+                  Add a PDF and TableWIZ will extract tables, summarize them, and create a document-specific chat index.
+                </p>
+              </div>
+
+              <div id="upload-zone" class="flex-1 rounded-xl border-2 border-dashed border-wiz-border bg-wiz-panel/50 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition hover:border-wiz-primary/50 hover:bg-wiz-primary_glow">
+                <i data-lucide="file-up" class="h-8 w-8 text-wiz-muted mb-3"></i>
+                <p id="selected-file-name" class="font-semibold mb-1">Drag and drop your PDF</p>
+                <p class="text-xs text-wiz-muted">Click to browse if that feels more civilized. PDF files only.</p>
+                <input id="file-input" class="hidden" type="file" accept="application/pdf" />
+              </div>
+              
+              <div class="flex justify-end items-center gap-4">
+                <p id="upload-error" class="hidden text-xs text-wiz-danger"></p>
+                <button id="process-button" disabled class="rounded-lg bg-wiz-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Start processing
+                </button>
+              </div>
+            </div>
+            
+            <div id="settings-panel" class="glass-panel rounded-2xl p-6">
+                <h3 class="text-sm font-semibold mb-4 text-wiz-muted tracking-wider">Engine Settings</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="block">
+                        <span class="block text-xs font-medium text-wiz-muted mb-1.5">LLM Provider</span>
+                        <select id="provider-select" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm focus:border-wiz-primary focus:ring-1 focus:ring-wiz-primary outline-none">
+                            <option value="gemini">Gemini (Cloud)</option>
+                            <option value="ollama">Ollama (Local)</option>
+                        </select>
+                    </label>
+                    <label class="block">
+                        <span class="block text-xs font-medium text-wiz-muted mb-1.5">Retrieval K (<span id="retrieval-k-value">4</span>)</span>
+                        <input id="retrieval-k" class="w-full accent-wiz-primary mt-2" type="range" min="1" max="10" value="4" />
+                    </label>
+                </div>
+            </div>
+          </div>
+
+          <!-- Documents Dashboard -->
+          <div class="flex-1 flex flex-col max-w-2xl">
+            <div class="glass-panel rounded-2xl p-8 flex flex-col h-full">
+              <div class="mb-6">
+                <h3 class="text-xs font-semibold tracking-wider text-wiz-muted mb-1">Document Intelligence Library</h3>
+                <div class="flex justify-between items-end">
+                  <h2 class="text-3xl font-bold">Your documents</h2>
+                  <div class="flex gap-4">
+                    <div class="text-center">
+                      <div class="text-xl font-bold text-wiz-success" id="processed-count">0</div>
+                      <div class="text-[10px] text-wiz-muted tracking-wider">Processed</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-xl font-bold" id="total-count">0</div>
+                      <div class="text-[10px] text-wiz-muted tracking-wider">Total</div>
+                    </div>
+                  </div>
+                </div>
+                <p class="text-sm text-wiz-muted mt-2">Processed PDFs become selectable knowledge bases for chat.</p>
+              </div>
+
+              <!-- Search/Filter Bar -->
+              <div class="flex gap-3 mb-6">
+                <div class="flex-1 relative">
+                  <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-wiz-muted"></i>
+                  <input type="text" placeholder="Search documents..." class="w-full rounded-lg border border-wiz-border bg-wiz-panel/50 pl-9 pr-4 py-2 text-sm focus:border-wiz-primary outline-none" disabled />
+                </div>
+                <button class="flex items-center gap-2 rounded-lg border border-wiz-border bg-wiz-panel/50 px-4 py-2 text-sm text-wiz-muted transition hover:bg-wiz-panel_hover" disabled>
+                  <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                  Filters
+                </button>
+              </div>
+
+              <!-- Document Cards List -->
+              <div id="dashboard-doc-list" class="scrollbar flex-1 overflow-y-auto space-y-4 pr-2">
+                <!-- Dashboard cards populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHAT VIEW -->
+        <div id="chat-view" class="absolute inset-0 flex flex-col hidden bg-wiz-bg">
+          
+          <!-- Chat Header -->
+          <header class="flex items-center justify-between border-b border-wiz-border px-8 py-5 glass-panel z-10">
+            <div class="flex items-center gap-4">
+              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-wiz-panel border border-wiz-border text-wiz-primary">
+                <i data-lucide="file-text" class="h-5 w-5"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-semibold tracking-wider text-wiz-muted mb-0.5">TableWIZ Intelligence Workspace</p>
+                <h2 id="chat-document-title" class="text-xl font-bold tracking-tight">No document selected</h2>
+                <div class="flex items-center gap-3 mt-1 text-xs text-wiz-muted">
+                  <span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="h-3 w-3 text-wiz-success"></i> Selected index</span>
+                  <span class="flex items-center gap-1"><i data-lucide="zap" class="h-3 w-3 text-wiz-primary"></i> AI grounded mode</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-wiz-muted">
+               <span>Answers cite source table context when available.</span>
+               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-wiz-success/10 text-wiz-success border border-wiz-success/20 font-medium">
+                  <div class="h-1.5 w-1.5 rounded-full bg-wiz-success animate-pulse"></div>
+                  Ready
+               </div>
+            </div>
+          </header>
+
+          <!-- Chat Messages Area -->
+          <div id="chat-messages" class="scrollbar flex-1 overflow-y-auto p-8 flex flex-col gap-6 relative">
+             <!-- Welcome Empty State -->
+             <div id="chat-empty-state" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-wiz-panel border border-wiz-border shadow-lg mb-6">
+                    <i data-lucide="message-square" class="h-8 w-8 text-wiz-primary"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3">Ask about this document</h3>
+                <p class="text-sm text-wiz-muted text-center max-w-md mb-10 leading-relaxed">
+                  Start with a specific question about the tables, values, materials, or relationships in the selected PDF.
+                </p>
+                
+                <div class="grid grid-cols-3 gap-4 w-full max-w-2xl px-4 pointer-events-auto">
+                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                        <i data-lucide="table-2" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                        <span class="block text-sm font-medium">Find table values</span>
+                    </button>
+                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                        <i data-lucide="sparkles" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                        <span class="block text-sm font-medium">Summarize sections</span>
+                    </button>
+                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                        <i data-lucide="git-compare" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                        <span class="block text-sm font-medium">Compare entries</span>
+                    </button>
+                </div>
+             </div>
+          </div>
+
+          <!-- Chat Input -->
+          <div class="p-6 bg-wiz-bg border-t border-wiz-border z-10 flex justify-center">
+             <div class="w-full max-w-4xl relative">
+                <div class="glass-panel rounded-2xl p-2 flex flex-col shadow-xl">
+                    <textarea
+                        id="chat-input"
+                        class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 pt-3 pb-1 text-sm text-wiz-text placeholder:text-wiz-muted h-14 scrollbar"
+                        placeholder="Ask a question about the selected document..."
+                        disabled
+                    ></textarea>
+                    <div class="flex justify-between items-center px-2 pb-1">
+                        <div class="flex gap-4 text-[10px] text-wiz-muted">
+                           <span class="flex items-center gap-1"><i data-lucide="database" class="h-3 w-3 text-wiz-primary"></i> Scoped to selected document</span>
+                           <span class="flex items-center gap-1"><i data-lucide="check-shield" class="h-3 w-3 text-wiz-success"></i> Verify against source tables</span>
+                        </div>
+                        <button id="send-button" disabled class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary text-white hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="send" class="h-4 w-4"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center mt-3 text-[10px] text-wiz-muted">
+                    Answers are generated from the selected document only.
+                </div>
+             </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Initialize icons -->
+    <script>
+      lucide.createIcons();
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

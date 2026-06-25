@@ -48,19 +48,27 @@ with st.sidebar:
     st.header("Settings")
 
     st.subheader("LLM Provider")
+    default_provider = os.getenv("LLM_PROVIDER", "ollama").strip().lower()
+    provider_options = ["gemini", "ollama"]
     llm_provider = st.selectbox(
         "Choose provider",
-        options=["gemini", "ollama"],
-        index=0,
-        help="Gemini requires a GOOGLE_API_KEY in .env. Ollama runs locally."
+        options=provider_options,
+        index=provider_options.index(default_provider),
+        help="Gemini requires a GOOGLE_API_KEY and internet access. Ollama runs locally."
     )
 
     retrieval_k = st.slider(
         "Retrieved Chunks (k)", 
         min_value=1, 
-        max_value=10, 
-        value=1, 
-        help="Number of chunks to retrieve for each query."
+        max_value=15, 
+        value=int(os.getenv("RETRIEVAL_K", "5")), 
+        help="Final number of table chunks returned after hybrid search and reranking."
+    )
+
+    enable_reranker = st.toggle(
+        "Enable FlashRank Reranker",
+        value=True,
+        help="Use cross-encoder to rerank hybrid search results. Turn off if correct tables are being pushed down."
     )
 
     st.divider()
@@ -95,6 +103,17 @@ if "active_vector_mgr" not in st.session_state:
     st.session_state.active_vector_mgr = None
 if "active_summarizer" not in st.session_state:
     st.session_state.active_summarizer = None
+if "last_llm_provider" not in st.session_state:
+    st.session_state.last_llm_provider = None
+
+# Clear cached tools and reset session if provider changed
+if st.session_state.last_llm_provider != llm_provider:
+    get_tools.clear()
+    st.session_state.last_llm_provider = llm_provider
+    st.session_state.active_vector_mgr = None
+    st.session_state.active_summarizer = None
+    st.session_state.active_doc = None
+    st.session_state.messages = []
 
 
 def activate_doc(doc_name: str):
@@ -201,7 +220,10 @@ if st.session_state.active_doc:
     st.caption(f"Active: **{st.session_state.active_doc}** | Provider: **{llm_provider}**")
     
     doc_name = st.session_state.active_doc
-    base_md_dir = Path("assets/markdown") / doc_name / doc_name / "auto"
+    base_md_dir = Path("assets/markdown") / doc_name / "auto"
+    if not base_md_dir.exists():
+        base_md_dir = Path("assets/markdown") / doc_name / doc_name / "auto"
+        
     origin_pdf = base_md_dir / f"{doc_name}_origin.pdf"
     layout_pdf = base_md_dir / f"{doc_name}_layout.pdf"
     if not origin_pdf.exists():
@@ -228,8 +250,11 @@ if st.session_state.active_doc:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        if "table" in message:
-            with st.expander("View Source Table"):
+        if "table_html" in message:
+            with st.expander("View Source Tables"):
+                st.markdown(message["table_html"], unsafe_allow_html=True)
+        elif "table" in message:
+            with st.expander("View Source Tables (Legacy)"):
                 st.code(message["table"])
 
 if st.session_state.active_doc:
@@ -245,17 +270,51 @@ if st.session_state.active_doc:
                     summarizer=st.session_state.active_summarizer,
                     vector_mgr=st.session_state.active_vector_mgr,
                     k_val=retrieval_k,
+                    k_before_rerank=int(os.getenv("RETRIEVAL_K_BEFORE_RERANK", "15")),
+                    enable_reranking=enable_reranker,
                     print_func=lambda x: None,
                 )
 
                 if res.get("results"):
-                    st.markdown(res["answer"])
-                    with st.expander("View Source Table"):
-                        st.code(res["table_context"])
+                    latency = res.get('latency', 0)
+                    answer_with_latency = f"{res['answer']}\n\n*Answer generated in {latency:.2f} seconds.*"
+                    st.markdown(answer_with_latency)
+                    
+                    # Build HTML for source tables
+                    html_parts = []
+                    for i, result in enumerate(res["results"]):
+                        table_id = result.metadata.get("table_id", f"table_{i}")
+                        page_idx = result.metadata.get("page_idx")
+                        title = f"Table {i+1}: {table_id}"
+                        if page_idx is not None:
+                            title += f" (Page {page_idx + 1})"
+                        
+                        content = result.page_content
+                        context_part = ""
+                        table_part = content
+                        if "TABLE (JSON):\n" in content:
+                            parts = content.split("TABLE (JSON):\n")
+                            context_part = parts[0].replace("<context>\nCONTEXT:\n", "").strip()
+                            table_part = parts[1].replace("</context>", "").strip()
+                        
+                        import html
+                        html_parts.append(f"<h4>{title}</h4>")
+                        if context_part:
+                            safe_context = html.escape(context_part)
+                            html_parts.append(f"<details><summary><b>View Surrounding Context</b></summary><pre><code>{safe_context}</code></pre></details>")
+                        safe_table = html.escape(table_part)
+                        html_parts.append(f"<pre><code>{safe_table}</code></pre>")
+                    
+                    table_html = "<hr>".join(html_parts)
+                    
+                    with st.expander("View Source Tables"):
+                        st.markdown(table_html, unsafe_allow_html=True)
+                        
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": res["answer"],
-                        "table": res["table_context"]
+                        "content": answer_with_latency,
+                        "table": res["table_context"],
+                        "table_html": table_html
                     })
                 else:
                     st.error("No relevant tables found.")

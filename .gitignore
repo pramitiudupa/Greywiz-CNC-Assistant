@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 .env
+!.env.example
 faiss_index/
 extracted_tables/
 *.pkl
@@ -8,3 +9,8 @@ extracted_tables/
 .pyenv/
 pyenv/
 venv/
+node_modules/
+dist/
+frontend/.env
+frontend/.env.local
+.DS_Store

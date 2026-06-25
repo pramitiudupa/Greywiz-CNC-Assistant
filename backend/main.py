@@ -70,7 +70,12 @@ def main():
 
     def run_rag(query_text):
         k_val = int(os.getenv("RETRIEVAL_K", "1"))
-        res = query_rag(query_text, summarizer, vector_mgr, k_val=k_val, print_func=print)
+        k_before_rerank = int(os.getenv("RETRIEVAL_K_BEFORE_RERANK", "10"))
+        res = query_rag(
+            query_text, summarizer, vector_mgr,
+            k_val=k_val, k_before_rerank=k_before_rerank,
+            print_func=print,
+        )
         if "answer" in res and res["answer"] != "No relevant tables found.":
             print(f"\n[Answer]:\n{res['answer']}\n")
 

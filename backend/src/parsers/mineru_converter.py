@@ -113,13 +113,15 @@ class MinerUConverter:
         else:
             output_dir = Path(output_dir).resolve()
 
-        pdf_stem = re.sub(r"[^\w\-]", "_", pdf_path.stem)
-        run_dir = output_dir / pdf_stem
+        pdf_stem = pdf_path.stem
+        run_dir = output_dir
         if run_dir.exists():
-            if "assets" in str(run_dir) and "markdown" in str(run_dir):
-                shutil.rmtree(run_dir)
-            else:
-                raise RuntimeError(f"Safety check failed: {run_dir} is not inside assets/markdown")
+            pdf_out_dir = run_dir / pdf_stem
+            if pdf_out_dir.exists():
+                if "assets" in str(pdf_out_dir) and "markdown" in str(pdf_out_dir):
+                    shutil.rmtree(pdf_out_dir)
+                else:
+                    raise RuntimeError(f"Safety check failed: {pdf_out_dir} is not inside assets/markdown")
         run_dir.mkdir(parents=True, exist_ok=True)
 
         print_func(f"[MinerU] Converting: {pdf_path.name}")
@@ -159,19 +161,15 @@ class MinerUConverter:
 
 
 
-        md_file = self._find_markdown(run_dir, pdf_stem)
+        md_file = self._find_markdown(run_dir / pdf_stem, pdf_stem)
 
         if md_file is None:
             raise RuntimeError(
-                f"MinerU completed but no .md file was found in {run_dir}. "
+                f"MinerU completed but no .md file was found in {run_dir / pdf_stem}. "
                 "Check MinerU output for errors."
             )
 
-
-        convenience_path = output_dir / f"{pdf_stem}.md"
-        shutil.copy2(md_file, convenience_path)
-        print_func(f"[MinerU] Markdown saved to: {convenience_path}")
-
+        print_func(f"[MinerU] Markdown saved to: {md_file}")
 
         images_dir = md_file.parent / "images"
         if images_dir.is_dir():
@@ -179,7 +177,7 @@ class MinerUConverter:
             if image_count:
                 print_func(f"[MinerU] Extracted {image_count} image(s)")
 
-        return convenience_path
+        return md_file
 
     @staticmethod
     def _find_markdown(search_dir: Path, stem: str) -> Path | None:

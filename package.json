@@ -1,0 +1,13 @@
+{
+  "name": "greywiz-document-processor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "backend": "cd backend && python3 -m uvicorn api:app --reload --host 127.0.0.1 --port 8000",
+    "frontend": "bash scripts/frontend.sh",
+    "dev": "bash scripts/dev.sh",
+    "build": "bash scripts/frontend.sh build",
+    "typecheck": "bash scripts/frontend.sh typecheck"
+  }
+}

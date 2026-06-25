@@ -1,0 +1,74 @@
+[
+    {
+        "type": "text",
+        "text": "1.0.21 Weights",
+        "text_level": 2,
+        "bbox": [
+            65,
+            84,
+            236,
+            104
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "table",
+        "img_path": "images/54f4d3e6b3d398bfcf77894145ab5fca7a9a2986a559933b606f2d45c2de6c16.jpg",
+        "table_caption": [],
+        "table_footnote": [
+            "\\*These weightscan varydepending on technical specifications."
+        ],
+        "table_body": "<table><tr><td rowspan=\"2\">No.</td><td rowspan=\"2\">Type</td><td colspan=\"2\">Weightinkg</td><td rowspan=\"2\">Contents</td><td rowspan=\"2\">Length</td><td rowspan=\"2\">Width</td><td rowspan=\"2\">Height</td></tr><tr><td>gross</td><td>net</td></tr><tr><td>1</td><td>Crate</td><td>1440</td><td>1390</td><td>1 Section of 11 wdg.units*</td><td>399</td><td>115</td><td>205</td></tr><tr><td>1</td><td>Crate</td><td>1380</td><td>1330</td><td>Section of 10wdg.units* 1</td><td>375</td><td>115</td><td>205</td></tr><tr><td>1</td><td>Crate</td><td>1120</td><td>1070</td><td>1 Section of 8wdg.units*</td><td>312</td><td>115</td><td>205</td></tr><tr><td>1</td><td>Crate</td><td>500</td><td>480</td><td>1 Controlcompartment</td><td>120</td><td>120</td><td>223</td></tr><tr><td></td><td>Crate</td><td>560</td><td>540</td><td>1 Suction frame</td><td>146</td><td>125</td><td>208</td></tr><tr><td></td><td>Colli</td><td>180</td><td>170</td><td>1 Wdg.unit carriage</td><td>100</td><td>70</td><td>160</td></tr><tr><td></td><td>Carton</td><td>220</td><td>200</td><td>1Traveling cleaner</td><td>121</td><td>82</td><td>110</td></tr><tr><td></td><td>Box</td><td>200</td><td>180</td><td>1Package doffer</td><td>110</td><td>90</td><td>127</td></tr><tr><td></td><td>Box</td><td>360</td><td>325</td><td>Baseplate 1</td><td>135</td><td>125</td><td>130</td></tr><tr><td></td><td>Box</td><td>1200</td><td>1150</td><td>Flatbed/Circular feeder 1</td><td>290</td><td>120</td><td>120</td></tr><tr><td></td><td>Box</td><td>940</td><td>840</td><td>Accessoriesand tool cabinet</td><td>366</td><td>98</td><td>77</td></tr><tr><td></td><td>Box</td><td>540</td><td>490</td><td>Accessories</td><td>202</td><td>122</td><td>90</td></tr><tr><td>1</td><td>Box</td><td>1360</td><td>1260</td><td>Accessories/Superstructure</td><td>366</td><td>98</td><td>77</td></tr><tr><td>1</td><td>Box</td><td>136</td><td>90</td><td>Screws</td><td>50</td><td>60</td><td>90</td></tr></table>",
+        "bbox": [
+            65,
+            136,
+            931,
+            443
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "header",
+        "text": "Schlafhorst\" Winding Systems",
+        "bbox": [
+            65,
+            35,
+            260,
+            71
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "header",
+        "text": "Autoconer 338",
+        "bbox": [
+            731,
+            48,
+            862,
+            63
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "page_number",
+        "text": "1-14",
+        "bbox": [
+            62,
+            973,
+            109,
+            986
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "footer",
+        "text": "148-6400011.0 en",
+        "bbox": [
+            818,
+            975,
+            929,
+            986
+        ],
+        "page_idx": 0
+    }
+]

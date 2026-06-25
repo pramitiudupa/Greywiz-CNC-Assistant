@@ -57,9 +57,12 @@ def process_documents(
             "original_index": i,
             "context_snippet": context[:200]
         }
+        page_idx = bundle.get("page_idx")
+        if page_idx is not None:
+            metadata["page_idx"] = page_idx
         metadatas.append(metadata)
 
-    print_func("[*] Creating FAISS index...")
+    print_func("[*] Building hybrid index (FAISS + BM25)...")
     vector_mgr.create_index(chunks, metadatas)
     vector_mgr.save_local(str(faiss_index_path))
     
@@ -70,16 +73,24 @@ def query_rag(
     summarizer,
     vector_mgr: VectorStoreManager,
     k_val: int = 1,
+    k_before_rerank: int | None = None,
+    enable_reranking: bool = True,
     print_func=print
 ) -> Dict[str, Any]:
     """
-    Search the vector store and generate an answer for the query.
-    Retrieves top-k matching table chunks directly from the vector store
-    (no file reads needed - the chunk IS the table content).
+    Run the hybrid retrieval pipeline and generate an answer.
+
+    Pipeline: hybrid search (FAISS + BM25 with RRF fusion)
+              -> cross-encoder reranking (FlashRank)
+              -> LLM answer generation from top-k table chunks.
     """
-    
     print_func(f"\n[Query]: {query_text}")
-    results = vector_mgr.search(query_text, k=k_val)
+    results = vector_mgr.search(
+        query_text,
+        k=k_val,
+        k_before_rerank=k_before_rerank,
+        enable_reranking=enable_reranking,
+    )
     if not results:
         print_func("No relevant tables found.")
         return {"answer": "No relevant tables found.", "results": []}
@@ -90,22 +101,30 @@ def query_rag(
     for i, result in enumerate(results):
         table_id = result.metadata.get("table_id", f"table_{i}")
         chunk_content = result.page_content
+        page_idx = result.metadata.get("page_idx")
         
         print_func(f"[*] Retrieved chunk {i+1}/{len(results)}: {table_id}")
         
+        table_title = f"=== Table {i+1}: {table_id} ==="
+        if page_idx is not None:
+            table_title = f"=== Table {i+1}: {table_id} (Page {page_idx + 1}) ==="
+            
         all_table_sections.append(
-            f"=== Table {i+1}: {table_id} ===\n<context>\n{chunk_content}\n</context>"
+            f"{table_title}\n<context>\n{chunk_content}\n</context>"
         )
     
     combined_tables = "\n\n".join(all_table_sections)
     
     print_func(f"[*] Generating answer using {len(results)} table(s) as context...")
+    start_time = time.time()
     answer = summarizer.answer_query(query_text, combined_tables)
+    latency = time.time() - start_time
     
     return {
         "answer": answer,
         "table_context": combined_tables,
-        "results": results
+        "results": results,
+        "latency": latency
     }
 
 

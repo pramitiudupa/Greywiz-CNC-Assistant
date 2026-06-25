@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import Iterable
@@ -135,6 +136,19 @@ def parse_bundles_from_md(md_path: str | Path) -> list[dict]:
             pending_text = ""
         else:
             pending_text = part
+
+    try:
+        md_path_obj = Path(md_path)
+        content_list_path = md_path_obj.parent / f"{md_path_obj.stem}_content_list.json"
+        if content_list_path.exists():
+            with open(content_list_path, "r", encoding="utf-8") as f:
+                content_list = json.load(f)
+            table_items = [item for item in content_list if item.get("type") == "table"]
+            if len(table_items) == len(bundles):
+                for i, bundle in enumerate(bundles):
+                    bundle["page_idx"] = table_items[i].get("page_idx")
+    except Exception as e:
+        pass
 
     return bundles
 
