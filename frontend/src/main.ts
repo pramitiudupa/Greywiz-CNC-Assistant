@@ -131,6 +131,99 @@ function formatTitle(text: string): string {
   return text;
 }
 
+function updatePdfPanelReferences(documentId: string) {
+  const baseURL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
+  
+  const originUrl = `${baseURL}/api/documents/${encodeURIComponent(documentId)}/pdf/origin`;
+  const layoutUrl = `${baseURL}/api/documents/${encodeURIComponent(documentId)}/pdf/layout`;
+  
+  const originIframe = $("#origin-pdf-iframe") as HTMLIFrameElement | null;
+  const layoutIframe = $("#layout-pdf-iframe") as HTMLIFrameElement | null;
+  const originDownload = $("#download-origin-pdf") as HTMLAnchorElement | null;
+  const layoutDownload = $("#download-layout-pdf") as HTMLAnchorElement | null;
+  
+  if (originIframe) originIframe.src = originUrl;
+  if (layoutIframe) layoutIframe.src = layoutUrl;
+  if (originDownload) originDownload.href = originUrl;
+  if (layoutDownload) layoutDownload.href = layoutUrl;
+}
+
+function formatSourceTables(results: Array<{ content: string; metadata: Record<string, any> }>): string {
+  if (!results || !results.length) return "";
+  
+  const htmlParts: string[] = [];
+  results.forEach((res, i) => {
+    const tableId = res.metadata.table_id || `table_${i}`;
+    const pageIdx = res.metadata.page_idx;
+    let title = `Table ${i + 1}: ${tableId}`;
+    if (pageIdx !== undefined && pageIdx !== null) {
+      title += ` (Page ${Number(pageIdx) + 1})`;
+    }
+    
+    const content = res.content || "";
+    let contextPart = "";
+    let tablePart = content;
+    
+    if (content.includes("TABLE (JSON):\n")) {
+      const parts = content.split("TABLE (JSON):\n");
+      contextPart = parts[0].replace("<context>\nCONTEXT:\n", "").trim();
+      tablePart = parts[1].replace("</context>", "").trim();
+    }
+    
+    let partHtml = `<h4 class="font-bold mt-3 text-wiz-text text-xs border-b border-wiz-border pb-1 mb-2">${escapeHtml(title)}</h4>`;
+    if (contextPart) {
+      partHtml += `
+        <details class="source-dropdown mb-2">
+          <summary class="flex justify-between items-center w-full !mt-1 !py-1.5 text-[11px] bg-wiz-panel/20 border border-wiz-border/30 rounded-md">
+             <span>View Surrounding Context</span>
+             <svg class="chevron-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </summary>
+          <pre class="source-content !bg-wiz-bg/40 !mt-1 text-[11px] font-mono leading-normal p-2 max-h-[150px] overflow-y-auto rounded border border-wiz-border/20">${escapeHtml(contextPart)}</pre>
+        </details>
+      `;
+    }
+    
+    let tableHtml = "";
+    try {
+      const trimmedTable = tablePart.trim();
+      const grid = JSON.parse(trimmedTable);
+      if (Array.isArray(grid)) {
+        tableHtml = `<div class="overflow-x-auto my-2 border border-wiz-border rounded-lg"><table class="min-w-full divide-y divide-wiz-border text-xs text-left">`;
+        grid.forEach((row, rowIndex) => {
+          if (Array.isArray(row)) {
+            if (rowIndex === 0) {
+              tableHtml += `<thead class="bg-wiz-panel"><tr>`;
+              row.forEach(cell => {
+                tableHtml += `<th class="px-4 py-2 font-semibold text-wiz-text border-b border-wiz-border">${escapeHtml(String(cell))}</th>`;
+              });
+              tableHtml += `</tr></thead><tbody class="divide-y divide-wiz-border bg-wiz-bg/25">`;
+            } else {
+              tableHtml += `<tr class="hover:bg-wiz-panel/20">`;
+              row.forEach(cell => {
+                tableHtml += `<td class="px-4 py-2 text-wiz-muted whitespace-nowrap border-b border-wiz-border/50">${escapeHtml(String(cell))}</td>`;
+              });
+              tableHtml += `</tr>`;
+            }
+          }
+        });
+        if (grid.length > 0) {
+          tableHtml += `</tbody>`;
+        }
+        tableHtml += `</table></div>`;
+      } else {
+        tableHtml = `<pre class="source-content !bg-wiz-bg/50 !mt-1 text-[11px] font-mono leading-normal p-2 max-h-[250px] overflow-y-auto rounded border border-wiz-border/20">${escapeHtml(tablePart)}</pre>`;
+      }
+    } catch (e) {
+      tableHtml = `<pre class="source-content !bg-wiz-bg/50 !mt-1 text-[11px] font-mono leading-normal p-2 max-h-[250px] overflow-y-auto rounded border border-wiz-border/20">${escapeHtml(tablePart)}</pre>`;
+    }
+    
+    partHtml += tableHtml;
+    htmlParts.push(partHtml);
+  });
+  
+  return htmlParts.join('<hr class="border-wiz-border/40 my-4">');
+}
+
 function switchView(view: ViewMode) {
   state.view = view;
   
@@ -156,6 +249,7 @@ function switchView(view: ViewMode) {
 
 function selectDocumentAndChat(documentId: string) {
   state.activeDocumentId = documentId;
+  updatePdfPanelReferences(documentId);
   renderDocuments();
   renderChatHeader();
   switchView("chat");
@@ -298,7 +392,7 @@ async function processSelectedFile() {
   }
 }
 
-function appendMessage(role: "user" | "assistant", content: string, loading = false, sourceTables = "") {
+function appendMessage(role: "user" | "assistant", content: string, loading = false, sourceTablesHtml = "") {
   if (!chatMessages) return;
   
   if (chatEmptyState && !chatEmptyState.classList.contains("hidden")) {
@@ -314,14 +408,14 @@ function appendMessage(role: "user" | "assistant", content: string, loading = fa
   const body = loading ? `<div class="flex items-center gap-2 text-wiz-muted"><i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> ${escapeHtml(content)}</div>` : escapeHtml(content);
 
   let sourceDropdownHtml = "";
-  if (!loading && !isUser && sourceTables) {
+  if (!loading && !isUser && sourceTablesHtml) {
     sourceDropdownHtml = `
       <details class="source-dropdown">
         <summary>
           <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           View Source Tables
         </summary>
-        <div class="source-content scrollbar">${escapeHtml(sourceTables)}</div>
+        <div class="source-content scrollbar">${sourceTablesHtml}</div>
       </details>
     `;
   }
@@ -334,7 +428,7 @@ function appendMessage(role: "user" | "assistant", content: string, loading = fa
            <i data-lucide="${icon}" class="h-3.5 w-3.5"></i>
            <span class="font-semibold">${name}</span>
         </div>
-        <div class="rounded-xl p-4 text-sm leading-relaxed border backdrop-blur-sm ${bgClass} ${textClass}">
+        <div class="rounded-xl p-4 text-sm leading-relaxed border backdrop-blur-sm ${bgClass} ${textClass}" style="white-space: pre-wrap;">
            ${body}
            ${sourceDropdownHtml}
         </div>
@@ -366,13 +460,17 @@ async function sendQuery(query?: string) {
 
   setBusy(true);
   try {
-    const response = await askDocument(state.activeDocumentId, message, kValue(), provider());
-    const sourceContext = response.table_context || "";
+    const enableReranker = ($("#enable-reranker") as HTMLInputElement | null)?.checked ?? true;
+    const response = await askDocument(state.activeDocumentId, message, kValue(), provider(), enableReranker);
+    const sourceContextHtml = formatSourceTables(response.results || []);
+    const answer = response.answer || "No relevant data found in tables to answer this question.";
+    const latencyMsg = response.latency !== undefined ? `\n\n*Answer generated in ${response.latency.toFixed(2)} seconds.*` : "";
     replaceLastAssistantMessage(
-      response.answer || "No relevant data found in tables to answer this question.",
-      sourceContext
+      answer + latencyMsg,
+      sourceContextHtml
     );
-  } catch {
+  } catch (err) {
+    console.error("Query execution failed:", err);
     replaceLastAssistantMessage("Query failed. Please check backend logs or try a different question.");
   } finally {
     setBusy(false);
@@ -385,6 +483,21 @@ function bindEvents() {
   navHome?.addEventListener("click", () => switchView("home"));
   navChat?.addEventListener("click", () => {
     if (state.activeDocumentId) switchView("chat");
+  });
+
+  // PDF Panel Collapsible handlers
+  const pdfPanel = $("#pdf-reference-panel");
+  const togglePdfBtn = $("#toggle-pdf-panel-btn");
+  const showPdfBtn = $("#show-pdf-panel-btn");
+  
+  togglePdfBtn?.addEventListener("click", () => {
+    pdfPanel?.classList.add("hidden");
+    showPdfBtn?.classList.remove("hidden");
+  });
+  
+  showPdfBtn?.addEventListener("click", () => {
+    pdfPanel?.classList.remove("hidden");
+    showPdfBtn?.classList.add("hidden");
   });
 
   // Settings

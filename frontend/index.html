@@ -201,6 +201,12 @@
                         <span class="block text-xs font-medium text-wiz-muted mb-1.5">Retrieval K (<span id="retrieval-k-value">4</span>)</span>
                         <input id="retrieval-k" class="w-full accent-wiz-primary mt-2" type="range" min="1" max="10" value="4" />
                     </label>
+                    <div class="block col-span-2 mt-2">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input id="enable-reranker" type="checkbox" checked class="rounded border-wiz-border bg-wiz-panel text-wiz-primary focus:ring-wiz-primary h-4 w-4" />
+                            <span class="text-xs font-medium text-wiz-muted">Enable FlashRank Reranker</span>
+                        </label>
+                    </div>
                 </div>
             </div>
           </div>
@@ -247,88 +253,148 @@
         </div>
 
         <!-- CHAT VIEW -->
-        <div id="chat-view" class="absolute inset-0 flex flex-col hidden bg-wiz-bg">
+        <div id="chat-view" class="absolute inset-0 flex hidden bg-wiz-bg">
           
-          <!-- Chat Header -->
-          <header class="flex items-center justify-between border-b border-wiz-border px-8 py-5 glass-panel z-10">
-            <div class="flex items-center gap-4">
-              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-wiz-panel border border-wiz-border text-wiz-primary">
-                <i data-lucide="file-text" class="h-5 w-5"></i>
-              </div>
-              <div>
-                <p class="text-[10px] font-semibold tracking-wider text-wiz-muted mb-0.5">TableWIZ Intelligence Workspace</p>
-                <h2 id="chat-document-title" class="text-xl font-bold tracking-tight">No document selected</h2>
-                <div class="flex items-center gap-3 mt-1 text-xs text-wiz-muted">
-                  <span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="h-3 w-3 text-wiz-success"></i> Selected index</span>
-                  <span class="flex items-center gap-1"><i data-lucide="zap" class="h-3 w-3 text-wiz-primary"></i> AI grounded mode</span>
+          <!-- Left: Chat Workspace -->
+          <div class="flex-1 flex flex-col min-w-0 h-full border-r border-wiz-border">
+            
+            <!-- Chat Header -->
+            <header class="flex items-center justify-between border-b border-wiz-border px-8 py-5 glass-panel z-10 flex-shrink-0">
+              <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-wiz-panel border border-wiz-border text-wiz-primary flex-shrink-0">
+                  <i data-lucide="file-text" class="h-5 w-5"></i>
+                </div>
+                <div>
+                  <p class="text-[10px] font-semibold tracking-wider text-wiz-muted mb-0.5">TableWIZ Intelligence Workspace</p>
+                  <h2 id="chat-document-title" class="text-xl font-bold tracking-tight truncate max-w-[300px]">No document selected</h2>
+                  <div class="flex items-center gap-3 mt-1 text-xs text-wiz-muted">
+                    <span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="h-3 w-3 text-wiz-success"></i> Selected index</span>
+                    <span class="flex items-center gap-1"><i data-lucide="zap" class="h-3 w-3 text-wiz-primary"></i> AI grounded mode</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="flex items-center gap-3 text-xs text-wiz-muted">
-               <span>Answers cite source table context when available.</span>
-               <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-wiz-success/10 text-wiz-success border border-wiz-success/20 font-medium">
-                  <div class="h-1.5 w-1.5 rounded-full bg-wiz-success animate-pulse"></div>
-                  Ready
+              <div class="flex items-center gap-4 text-xs text-wiz-muted flex-wrap sm:flex-nowrap">
+                 <span>Answers cite source table context when available.</span>
+                 <button id="show-pdf-panel-btn" class="hidden flex items-center gap-2 rounded-lg border border-wiz-border bg-wiz-panel px-3 py-1.5 text-xs text-wiz-muted hover:bg-wiz-panel_hover hover:text-wiz-text transition">
+                    <i data-lucide="eye" class="h-3.5 w-3.5"></i>
+                    Show PDF Reference
+                 </button>
+                 <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-wiz-success/10 text-wiz-success border border-wiz-success/20 font-medium flex-shrink-0">
+                    <div class="h-1.5 w-1.5 rounded-full bg-wiz-success animate-pulse"></div>
+                    Ready
+                 </div>
+              </div>
+            </header>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="scrollbar flex-1 overflow-y-auto p-8 flex flex-col gap-6 relative">
+               <!-- Welcome Empty State -->
+               <div id="chat-empty-state" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-wiz-panel border border-wiz-border shadow-lg mb-6">
+                      <i data-lucide="message-square" class="h-8 w-8 text-wiz-primary"></i>
+                  </div>
+                  <h3 class="text-2xl font-bold mb-3">Ask about this document</h3>
+                  <p class="text-sm text-wiz-muted text-center max-w-md mb-10 leading-relaxed">
+                    Start with a specific question about the tables, values, materials, or relationships in the selected PDF.
+                  </p>
+                  
+                  <div class="grid grid-cols-3 gap-4 w-full max-w-2xl px-4 pointer-events-auto">
+                      <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                          <i data-lucide="table-2" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                          <span class="block text-sm font-medium">Find table values</span>
+                      </button>
+                      <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                          <i data-lucide="sparkles" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                          <span class="block text-sm font-medium">Summarize sections</span>
+                      </button>
+                      <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
+                          <i data-lucide="git-compare" class="h-5 w-5 text-wiz-primary mb-3"></i>
+                          <span class="block text-sm font-medium">Compare entries</span>
+                      </button>
+                  </div>
                </div>
             </div>
-          </header>
 
-          <!-- Chat Messages Area -->
-          <div id="chat-messages" class="scrollbar flex-1 overflow-y-auto p-8 flex flex-col gap-6 relative">
-             <!-- Welcome Empty State -->
-             <div id="chat-empty-state" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-wiz-panel border border-wiz-border shadow-lg mb-6">
-                    <i data-lucide="message-square" class="h-8 w-8 text-wiz-primary"></i>
+            <!-- Chat Input -->
+            <div class="p-6 bg-wiz-bg border-t border-wiz-border z-10 flex justify-center flex-shrink-0">
+               <div class="w-full max-w-4xl relative">
+                  <div class="glass-panel rounded-2xl p-2 flex flex-col shadow-xl">
+                      <textarea
+                          id="chat-input"
+                          class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 pt-3 pb-1 text-sm text-wiz-text placeholder:text-wiz-muted h-14 scrollbar"
+                          placeholder="Ask a question about the selected document..."
+                          disabled
+                      ></textarea>
+                      <div class="flex justify-between items-center px-2 pb-1">
+                          <div class="flex gap-4 text-[10px] text-wiz-muted">
+                             <span class="flex items-center gap-1"><i data-lucide="database" class="h-3 w-3 text-wiz-primary"></i> Scoped to selected document</span>
+                             <span class="flex items-center gap-1"><i data-lucide="check-shield" class="h-3 w-3 text-wiz-success"></i> Verify against source tables</span>
+                          </div>
+                          <button id="send-button" disabled class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary text-white hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                              <i data-lucide="send" class="h-4 w-4"></i>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="text-center mt-3 text-[10px] text-wiz-muted">
+                      Answers are generated from the selected document only.
+                  </div>
+               </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Collapsible PDF Reference Panel -->
+          <div id="pdf-reference-panel" class="w-[480px] flex flex-col h-full bg-wiz-panel/40 z-10 border-l border-wiz-border flex-shrink-0">
+             <header class="flex items-center justify-between border-b border-wiz-border px-6 py-5 glass-panel flex-shrink-0">
+                <div class="flex items-center gap-2">
+                   <i data-lucide="file-search" class="h-5 w-5 text-wiz-primary"></i>
+                   <h3 class="font-bold text-sm tracking-wide">Document Reference</h3>
                 </div>
-                <h3 class="text-2xl font-bold mb-3">Ask about this document</h3>
-                <p class="text-sm text-wiz-muted text-center max-w-md mb-10 leading-relaxed">
-                  Start with a specific question about the tables, values, materials, or relationships in the selected PDF.
-                </p>
+                <button id="toggle-pdf-panel-btn" class="p-1 rounded hover:bg-wiz-panel_hover text-wiz-muted hover:text-wiz-text transition">
+                   <i data-lucide="chevrons-right" class="h-4 w-4"></i>
+                </button>
+             </header>
+             
+             <div class="scrollbar flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Collapsible Original PDF Section -->
+                <details class="source-dropdown" open>
+                   <summary class="flex justify-between items-center w-full">
+                      <span class="flex items-center gap-2">
+                         <i data-lucide="file-text" class="h-4 w-4 text-wiz-primary"></i>
+                         <b>Original PDF</b>
+                      </span>
+                      <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                   </summary>
+                   <div class="pt-4 space-y-3">
+                      <a id="download-origin-pdf" href="#" target="_blank" download class="flex items-center justify-center gap-2 w-full py-2 px-3 bg-wiz-primary/20 border border-wiz-primary/30 rounded-lg text-xs font-semibold hover:bg-wiz-primary/30 hover:text-wiz-text transition text-wiz-muted">
+                         <i data-lucide="download" class="h-3.5 w-3.5"></i> Download Original PDF
+                      </a>
+                      <div class="w-full h-[360px] bg-wiz-bg border border-wiz-border rounded-lg overflow-hidden relative">
+                         <iframe id="origin-pdf-iframe" class="w-full h-full border-none" src=""></iframe>
+                      </div>
+                   </div>
+                </details>
                 
-                <div class="grid grid-cols-3 gap-4 w-full max-w-2xl px-4 pointer-events-auto">
-                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
-                        <i data-lucide="table-2" class="h-5 w-5 text-wiz-primary mb-3"></i>
-                        <span class="block text-sm font-medium">Find table values</span>
-                    </button>
-                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
-                        <i data-lucide="sparkles" class="h-5 w-5 text-wiz-primary mb-3"></i>
-                        <span class="block text-sm font-medium">Summarize sections</span>
-                    </button>
-                    <button class="chat-suggestion glass-panel rounded-xl p-4 text-left hover:border-wiz-primary/50 hover:bg-wiz-primary_glow transition group">
-                        <i data-lucide="git-compare" class="h-5 w-5 text-wiz-primary mb-3"></i>
-                        <span class="block text-sm font-medium">Compare entries</span>
-                    </button>
-                </div>
+                <!-- Collapsible Annotated Layout PDF Section -->
+                <details class="source-dropdown">
+                   <summary class="flex justify-between items-center w-full">
+                      <span class="flex items-center gap-2">
+                         <i data-lucide="layout" class="h-4 w-4 text-wiz-primary"></i>
+                         <b>Annotated Layout PDF</b>
+                      </span>
+                      <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                   </summary>
+                   <div class="pt-4 space-y-3">
+                      <a id="download-layout-pdf" href="#" target="_blank" download class="flex items-center justify-center gap-2 w-full py-2 px-3 bg-wiz-primary/20 border border-wiz-primary/30 rounded-lg text-xs font-semibold hover:bg-wiz-primary/30 hover:text-wiz-text transition text-wiz-muted">
+                         <i data-lucide="download" class="h-3.5 w-3.5"></i> Download Annotated PDF
+                      </a>
+                      <div class="w-full h-[360px] bg-wiz-bg border border-wiz-border rounded-lg overflow-hidden relative">
+                         <iframe id="layout-pdf-iframe" class="w-full h-full border-none" src=""></iframe>
+                      </div>
+                   </div>
+                </details>
              </div>
           </div>
-
-          <!-- Chat Input -->
-          <div class="p-6 bg-wiz-bg border-t border-wiz-border z-10 flex justify-center">
-             <div class="w-full max-w-4xl relative">
-                <div class="glass-panel rounded-2xl p-2 flex flex-col shadow-xl">
-                    <textarea
-                        id="chat-input"
-                        class="w-full bg-transparent border-none focus:ring-0 resize-none px-4 pt-3 pb-1 text-sm text-wiz-text placeholder:text-wiz-muted h-14 scrollbar"
-                        placeholder="Ask a question about the selected document..."
-                        disabled
-                    ></textarea>
-                    <div class="flex justify-between items-center px-2 pb-1">
-                        <div class="flex gap-4 text-[10px] text-wiz-muted">
-                           <span class="flex items-center gap-1"><i data-lucide="database" class="h-3 w-3 text-wiz-primary"></i> Scoped to selected document</span>
-                           <span class="flex items-center gap-1"><i data-lucide="check-shield" class="h-3 w-3 text-wiz-success"></i> Verify against source tables</span>
-                        </div>
-                        <button id="send-button" disabled class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary text-white hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i data-lucide="send" class="h-4 w-4"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="text-center mt-3 text-[10px] text-wiz-muted">
-                    Answers are generated from the selected document only.
-                </div>
-             </div>
-          </div>
-
-        </div>
       </main>
     </div>
 

@@ -33,6 +33,7 @@ export interface ChatResponse {
     content: string;
     metadata: Record<string, unknown>;
   }>;
+  latency?: number;
 }
 
 export async function getDocuments() {
@@ -63,12 +64,13 @@ export async function processDocument(documentId: string, force = false, provide
   return data;
 }
 
-export async function askDocument(documentId: string, message: string, retrievalK = 1, provider?: string) {
+export async function askDocument(documentId: string, message: string, retrievalK = 1, provider?: string, enableReranking = true) {
   const { data } = await api.post<ChatResponse>("/api/chat", {
     document_id: documentId,
     message,
     retrieval_k: retrievalK,
-    provider
+    provider,
+    enable_reranking: enableReranking
   });
   return data;
 }

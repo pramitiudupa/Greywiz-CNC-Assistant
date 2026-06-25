@@ -15,6 +15,7 @@ from typing import Optional
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -99,6 +100,7 @@ class ChatRequest(BaseModel):
     message: str
     retrieval_k: int = 1
     provider: Optional[str] = None
+    enable_reranking: bool = True
 
 
 class ChatResponse(BaseModel):
@@ -232,6 +234,7 @@ async def chat(req: ChatRequest):
             vector_mgr=tools["vector_mgr"],
             k_val=req.retrieval_k,
             k_before_rerank=k_before_rerank,
+            enable_reranking=req.enable_reranking,
             print_func=print,
         )
 
@@ -264,4 +267,42 @@ async def chat(req: ChatRequest):
         "answer": response.get("answer", ""),
         "table_context": response.get("table_context", ""),
         "results": serialized_results,
+        "latency": response.get("latency", 0.0),
     }
+
+
+@app.get("/api/documents/{document_id}/pdf/origin")
+async def get_origin_pdf(document_id: str):
+    """Serve the original PDF of the document."""
+    paths = [
+        PDFS_DIR / f"{document_id}.pdf",
+        Path("assets/markdown") / document_id / "auto" / f"{document_id}_origin.pdf",
+        Path("assets/markdown") / document_id / document_id / "auto" / f"{document_id}_origin.pdf",
+    ]
+    for p in paths:
+        if p.exists():
+            return FileResponse(
+                p,
+                media_type="application/pdf",
+                filename=f"{document_id}_origin.pdf",
+                content_disposition_type="inline"
+            )
+    raise HTTPException(404, "Original PDF not found.")
+
+
+@app.get("/api/documents/{document_id}/pdf/layout")
+async def get_layout_pdf(document_id: str):
+    """Serve the annotated layout PDF of the document."""
+    paths = [
+        Path("assets/markdown") / document_id / "auto" / f"{document_id}_layout.pdf",
+        Path("assets/markdown") / document_id / document_id / "auto" / f"{document_id}_layout.pdf",
+    ]
+    for p in paths:
+        if p.exists():
+            return FileResponse(
+                p,
+                media_type="application/pdf",
+                filename=f"{document_id}_layout.pdf",
+                content_disposition_type="inline"
+            )
+    raise HTTPException(404, "Annotated layout PDF not found.")
