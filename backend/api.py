@@ -7,10 +7,13 @@ Provides REST endpoints for:
 """
 
 import asyncio
+import io
 import os
 import json
 import re
 import shutil
+import threading
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -26,7 +29,10 @@ from src.parsers.storage import get_storage
 from src.llm.provider_factory import get_summarizer
 from src.parsers.vector_store import IndexMismatchError, VectorStoreManager
 from src.diagnosis import store as diagnosis_store
+from src.library import library
 from src.diagnosis.engine import diagnose, prepare_photo
+from src.diagnosis.model3d import generate_model
+from src.diagnosis.health import health_outlook
 from routes.rag_routes import process_documents, process_pdf_to_rag, query_rag
 
 app = FastAPI(title="Greywiz CNC API")
@@ -83,10 +89,93 @@ def _get_tools(provider: str | None = None, storage_format: str = "json"):
     }
 
 
+# ── Background processing ────────────────────────────────────────────────
+# MinerU takes minutes per manual on a CPU, so uploads return at once and the
+# work runs in a thread. One document is processed at a time (MinerU is heavy);
+# the rest wait their turn. JOBS holds what the UI shows while that happens.
+
+JOBS: dict[str, dict] = {}
+_PROCESS_LOCK = threading.Lock()
+_BACKGROUND_TASKS: set[asyncio.Task] = set()
+IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff")
+
+
+def _run_processing(doc_name: str, pdf_path: Path, provider: str | None, storage_format: str):
+    JOBS[doc_name] = {"state": "processing", "step": "Waiting for another document to finish"}
+    with _PROCESS_LOCK:
+        JOBS[doc_name]["step"] = "Reading the pages (MinerU)"
+        doc_dir = OUTPUT_BASE / doc_name
+        try:
+            tools = _get_tools(provider=provider, storage_format=storage_format)
+
+            def progress(message: str):
+                print(message)
+                if "Step 2/2" in message:
+                    JOBS[doc_name]["step"] = "Building the search index"
+
+            # A retry after an indexing error reuses MinerU's earlier output
+            # instead of reading every page again (minutes on a CPU).
+            md_path = MARKDOWN_DIR / doc_name / "auto" / f"{doc_name}.md"
+            if md_path.exists() and md_path.stat().st_mtime > pdf_path.stat().st_mtime:
+                JOBS[doc_name]["step"] = "Building the search index"
+                process_documents(
+                    input_path=md_path,
+                    output_dir=doc_dir,
+                    storage_format=storage_format,
+                    faiss_index_path=doc_dir / "faiss_index",
+                    vector_mgr=tools["vector_mgr"],
+                    storage=tools["storage"],
+                    print_func=progress,
+                )
+            else:
+                process_pdf_to_rag(
+                    pdf_path=pdf_path,
+                    output_dir=doc_dir,
+                    storage_format=storage_format,
+                    faiss_index_path=doc_dir / "faiss_index",
+                    vector_mgr=tools["vector_mgr"],
+                    storage=tools["storage"],
+                    print_func=progress,
+                )
+            JOBS.pop(doc_name, None)
+        except Exception as e:
+            print(f"[ERROR] Processing failed for {doc_name}: {e!r}")
+            JOBS[doc_name] = {"state": "error", "step": f"Processing failed: {e}"}
+
+
+def start_processing(doc_name: str, pdf_path: Path, provider: str | None = None, storage_format: str = "json"):
+    """Queue a PDF for MinerU + indexing without blocking the request."""
+    (OUTPUT_BASE / doc_name).mkdir(parents=True, exist_ok=True)
+    JOBS[doc_name] = {"state": "processing", "step": "Queued"}
+    task = asyncio.get_running_loop().create_task(
+        asyncio.to_thread(_run_processing, doc_name, pdf_path, provider, storage_format)
+    )
+    _BACKGROUND_TASKS.add(task)
+    task.add_done_callback(_BACKGROUND_TASKS.discard)
+
+
+def _images_to_pdf(images: list[bytes]) -> bytes:
+    """Combine photos of manual pages into one PDF (one photo per page)."""
+    from PIL import Image, ImageOps
+
+    pages = []
+    for raw in images:
+        try:
+            page = ImageOps.exif_transpose(Image.open(io.BytesIO(raw))).convert("RGB")
+        except Exception as e:
+            raise HTTPException(400, f"Could not read one of the photos: {e}")
+        page.thumbnail((2400, 2400))
+        pages.append(page)
+    out = io.BytesIO()
+    pages[0].save(out, format="PDF", save_all=True, append_images=pages[1:], resolution=200)
+    return out.getvalue()
+
+
 def _doc_summary(doc_name: str) -> dict:
     """Build a summary dict for a single document."""
     doc_dir = OUTPUT_BASE / doc_name
     has_index = (doc_dir / "faiss_index" / "index.faiss").exists()
+    job = JOBS.get(doc_name)
 
     # Detect status
     table_files = [
@@ -94,7 +183,11 @@ def _doc_summary(doc_name: str) -> dict:
         if f.is_file() and f.suffix in (".json", ".md", ".html", ".xml")
     ] if doc_dir.exists() else []
 
-    if has_index:
+    if job and job["state"] == "processing":
+        status = "processing"
+    elif job and job["state"] == "error":
+        status = "error"
+    elif has_index:
         status = "completed"
     elif table_files:
         status = "partial"
@@ -122,6 +215,8 @@ def _doc_summary(doc_name: str) -> dict:
         "has_index": has_index,
         "table_count": len(table_files),
         "tables": tables,
+        "progress": job["step"] if job else None,
+        "source": library.source_of(doc_name),
     }
 
 
@@ -154,95 +249,57 @@ async def list_documents():
         if d.is_dir():
             try:
                 documents.append(_doc_summary(d.name))
-            except Exception:
-                pass
+            except OSError as e:
+                print(f"[WARN] Skipping unreadable document folder {d.name}: {e}")
     return {"documents": documents}
 
 
 @app.post("/api/documents/upload")
 async def upload_document(
-    file: UploadFile = File(...),
+    file: list[UploadFile] = File(...),
     process: str = Form("true"),
     storage_format: str = Form("json"),
     provider: Optional[str] = Form(None),
+    title: str = Form(""),
 ):
-    """Upload a PDF and optionally process it immediately."""
-    if not file.filename or not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(400, "Only PDF files are accepted.")
+    """
+    Upload one PDF, or photos of paper manual pages (several images become one
+    PDF document). Processing runs in the background; poll GET /api/documents.
+    """
+    names = [f.filename or "" for f in file]
+    if len(file) == 1 and names[0].lower().endswith(".pdf"):
+        pdf_bytes = await file[0].read()
+        stem = _safe_stem(title + ".pdf" if title.strip() else names[0])
+    elif names and all(n.lower().endswith(IMAGE_SUFFIXES) for n in names):
+        pdf_bytes = await asyncio.to_thread(_images_to_pdf, [await f.read() for f in file])
+        default = f"Manual photos {datetime.now():%Y-%m-%d %H%M}"
+        stem = _safe_stem((title.strip() or default) + ".pdf")
+    else:
+        raise HTTPException(400, "Upload one PDF, or one or more photos of manual pages (JPG/PNG).")
 
     PDFS_DIR.mkdir(parents=True, exist_ok=True)
-    pdf_path = PDFS_DIR / f"{_safe_stem(file.filename)}.pdf"
-    content = await file.read()
-    pdf_path.write_bytes(content)
+    pdf_path = PDFS_DIR / f"{stem}.pdf"
+    pdf_path.write_bytes(pdf_bytes)
 
-    doc_name = pdf_path.stem
-    doc_dir = OUTPUT_BASE / doc_name
-    faiss_path = doc_dir / "faiss_index"
-
-    processed = False
-
-    if process.lower() == "true":
-        tools = _get_tools(provider=provider, storage_format=storage_format)
-        try:
-            await asyncio.to_thread(
-                process_pdf_to_rag,
-                pdf_path=pdf_path,
-                output_dir=doc_dir,
-                storage_format=storage_format,
-                faiss_index_path=faiss_path,
-                vector_mgr=tools["vector_mgr"],
-                storage=tools["storage"],
-                print_func=print,
-            )
-            processed = True
-        except Exception as e:
-            print(f"[ERROR] Processing failed for {doc_name}: {e}")
-            # Still return the document even if processing fails
-            raise HTTPException(500, f"Processing failed: {e}")
-
-    return {
-        "document": _doc_summary(doc_name),
-        "processed": processed,
-    }
+    processing = process.lower() == "true"
+    if processing:
+        start_processing(stem, pdf_path, provider, storage_format)
+    return {"document": _doc_summary(stem), "processing": processing}
 
 
 @app.post("/api/documents/{document_id}/process")
 async def process_document(document_id: str, body: dict = Body(default_factory=dict)):
-    """(Re-)process an already-uploaded document."""
+    """(Re-)process an already-uploaded document in the background."""
     doc_dir = _document_dir(document_id)
     pdf_path = PDFS_DIR / f"{document_id}.pdf"
     if not pdf_path.exists():
         raise HTTPException(404, f"PDF not found for document '{document_id}'.")
-
-    storage_format = body.get("storage_format", "json")
-    provider = body.get("provider")
-    force = body.get("force", False)
-
-    faiss_path = doc_dir / "faiss_index"
-
-    if force and doc_dir.exists():
+    if JOBS.get(document_id, {}).get("state") == "processing":
+        raise HTTPException(409, "This document is already being processed.")
+    if body.get("force", False) and doc_dir.exists():
         _remove_inside(OUTPUT_BASE, doc_dir)
-
-    tools = _get_tools(provider=provider, storage_format=storage_format)
-
-    try:
-        await asyncio.to_thread(
-            process_pdf_to_rag,
-            pdf_path=pdf_path,
-            output_dir=doc_dir,
-            storage_format=storage_format,
-            faiss_index_path=faiss_path,
-            vector_mgr=tools["vector_mgr"],
-            storage=tools["storage"],
-            print_func=print,
-        )
-    except Exception as e:
-        raise HTTPException(500, f"Processing failed: {e}")
-
-    return {
-        "document": _doc_summary(document_id),
-        "processed": True,
-    }
+    start_processing(document_id, pdf_path, body.get("provider"), body.get("storage_format", "json"))
+    return {"document": _doc_summary(document_id), "processing": True}
 
 
 @app.post("/api/chat")
@@ -382,6 +439,42 @@ async def delete_document(document_id: str):
     return {"deleted": document_id}
 
 
+# ── Document library: missing documents from validated sources ───────────
+
+@app.get("/api/library/check")
+async def check_library():
+    """Which kinds of CNC document are covered, which are missing, and validated sources for them."""
+    report = await asyncio.to_thread(library.check_library, OUTPUT_BASE, diagnosis_store.load_machine())
+    report["processing"] = [name for name, job in JOBS.items() if job["state"] == "processing"]
+    return report
+
+
+class LibraryAdd(BaseModel):
+    catalog_id: str
+    consent: bool
+    consented_by: str = ""
+
+
+@app.post("/api/library/add")
+async def add_library_document(body: LibraryAdd):
+    """Download a catalog document only after explicit consent, then process it."""
+    if not body.consent:
+        raise HTTPException(400, "Consent is required before Greywiz downloads anything.")
+    try:
+        doc_name, pdf_path = await asyncio.to_thread(
+            library.fetch_document, body.catalog_id, body.consent, body.consented_by[:80], PDFS_DIR, _safe_stem
+        )
+    except KeyError:
+        raise HTTPException(404, "That document is not in the validated catalog.")
+    except (ValueError, PermissionError) as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        print(f"[ERROR] Library download failed: {e!r}")
+        raise HTTPException(502, f"Could not download from the official source: {e}")
+    start_processing(doc_name, pdf_path)
+    return {"document": _doc_summary(doc_name), "processing": True}
+
+
 # ── CNC machine and fault diagnosis ──────────────────────────────────────
 
 @app.get("/api/machine")
@@ -395,6 +488,28 @@ async def put_machine(body: dict = Body(...)):
         return {"machine": diagnosis_store.save_machine(body)}
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+class HealthRequest(BaseModel):
+    hours_per_day: float = 8
+    days_per_week: float = 6
+    provider: Optional[str] = None
+
+
+@app.post("/api/machine/health")
+async def machine_health(body: HealthRequest):
+    """Forecast upcoming checks and parts at risk from history, manuals and usage."""
+    if not (0 < body.hours_per_day <= 24 and 0 < body.days_per_week <= 7):
+        raise HTTPException(400, "Hours per day must be 1-24 and days per week 1-7.")
+    try:
+        return await asyncio.to_thread(
+            health_outlook, OUTPUT_BASE, body.hours_per_day, body.days_per_week, body.provider
+        )
+    except RuntimeError as e:
+        raise HTTPException(400, str(e))
+    except Exception as e:
+        print(f"[ERROR] Health forecast failed: {e!r}")
+        raise HTTPException(500, f"Health forecast failed: {e}")
 
 
 @app.post("/api/diagnose")
@@ -433,7 +548,7 @@ async def diagnose_problem(
     return {"case_id": case["id"], "created_at": case["created_at"], **result}
 
 
-PROFILE_FIELDS = ("name", "role", "experience", "training", "alarms", "electrical", "level", "level_label")
+PROFILE_FIELDS = ("name", "role", "experience", "electrical", "level", "level_label")
 
 
 def _parse_profile(raw: str) -> dict | None:
@@ -489,6 +604,36 @@ async def get_case_photo(case_id: str):
     if path is None:
         raise HTTPException(404, "No photo for this case.")
     return FileResponse(path, media_type="image/jpeg")
+
+
+@app.post("/api/cases/{case_id}/model3d")
+async def make_case_model(case_id: str):
+    """Turn the report's photo into a 3D mesh with an open model on the Hugging Face hub."""
+    try:
+        case = diagnosis_store.get_case(case_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    photo = diagnosis_store.photo_path(case) if case else None
+    if photo is None:
+        raise HTTPException(404, "This report has no photo to turn into 3D.")
+    out = diagnosis_store.CASES_DIR / f"{case_id}.glb"
+    try:
+        info = await asyncio.to_thread(generate_model, photo, out)
+    except RuntimeError as e:
+        raise HTTPException(502, str(e))
+    return {"url": f"/api/cases/{case_id}/model3d", **info}
+
+
+@app.api_route("/api/cases/{case_id}/model3d", methods=["GET", "HEAD"])
+async def get_case_model(case_id: str):
+    try:
+        diagnosis_store.get_case(case_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    path = diagnosis_store.CASES_DIR / f"{case_id}.glb"
+    if not path.exists():
+        raise HTTPException(404, "No 3D model for this report yet.")
+    return FileResponse(path, media_type="model/gltf-binary")
 
 
 class CaseUpdate(BaseModel):

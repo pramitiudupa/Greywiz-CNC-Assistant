@@ -2,6 +2,8 @@ import os
 from google import genai
 from dotenv import load_dotenv
 
+from src.llm import gemini_hub
+
 load_dotenv()
 
 
@@ -20,8 +22,5 @@ class TableSummarizer:
 
         prompt = prompt_template.format(context_table=context_table, query=query)
 
-        response = self.client.models.generate_content(
-            model=self.model_name,
-            contents=prompt,
-        )
+        response, _ = gemini_hub.generate(prompt, gemini=self.client)
         return response.text.strip()

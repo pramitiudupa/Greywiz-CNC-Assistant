@@ -25,6 +25,18 @@ export interface DocumentSummary {
   has_index: boolean;
   table_count: number;
   tables: SourceTable[];
+  progress?: string | null;
+  source?: LibrarySource | null;
+}
+
+export interface LibrarySource {
+  catalog_id: string;
+  publisher: string;
+  url: string;
+  pages: string;
+  edition_note: string;
+  consented_by: string;
+  consented_at: string;
 }
 
 export interface ChatResponse {
@@ -42,14 +54,15 @@ export async function getDocuments() {
   return data.documents;
 }
 
-export async function uploadPdf(file: File, provider?: string) {
+export async function uploadPdf(files: File[], provider?: string, title = "") {
   const formData = new FormData();
-  formData.append("file", file);
+  files.forEach((file) => formData.append("file", file));
   formData.append("process", "true");
   formData.append("storage_format", "json");
+  if (title) formData.append("title", title);
   if (provider) formData.append("provider", provider);
 
-  const { data } = await api.post<{ document: DocumentSummary; processed: boolean }>(
+  const { data } = await api.post<{ document: DocumentSummary; processing: boolean }>(
     "/api/documents/upload",
     formData,
     { headers: { "Content-Type": "multipart/form-data" }, timeout: 0 }
@@ -139,10 +152,11 @@ export interface DiagnosisResult {
   needs_more_detail?: boolean;
   question_for_worker: string;
   sources: DiagnosisSource[];
+  where_we_looked?: { keywords: string[]; documents: Array<{ document_id: string; keywords: Record<string, number[]> }> };
   photo_reading: PhotoReading | null;
   machine: Machine | null;
   warnings: string[];
-  timings: Record<string, number>;
+  timings: Record<string, number | string>;
 }
 
 export interface CaseSummary {
@@ -219,4 +233,70 @@ export function documentPageUrl(documentId: string, page?: number | null) {
 
 export function casePhotoUrl(caseId: string) {
   return `${baseURL}/api/cases/${caseId}/photo`;
+}
+
+export interface LibrarySuggestion {
+  id: string;
+  title: string;
+  publisher: string;
+  url: string;
+  domain: string;
+  pages: string;
+  edition_note: string;
+  est_minutes: number;
+}
+
+export interface LibraryReport {
+  machine_maker: string | null;
+  documents: Array<{ id: string; covers: string[] }>;
+  covered: Array<{ kind: string; label: string; documents: string[] }>;
+  missing: Array<{ kind: string; label: string; why: string; suggestions: LibrarySuggestion[] }>;
+  also_available: LibrarySuggestion[];
+  references: Array<{ name: string; count: number }>;
+  has_trusted_sources: boolean;
+  processing: string[];
+}
+
+export async function checkLibrary() {
+  const { data } = await api.get<LibraryReport>("/api/library/check");
+  return data;
+}
+
+export async function addLibraryDocument(catalogId: string, consentedBy: string) {
+  const { data } = await api.post<{ document: DocumentSummary }>(
+    "/api/library/add",
+    { catalog_id: catalogId, consent: true, consented_by: consentedBy },
+    { timeout: 0 }
+  );
+  return data;
+}
+
+export async function makeCaseModel(caseId: string) {
+  const { data } = await api.post<{ url: string; space: string }>(`/api/cases/${caseId}/model3d`, {}, { timeout: 0 });
+  return `${baseURL}${data.url}`;
+}
+
+export function caseModelUrl(caseId: string) {
+  return `${baseURL}/api/cases/${caseId}/model3d`;
+}
+
+export interface HealthItemBase { source_ids: string[]; from_documents: boolean }
+export interface HealthOutlook {
+  summary: string;
+  upcoming_checks: Array<HealthItemBase & { item: string; when: string; why: string }>;
+  risks: Array<HealthItemBase & { component: string; why: string; likelihood: "high" | "medium" | "low" }>;
+  data_gaps: string[];
+  sources: DiagnosisSource[];
+  history: { total: number; open: number; repeats: Array<{ cause: string; count: number }> };
+  usage: { hours_per_day: number; days_per_week: number; weekly_hours: number };
+  model: string;
+}
+
+export async function machineHealth(hoursPerDay: number, daysPerWeek: number, provider?: string) {
+  const { data } = await api.post<HealthOutlook>(
+    "/api/machine/health",
+    { hours_per_day: hoursPerDay, days_per_week: daysPerWeek, provider },
+    { timeout: 0 }
+  );
+  return data;
 }

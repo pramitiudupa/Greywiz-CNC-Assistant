@@ -15,6 +15,7 @@ Steps (each a separate, inspectable stage):
 from __future__ import annotations
 
 import io
+import re
 import os
 import time
 from pathlib import Path
@@ -26,6 +27,7 @@ from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from src.diagnosis import store
+from src.llm import gemini_hub
 from src.parsers.vector_store import IndexMismatchError, VectorStoreManager
 
 MAX_IMAGE_SIDE = 1600
@@ -146,22 +148,10 @@ def describe_profile(profile: dict | None) -> tuple[str, str]:
     level = profile.get("level") if profile.get("level") in LEVEL_GUIDANCE else "beginner"
     who = (
         f"{profile.get('name') or 'A worker'}: {profile.get('role', 'unknown role')}, "
-        f"{profile.get('experience', 'unknown')} with CNC machines, training: "
-        f"{profile.get('training', 'unknown')}, has cleared CNC alarms: {profile.get('alarms', 'unknown')}, "
-        f"trained for lockout/electrical work: {profile.get('electrical', 'unknown')}."
+        f"{profile.get('experience', 'unknown')} with CNC machines, "
+        f"trained and allowed to do lockout/electrical work: {profile.get('electrical', 'unknown')}."
     )
     return who, LEVEL_GUIDANCE[level]
-
-
-def _client() -> genai.Client:
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY is not set in backend/.env; photo diagnosis needs Gemini.")
-    return genai.Client(api_key=api_key)
-
-
-def _model_name() -> str:
-    return os.getenv("GEMINI_LLM_MODEL", "gemini-2.5-flash")
 
 
 def prepare_photo(raw: bytes) -> tuple[bytes, str]:
@@ -188,8 +178,8 @@ def _machine_label(machine: dict | None) -> str:
 
 
 def read_photo(client: genai.Client, photo: bytes, description: str, machine: dict | None) -> PhotoReading:
-    response = client.models.generate_content(
-        model=_model_name(),
+    response, _ = gemini_hub.generate(
+        gemini=client,
         contents=[
             types.Part.from_bytes(data=photo, mime_type="image/jpeg"),
             READ_PHOTO_PROMPT.format(
@@ -215,16 +205,52 @@ def _indexed_documents(output_base: Path) -> list[str]:
     )
 
 
-def search_documents(queries: list[str], output_base: Path, provider: str | None) -> tuple[list[dict], list[str]]:
+KEYWORD_STOP_WORDS = {
+    "machine", "when", "what", "with", "this", "that", "there", "have", "does", "doesn",
+    "will", "from", "into", "just", "some", "then", "after", "before", "nothing", "happens",
+    "working", "work", "press", "pressed", "problem", "please", "again", "still", "cannot",
+    "stopped", "stop", "middle", "showing", "shows", "show", "active", "doing", "going",
+    "suddenly", "today", "anything", "something", "started", "start", "help", "dropped",
+    "below", "minimum", "clear", "fixing", "cause", "check", "program", "about", "their",
+}
+KEYWORD_PATTERN = re.compile(r"[a-z][a-z0-9-]{3,}|\d{3,5}")
+
+
+def problem_keywords(description: str, photo_reading: "PhotoReading | None") -> list[str]:
+    """The words a person would search the manuals for: nouns, alarm numbers, labels."""
+    text = description.lower()
+    if photo_reading:
+        text += " " + " ".join(photo_reading.visible_text).lower()
+    words = [w for w in KEYWORD_PATTERN.findall(text) if w not in KEYWORD_STOP_WORDS]
+    return list(dict.fromkeys(words))[:8]
+
+
+def keyword_hits(manager: VectorStoreManager, keywords: list[str]) -> dict[str, list[int]]:
+    """Pages of one document whose text contains each keyword (whole word)."""
+    found: dict[str, set[int]] = {}
+    for kw in keywords:
+        pattern = re.compile(r"\b" + re.escape(kw), re.IGNORECASE)
+        for chunk in manager._documents:
+            page = chunk.metadata.get("page_idx")
+            if page is not None and pattern.search(chunk.page_content):
+                found.setdefault(kw, set()).add(int(page) + 1)
+    return {kw: sorted(pages) for kw, pages in found.items()}
+
+
+def search_documents(
+    queries: list[str], output_base: Path, provider: str | None, keywords: list[str] | None = None
+) -> tuple[list[dict], list[str], list[dict]]:
     """
     Search every indexed document with each query and merge the hits.
 
-    Returns (excerpts, warnings). Excerpts are ordered by how many queries
-    found them, then by best rank, so text that matches both the photo and
-    the description comes first.
+    Returns (excerpts, warnings, coverage). Excerpts are ordered by how many
+    queries found them, then by best rank, so text that matches both the photo
+    and the description comes first. Coverage lists, per document, the pages
+    where each keyword appears ("Where we looked").
     """
     hits: dict[tuple[str, str], dict] = {}
     warnings: list[str] = []
+    coverage: list[dict] = []
     for doc_name in _indexed_documents(output_base):
         manager = VectorStoreManager(provider=provider)
         try:
@@ -232,6 +258,7 @@ def search_documents(queries: list[str], output_base: Path, provider: str | None
         except IndexMismatchError as e:
             warnings.append(f"Skipped '{doc_name}': {e}")
             continue
+        coverage.append({"document_id": doc_name, "keywords": keyword_hits(manager, keywords or [])})
         for query in queries:
             results = manager.search(query, k=EXCERPTS_PER_QUERY, enable_reranking=False)
             for rank, doc in enumerate(results):
@@ -247,7 +274,7 @@ def search_documents(queries: list[str], output_base: Path, provider: str | None
                 entry["best_rank"] = min(entry["best_rank"], rank)
 
     ranked = sorted(hits.values(), key=lambda h: (-h["matches"], h["best_rank"]))
-    return ranked[:MAX_EXCERPTS], warnings
+    return ranked[:MAX_EXCERPTS], warnings, coverage
 
 
 def _excerpt_text(content: str) -> str:
@@ -349,7 +376,7 @@ def diagnose(
         raise ValueError("Add a photo of the problem or describe it in words.")
 
     started = time.time()
-    client = _client()
+    client = gemini_hub.client()
     machine = store.load_machine()
     timings: dict[str, float] = {}
 
@@ -367,7 +394,8 @@ def diagnose(
     queries = list(dict.fromkeys(q for q in queries if q))
 
     t = time.time()
-    excerpts, warnings = search_documents(queries, output_base, provider)
+    keywords = problem_keywords(description, photo_reading)
+    excerpts, warnings, coverage = search_documents(queries, output_base, provider, keywords)
     # A photo with no visible fault and no description gives nothing to match
     # past repairs against; offering one would invite a confident guess.
     nothing_reported = not description.strip() and not (photo_reading and photo_reading.problem_visible)
@@ -397,8 +425,8 @@ def diagnose(
     ))
 
     t = time.time()
-    response = client.models.generate_content(
-        model=_model_name(),
+    response, model_used = gemini_hub.generate(
+        gemini=client,
         contents=contents,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
@@ -408,6 +436,7 @@ def diagnose(
     )
     diagnosis = Diagnosis.model_validate_json(response.text)
     timings["explain"] = round(time.time() - t, 2)
+    timings["model"] = model_used
 
     result = check_sources(diagnosis, sources)
     if not description.strip():
@@ -426,6 +455,7 @@ def diagnose(
     result["photo_reading"] = photo_reading.model_dump() if photo_reading else None
     result["machine"] = machine
     result["search_queries"] = queries
+    result["where_we_looked"] = {"keywords": keywords, "documents": coverage}
     result["warnings"] = warnings
     timings["total"] = round(time.time() - started, 2)
     result["timings"] = timings

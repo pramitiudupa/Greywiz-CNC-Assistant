@@ -18,6 +18,7 @@ Embedding providers:
 """
 
 import hashlib
+import time
 import json
 import os
 from datetime import datetime, timezone
@@ -135,13 +136,35 @@ class VectorStoreManager:
 
         # Dense index — cosine similarity via FAISS.
         # LangChain handles L2-normalisation internally when COSINE is selected.
-        self.vector_store = FAISS.from_documents(
-            documents,
-            self.doc_embeddings,
-            distance_strategy=DistanceStrategy.COSINE,
-        )
+        # Embedded in batches: free-tier Gemini keys allow ~100 embedding
+        # requests a minute, so a long manual is paced instead of failing.
+        batch_size = int(os.getenv("EMBED_BATCH_SIZE", "80"))
+        self.vector_store = None
+        for start in range(0, len(documents), batch_size):
+            batch = documents[start:start + batch_size]
+            if start:
+                time.sleep(float(os.getenv("EMBED_BATCH_PAUSE_SECONDS", "62")))
+            self._embed_batch(batch)
 
         self._build_bm25(documents)
+
+    def _embed_batch(self, batch: List[Document], attempts: int = 4):
+        """Add one batch to the FAISS index, waiting out per-minute rate limits."""
+        for attempt in range(attempts):
+            try:
+                if self.vector_store is None:
+                    self.vector_store = FAISS.from_documents(
+                        batch, self.doc_embeddings, distance_strategy=DistanceStrategy.COSINE
+                    )
+                else:
+                    self.vector_store.add_documents(batch)
+                return
+            except Exception as e:
+                rate_limited = "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)
+                if not rate_limited or attempt == attempts - 1:
+                    raise
+                print(f"[embed] rate limited; waiting 65 s before retrying ({attempt + 1}/{attempts - 1})")
+                time.sleep(65)
 
     def _build_bm25(self, documents: List[Document]):
         """

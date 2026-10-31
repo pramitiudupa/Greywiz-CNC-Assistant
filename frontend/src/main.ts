@@ -10,24 +10,26 @@ import {
   uploadPdf
 } from "./api";
 import { initDiagnose, renderMachine } from "./diagnose";
+import { initHealth } from "./health";
+import { initLibrary, refreshLibrary } from "./library";
 
 // @ts-ignore
 const lucide = window.lucide;
 
-type ViewMode = "home" | "chat" | "diagnose";
+type ViewMode = "home" | "chat" | "diagnose" | "health";
 
 const state: {
   activeDocumentId: string | null;
   busy: boolean;
   documents: DocumentSummary[];
-  selectedFile: File | null;
+  selectedFiles: File[];
   view: ViewMode;
   machine: Machine | null;
 } = {
   activeDocumentId: null,
   busy: false,
   documents: [],
-  selectedFile: null,
+  selectedFiles: [],
   view: "diagnose",
   machine: null
 };
@@ -39,6 +41,8 @@ const $$ = <T extends HTMLElement>(selector: string) => document.querySelectorAl
 const navHome = $("#nav-home");
 const navChat = $("#nav-chat");
 const navDiagnose = $("#nav-diagnose");
+const navHealth = $("#nav-health");
+const healthView = $("#health-view");
 const homeView = $("#home-view");
 const chatView = $("#chat-view");
 const diagnoseView = $("#diagnose-view");
@@ -98,7 +102,7 @@ function kValue() {
 function setBusy(busy: boolean, message = "") {
   state.busy = busy;
   if (processButton) {
-    processButton.disabled = busy || !state.selectedFile;
+    processButton.disabled = busy || !state.selectedFiles.length;
     processButton.textContent = busy ? (message || "Processing...") : "Start processing";
   }
   if (sendButton) sendButton.disabled = busy || !state.activeDocumentId;
@@ -254,7 +258,8 @@ function switchView(view: ViewMode) {
   const views: Array<[ViewMode, HTMLElement | null, HTMLElement | null]> = [
     ["home", navHome, homeView],
     ["chat", navChat, chatView],
-    ["diagnose", navDiagnose, diagnoseView]
+    ["diagnose", navDiagnose, diagnoseView],
+    ["health", navHealth, healthView]
   ];
   for (const [name, nav, panel] of views) {
     const active = name === view;
@@ -350,7 +355,7 @@ function renderDocuments() {
       dashboardDocList.innerHTML = state.documents.map(doc => {
         const isProcessed = doc.status === "completed" || doc.status === "partial";
         const statusColor = doc.status === "completed" ? "text-wiz-success bg-wiz-success/10 border-wiz-success/20" : (doc.status === "error" ? "text-wiz-danger bg-wiz-danger/10 border-wiz-danger/20" : "text-yellow-500 bg-yellow-500/10 border-yellow-500/20");
-        const statusText = doc.status.charAt(0).toUpperCase() + doc.status.slice(1);
+        const statusText = doc.status === "processing" ? (doc.progress || "Processing") : doc.status === "error" ? "Failed" : doc.status.charAt(0).toUpperCase() + doc.status.slice(1);
         const statusIcon = doc.status === "completed" ? "check-circle-2" : (doc.status === "error" ? "alert-circle" : "loader-2");
 
         return `
@@ -369,6 +374,8 @@ function renderDocuments() {
                   <span class="text-wiz-muted">${formatSize(doc.size_bytes)}</span>
                   ${doc.table_count > 0 ? `<span class="text-wiz-muted">· ${doc.table_count} tables</span>` : ''}
                 </div>
+                ${doc.status === "error" && doc.progress ? `<p class="text-[11px] text-wiz-danger mt-1">${escapeHtml(doc.progress)}</p>` : ""}
+                ${doc.source ? `<p class="text-[11px] text-wiz-muted mt-1" title="${escapeHtml(doc.source.url)}"><i data-lucide="badge-check" class="inline h-3 w-3 text-wiz-success"></i> From ${escapeHtml(doc.source.publisher)}, added with ${escapeHtml(doc.source.consented_by)}'s consent on ${escapeHtml(doc.source.consented_at.slice(0, 10))}</p>` : ""}
               </div>
             </div>
             
@@ -402,6 +409,9 @@ function renderChatHeader() {
   chatDocumentTitle.textContent = doc ? formatTitle(doc.name) : "No document selected";
 }
 
+let pollTimer: number | undefined;
+let wasProcessing = false;
+
 async function refreshDocuments() {
   try {
     state.documents = await getDocuments();
@@ -410,6 +420,13 @@ async function refreshDocuments() {
   } catch (e) {
     console.error("Could not fetch documents", e);
   }
+  // While anything is being read, check again every few seconds so the status
+  // and the "missing documents" panel update on their own.
+  const processing = state.documents.some((d) => d.status === "processing");
+  if (wasProcessing && !processing) void refreshLibrary();
+  wasProcessing = processing;
+  window.clearTimeout(pollTimer);
+  if (processing) pollTimer = window.setTimeout(() => void refreshDocuments(), 5000);
 }
 
 async function removeDocument(documentId: string) {
@@ -423,37 +440,37 @@ async function removeDocument(documentId: string) {
   }
 }
 
-function stageFile(file: File) {
+const IMAGE_FILE = /\.(jpe?g|png|webp|bmp|tiff?)$/i;
+
+function stageFiles(files: File[]) {
   showUploadError();
-  if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-    showUploadError("Please choose a valid PDF file.");
+  const isPdf = files.length === 1 && (files[0].type === "application/pdf" || files[0].name.toLowerCase().endsWith(".pdf"));
+  const allImages = files.length > 0 && files.every((f) => f.type.startsWith("image/") || IMAGE_FILE.test(f.name));
+  if (!isPdf && !allImages) {
+    showUploadError("Choose one PDF, or one or more photos of manual pages.");
     return;
   }
-
-  state.selectedFile = file;
-  if (selectedFileName) selectedFileName.textContent = `${file.name}`;
-  if (processButton) {
-    processButton.disabled = false;
+  state.selectedFiles = files;
+  if (selectedFileName) {
+    selectedFileName.textContent = isPdf ? files[0].name : `${files.length} photo${files.length === 1 ? "" : "s"} of manual pages`;
   }
+  if (processButton) processButton.disabled = false;
 }
 
 async function processSelectedFile() {
-  if (!state.selectedFile || state.busy) return;
-
-  setBusy(true, "Reading the document (can take several minutes)...");
-
+  if (!state.selectedFiles.length || state.busy) return;
+  setBusy(true, "Uploading...");
+  const titleInput = $("#doc-title") as HTMLInputElement | null;
   try {
-    const result = await uploadPdf(state.selectedFile, provider());
-    state.activeDocumentId = result.document.id;
-    state.selectedFile = null;
-    
-    if (selectedFileName) selectedFileName.textContent = "Drag and drop your PDF";
+    await uploadPdf(state.selectedFiles, provider(), titleInput?.value.trim() ?? "");
+    state.selectedFiles = [];
+    if (selectedFileName) selectedFileName.textContent = "Drag and drop a PDF or photos";
     if (fileInput) fileInput.value = "";
-    
+    if (titleInput) titleInput.value = "";
+    showUploadError();
     await refreshDocuments();
-    selectDocumentAndChat(result.document.id);
   } catch (err) {
-    showUploadError(errorMessage(err, "Processing failed. Please check the backend terminal."));
+    showUploadError(errorMessage(err, "Upload failed. Please check the backend terminal."));
   } finally {
     setBusy(false);
   }
@@ -558,6 +575,8 @@ function bindEvents() {
     else switchView("home");
   });
   navDiagnose?.addEventListener("click", () => switchView("diagnose"));
+  navHealth?.addEventListener("click", () => switchView("health"));
+  navHome?.addEventListener("click", () => void refreshLibrary());
 
   machineForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -566,6 +585,7 @@ function bindEvents() {
       state.machine = await saveMachine(data);
       renderSidebarMachine();
       renderMachine(state.machine);
+      void refreshLibrary();
       machineSaved?.classList.remove("hidden");
       window.setTimeout(() => machineSaved?.classList.add("hidden"), 2500);
     } catch (err) {
@@ -603,12 +623,12 @@ function bindEvents() {
   uploadZone?.addEventListener("drop", (event) => {
     event.preventDefault();
     uploadZone.classList.remove("border-wiz-primary", "bg-wiz-primary_glow");
-    const file = event.dataTransfer?.files[0];
-    if (file) stageFile(file);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) stageFiles(files);
   });
   fileInput?.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (file) stageFile(file);
+    const files = Array.from(fileInput.files ?? []);
+    if (files.length) stageFiles(files);
   });
   processButton?.addEventListener("click", () => void processSelectedFile());
 
@@ -639,3 +659,5 @@ bindEvents();
 initDiagnose(provider);
 void refreshDocuments();
 void loadMachine();
+initLibrary(() => void refreshDocuments());
+initHealth(provider);

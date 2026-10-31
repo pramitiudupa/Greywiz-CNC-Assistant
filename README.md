@@ -30,6 +30,28 @@ step at a time with *That fixed it / Done, still not working / I can't do this
 step*; a fix is saved to the report, and running out of safe steps produces a
 hand-over list for the technician.
 
+**Is anything missing?** After documents are processed, Greywiz checks which
+kinds of document a CNC machine needs (operator manual, alarm list,
+troubleshooting guide, maintenance schedule, electrical diagrams) against the
+uploaded ones, and offers missing ones only from a fixed catalog of official
+sources (the maker's own site). Nothing is downloaded until the user consents;
+the source, pages, consent and person are stored with the document.
+
+**Photos of paper manuals.** The upload box takes a PDF or several photos of
+manual pages (combined into one document). Processing runs in the background.
+
+**Where we looked.** Each answer lists the documents and pages where the
+problem's key words appear ("120" → alarm table, page 25).
+
+**3D model.** On request, the reported photo is turned into a 3D model by an open
+model on the Hugging Face hub (Tencent Hunyuan3D-2) and shown in the browser.
+
+**Machine health.** A forecast of upcoming checks and parts at risk, built from
+the problem history, the maintenance intervals in the documents and planned
+running hours. Every item cites its source; it is an estimate for planning.
+
+See [DEMO.md](DEMO.md) for the full demo script.
+
 **We do not build an LLM.** Greywiz uses a hosted model (Google Gemini) through its
 API for reading photos and writing answers; our code does the retrieval, the
 source checking and the guided workflow around it.

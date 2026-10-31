@@ -6,6 +6,8 @@ import {
   DiagnosisStep,
   Machine,
   casePhotoUrl,
+  caseModelUrl,
+  makeCaseModel,
   diagnoseProblem,
   documentPageUrl,
   errorMessage,
@@ -325,9 +327,34 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       </div>
     </div>` : "";
 
+  const looked = result.where_we_looked;
+  const lookedCard = looked && looked.documents.length ? card("Where we looked", "search", `
+    <p class="text-xs text-wiz-muted mb-3">Searched ${looked.documents.length} document${looked.documents.length === 1 ? "" : "s"} for ${looked.keywords.length ? looked.keywords.map((k) => `“${escapeHtml(k)}”`).join(", ") : "your problem"}, plus the meaning of the problem.</p>
+    <ul class="space-y-2 text-sm">
+      ${looked.documents.map((d) => {
+        const found = Object.entries(d.keywords);
+        return `<li><span class="font-medium">${escapeHtml(d.document_id)}</span>
+          ${found.length ? `<div class="mt-1 flex flex-wrap gap-1.5">${found.map(([kw, pages]) => `
+            <span class="inline-flex items-center gap-1 rounded-md border border-wiz-border bg-wiz-panel px-1.5 py-0.5 text-[11px]">“${escapeHtml(kw)}” ·
+              ${pages.slice(0, 6).map((pg) => `<a href="${documentPageUrl(d.document_id, pg)}" target="_blank" rel="noopener" class="text-blue-300 hover:underline">p.${pg}</a>`).join(" ")}${pages.length > 6 ? ` +${pages.length - 6}` : ""}</span>`).join("")}</div>`
+          : `<p class="text-[11px] text-wiz-muted">None of these words appear in it.</p>`}
+        </li>`;
+      }).join("")}
+    </ul>`) : "";
+
+  const modelCard = result.case_id && photoUrl ? `
+    <div class="glass-panel rounded-2xl p-5">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-sm font-semibold flex items-center gap-2"><i data-lucide="box" class="h-4 w-4 text-wiz-primary"></i>3D model of the photographed part</h3>
+        <button id="make-3d" class="rounded-lg border border-wiz-primary/40 bg-wiz-primary/10 px-3 py-1.5 text-xs font-semibold text-blue-300 hover:bg-wiz-primary/20">Make a 3D model</button>
+      </div>
+      <p class="text-[11px] text-wiz-muted mt-1">Uses Tencent's open Hunyuan3D-2 model on the Hugging Face hub. The photo is sent to that public service; takes about a minute.</p>
+      <div id="model-3d" class="mt-3"></div>
+    </div>` : "";
+
   const footer = `<p class="text-[11px] text-wiz-muted text-center">
     ${description ? `Reported: “${escapeHtml(description)}” · ` : ""}Greywiz assists; it does not replace the machine's manual or a qualified technician.
-    ${result.timings?.total ? ` · Answered in ${result.timings.total.toFixed(1)} s` : ""}
+    ${result.timings?.total ? ` · Answered in ${Number(result.timings.total).toFixed(1)} s` : ""}${result.timings?.model ? ` by ${escapeHtml(String(result.timings.model))} (Gemini API)` : ""}
   </p>
   ${result.warnings?.length ? `<p class="text-[11px] text-yellow-400 text-center">${result.warnings.map(escapeHtml).join("<br>")}</p>` : ""}`;
 
@@ -346,12 +373,15 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       ${guideCard}
       ${allStepsCard}
       ${technicianCard}
+      ${lookedCard}
+      ${modelCard}
       ${sourcesCard}
       ${fixCard}
       ${footer}
     </div>`;
   icons();
   if (guided.length) startGuide(result, guided, sources, status);
+  if (result.case_id && photoUrl) setupModel3d(result.case_id);
 
   const markFixed = $("#mark-fixed");
   markFixed?.addEventListener("click", async () => {
@@ -371,6 +401,36 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
   });
 }
 
+function showModel(host: HTMLElement, url: string) {
+  host.innerHTML = `
+    <model-viewer src="${url}" camera-controls auto-rotate shadow-intensity="1" exposure="1.1"
+      style="width:100%;height:340px;background:#0b101d;border-radius:12px"></model-viewer>
+    <p class="text-[11px] text-wiz-muted mt-1">Drag to turn it, scroll to zoom.</p>`;
+}
+
+function setupModel3d(caseId: string) {
+  const host = $("#model-3d");
+  const button = $("#make-3d") as HTMLButtonElement | null;
+  if (!host || !button) return;
+  // Show a model made earlier for this report, if there is one.
+  fetch(caseModelUrl(caseId), { method: "HEAD" }).then((r) => {
+    if (r.ok) { showModel(host, caseModelUrl(caseId)); button.textContent = "Make it again"; }
+  }).catch(() => undefined);
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    host.innerHTML = `<p class="text-sm text-wiz-muted flex items-center gap-2"><i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i>Building the 3D model…</p>`;
+    icons();
+    try {
+      showModel(host, `${await makeCaseModel(caseId)}?t=${Date.now()}`);
+      button.textContent = "Make it again";
+    } catch (err) {
+      host.innerHTML = `<p class="text-xs text-wiz-danger">${escapeHtml(errorMessage(err, "The 3D service did not answer. Try again in a minute."))}</p>`;
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
 function renderProfileCard(profile: WorkerProfile | null) {
   const host = $("#sidebar-profile");
   if (!host) return;
@@ -383,7 +443,7 @@ function renderProfileCard(profile: WorkerProfile | null) {
        <div class="text-wiz-muted truncate">${escapeHtml(profile.role)}</div>
        <div class="mt-2 inline-flex rounded-full border border-wiz-primary/30 bg-wiz-primary/10 px-2 py-0.5 text-[11px] text-blue-300" title="${escapeHtml(levelExplanation(profile.level))}">${escapeHtml(profile.level_label)}</div>`
     : `<div class="text-wiz-muted">We don't know who you are yet.</div>
-       <button id="change-profile" class="mt-1 text-[11px] text-blue-300 hover:underline">Answer 5 questions</button>`;
+       <button id="change-profile" class="mt-1 text-[11px] text-blue-300 hover:underline">Answer 3 questions</button>`;
   host.querySelector("#change-profile")?.addEventListener("click", () => void askWhoYouAre(true));
 }
 

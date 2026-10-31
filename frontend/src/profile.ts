@@ -10,8 +10,6 @@ export interface WorkerProfile {
   name: string;
   role: string;
   experience: string;
-  training: string;
-  alarms: string;
   electrical: string;
   level: Level;
   level_label: string;
@@ -39,29 +37,8 @@ const QUESTIONS: Question[] = [
     options: [
       { label: "Less than 6 months", points: 0 },
       { label: "6 months to 2 years", points: 1 },
-      { label: "2 to 5 years", points: 2 },
-      { label: "More than 5 years", points: 3 }
-    ]
-  },
-  {
-    id: "training",
-    title: "What training have you had?",
-    options: [
-      { label: "None yet", points: 0 },
-      { label: "Learned on the job", points: 1 },
-      { label: "ITI or diploma", points: 2, key: "formal" },
-      { label: "Engineering degree", points: 2, key: "formal" },
-      { label: "Machine maker's (OEM) service course", points: 3, key: "formal" }
-    ]
-  },
-  {
-    id: "alarms",
-    title: "Have you cleared an alarm on a CNC control yourself?",
-    hint: "For example pressing RESET after reading the alarm message.",
-    options: [
-      { label: "Never", points: 0 },
-      { label: "A few times", points: 1 },
-      { label: "Often", points: 2 }
+      { label: "2 to 5 years", points: 2, key: "experienced" },
+      { label: "More than 5 years", points: 3, key: "experienced" }
     ]
   },
   {
@@ -117,18 +94,17 @@ function saveProfile(profile: WorkerProfile) {
 
 function buildProfile(name: string, picks: Record<string, Option>): WorkerProfile {
   const score = Object.values(picks).reduce((sum, o) => sum + o.points, 0);
-  const level: Level = score >= 8 ? "professional" : score >= 4 ? "operator" : "beginner";
+  // Max 8 points: role 3 + experience 3 + electrical 2.
+  const level: Level = score >= 6 ? "professional" : score >= 3 ? "operator" : "beginner";
   const technicalRole = ["technician", "engineer"].includes(picks.role.key ?? "");
   return {
     name: name.trim(),
     role: picks.role.label,
     experience: picks.experience.label,
-    training: picks.training.label,
-    alarms: picks.alarms.label,
     electrical: picks.electrical.label,
     level,
     level_label: LEVELS[level].label,
-    can_do_technician_work: picks.electrical.key === "yes" && (technicalRole || picks.training.key === "formal")
+    can_do_technician_work: picks.electrical.key === "yes" && (technicalRole || picks.experience.key === "experienced")
   };
 }
 
@@ -170,7 +146,7 @@ export function askWhoYouAre(allowClose = current !== null): Promise<WorkerProfi
         body = `
           <p class="text-xs font-semibold tracking-wider text-wiz-primary mb-2">BEFORE WE START</p>
           <h2 class="text-2xl font-bold mb-2">Who are you?</h2>
-          <p class="text-sm text-wiz-muted mb-6">Five quick questions so Greywiz can talk to you the right way. A new helper and a maintenance engineer need different answers.</p>
+          <p class="text-sm text-wiz-muted mb-6">Three quick questions so Greywiz can talk to you the right way. A new helper and a maintenance engineer need different answers.</p>
           <label class="block text-xs text-wiz-muted mb-1.5" for="profile-name">Your name (optional)</label>
           <input id="profile-name" value="${escapeHtml(name)}" placeholder="e.g. Ravi" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2.5 text-sm outline-none focus:border-wiz-primary mb-6" />
           <button data-next class="w-full rounded-xl bg-wiz-primary px-5 py-3 text-sm font-semibold text-white hover:opacity-90">Start</button>`;

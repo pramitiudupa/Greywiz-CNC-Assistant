@@ -13,6 +13,7 @@
     />
     <!-- Add Lucide for icons -->
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -146,6 +147,10 @@
             <i data-lucide="folder-cog" class="h-4 w-4"></i>
             Machine &amp; documents
           </button>
+          <button id="nav-health" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-wiz-muted transition-colors hover:bg-wiz-panel_hover hover:text-wiz-text">
+            <i data-lucide="activity" class="h-4 w-4"></i>
+            Machine health
+          </button>
         </nav>
 
         <!-- Machine card (Sidebar) -->
@@ -184,11 +189,12 @@
 
               <div id="upload-zone" class="flex-1 rounded-xl border-2 border-dashed border-wiz-border bg-wiz-panel/50 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition hover:border-wiz-primary/50 hover:bg-wiz-primary_glow">
                 <i data-lucide="file-up" class="h-8 w-8 text-wiz-muted mb-3"></i>
-                <p id="selected-file-name" class="font-semibold mb-1">Drag and drop your PDF</p>
-                <p class="text-xs text-wiz-muted">Or click to browse. PDF files only. Large manuals take a few minutes.</p>
-                <input id="file-input" class="hidden" type="file" accept="application/pdf" />
+                <p id="selected-file-name" class="font-semibold mb-1">Drag and drop a PDF or photos</p>
+                <p class="text-xs text-wiz-muted">A PDF manual, or photos of paper manual pages (select several; they become one document). Processing runs in the background.</p>
+                <input id="file-input" class="hidden" type="file" accept="application/pdf,image/*" multiple />
               </div>
               
+              <input id="doc-title" placeholder="Document name (optional), e.g. Spindle service notes" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" />
               <div class="flex justify-end items-center gap-4">
                 <p id="upload-error" class="hidden text-xs text-wiz-danger"></p>
                 <button id="process-button" disabled class="rounded-lg bg-wiz-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -265,6 +271,9 @@
                 </div>
                 <p class="text-sm text-wiz-muted mt-2">Every processed document is searched when a worker reports a problem.</p>
               </div>
+
+              <!-- Missing documents (validated sources, consent) -->
+              <div id="library-panel" class="mb-6"></div>
 
               <!-- Search/Filter Bar -->
               <div class="flex gap-3 mb-6">
@@ -346,6 +355,28 @@
 
             <!-- Right: result -->
             <section id="diagnosis-panel" class="flex-1 min-w-0"></section>
+          </div>
+        </div>
+
+        <!-- HEALTH VIEW -->
+        <div id="health-view" class="absolute inset-0 hidden overflow-y-auto scrollbar">
+          <div class="max-w-5xl p-6 lg:p-8 flex flex-col gap-5">
+            <div>
+              <p class="text-xs font-semibold tracking-wider text-wiz-muted mb-1">Machine health</p>
+              <h2 class="text-2xl font-bold">What will this machine need next?</h2>
+              <p class="text-sm text-wiz-muted mt-1">A forecast from three things you already have: the problems reported on this machine, the maintenance intervals in its documents, and how much you plan to run it. It is an estimate for planning, not a guarantee.</p>
+            </div>
+            <div class="glass-panel rounded-2xl p-5 flex flex-wrap items-end gap-4">
+              <label class="block"><span class="block text-xs text-wiz-muted mb-1">Running hours per day</span>
+                <input id="health-hours" type="number" min="1" max="24" value="8" class="w-32 rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+              <label class="block"><span class="block text-xs text-wiz-muted mb-1">Days per week</span>
+                <input id="health-days" type="number" min="1" max="7" value="6" class="w-32 rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+              <button id="health-run" class="rounded-xl bg-wiz-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50 flex items-center gap-2">
+                <i data-lucide="activity" class="h-4 w-4"></i> Forecast
+              </button>
+              <p id="health-error" class="hidden text-xs text-wiz-danger"></p>
+            </div>
+            <div id="health-result"></div>
           </div>
         </div>
 
