@@ -1,7 +1,8 @@
 // "Who are you?" — a short set of questions that decides how Greywiz talks to
 // the person in front of the machine: a new helper gets simple words and is
 // stopped before technician-only steps; a maintenance professional gets
-// technical detail. Kept per device in localStorage (each worker's phone).
+// technical detail. Kept in sessionStorage: every new visit starts with the
+// questions, so on a shared shop-floor device each worker answers for themselves.
 
 export type Level = "beginner" | "operator" | "professional";
 
@@ -99,7 +100,7 @@ function escapeHtml(value: string) {
 
 export function loadProfile(): WorkerProfile | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as WorkerProfile) : null;
   } catch {
     return null;
@@ -108,7 +109,7 @@ export function loadProfile(): WorkerProfile | null {
 
 function saveProfile(profile: WorkerProfile) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
   } catch {
     // Private windows can block storage; the profile still applies this session.
   }
