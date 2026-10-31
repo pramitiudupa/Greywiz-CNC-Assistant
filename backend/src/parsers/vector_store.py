@@ -17,8 +17,10 @@ Embedding providers:
                 future work).
 """
 
+import hashlib
 import json
 import os
+from datetime import datetime, timezone
 from typing import List, Dict, Optional
 
 from langchain_community.vectorstores import FAISS
@@ -29,6 +31,10 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+class IndexMismatchError(ValueError):
+    """Saved index has no manifest, was modified, or was built with other embeddings."""
 
 
 class VectorStoreManager:
@@ -48,6 +54,7 @@ class VectorStoreManager:
         self.provider = provider
         self.doc_embeddings = self._build_embeddings(provider, model_name, role="document")
         self.query_embeddings = self._build_embeddings(provider, model_name, role="query")
+        self.embedding_model = self.doc_embeddings.model
         self.vector_store: Optional[FAISS] = None
         self.bm25_retriever: Optional[BM25Retriever] = None
         # Keep a reference to the documents for BM25 rebuild on load_local().
@@ -278,11 +285,79 @@ class VectorStoreManager:
         with open(docs_path, "w", encoding="utf-8") as f:
             json.dump(doc_data, f, ensure_ascii=False)
 
+        self._write_manifest(folder_path)
+
+    # ── Index trust manifest ────────────────────────────────────────────
+    # index.pkl is a pickle, and unpickling a tampered file can run code.
+    # Every index this app writes gets a manifest with the SHA-256 of each
+    # file plus the embedding provider/model. load_local() refuses anything
+    # that does not match, so only indexes built here with the current
+    # embeddings are ever deserialised.
+
+    MANIFEST_NAME = "index_manifest.json"
+    MANIFEST_FILES = ("index.faiss", "index.pkl", "bm25_documents.json")
+
+    @staticmethod
+    def _sha256(path: str) -> str:
+        digest = hashlib.sha256()
+        with open(path, "rb") as f:
+            for block in iter(lambda: f.read(1 << 20), b""):
+                digest.update(block)
+        return digest.hexdigest()
+
+    def _write_manifest(self, folder_path: str):
+        manifest = {
+            "provider": self.provider,
+            "embedding_model": self.embedding_model,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "files": {
+                name: self._sha256(os.path.join(folder_path, name))
+                for name in self.MANIFEST_FILES
+                if os.path.exists(os.path.join(folder_path, name))
+            },
+        }
+        with open(os.path.join(folder_path, self.MANIFEST_NAME), "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=2)
+
+    def verify_index(self, folder_path: str) -> dict:
+        """
+        Confirm an index folder was written by this app with the current
+        embedding settings and has not changed since. Raises IndexMismatchError.
+        """
+        manifest_path = os.path.join(folder_path, self.MANIFEST_NAME)
+        if not os.path.exists(manifest_path):
+            raise IndexMismatchError(
+                "This index has no manifest (built by an older version). Re-process the document."
+            )
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+
+        if manifest.get("provider") != self.provider or \
+                manifest.get("embedding_model") != self.embedding_model:
+            raise IndexMismatchError(
+                f"This index was built with {manifest.get('provider')} / "
+                f"{manifest.get('embedding_model')}, but the current setting is "
+                f"{self.provider} / {self.embedding_model}. Re-process the document."
+            )
+        for name in self.MANIFEST_FILES:
+            expected = manifest.get("files", {}).get(name)
+            path = os.path.join(folder_path, name)
+            if name == "bm25_documents.json" and expected is None:
+                continue
+            if not expected or not os.path.exists(path) or self._sha256(path) != expected:
+                raise IndexMismatchError(
+                    f"{name} does not match its manifest; refusing to load it. Re-process the document."
+                )
+        return manifest
+
     def load_local(self, folder_path: str):
         """
         Load FAISS index from disk and rebuild the BM25 index from the
         saved document sidecar.
         """
+        self.verify_index(folder_path)
+        # Safe to unpickle: verify_index() confirmed these are the exact files
+        # this app wrote, for the current embedding model.
         self.vector_store = FAISS.load_local(
             folder_path,
             self.doc_embeddings,

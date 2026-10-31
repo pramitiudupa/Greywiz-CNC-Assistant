@@ -1,17 +1,20 @@
 import {
-  api,
   askDocument,
+  deleteDocument,
   DocumentSummary,
+  errorMessage,
   getDocuments,
-  processDocument,
-  SourceTable,
+  getMachine,
+  Machine,
+  saveMachine,
   uploadPdf
 } from "./api";
+import { initDiagnose, renderMachine } from "./diagnose";
 
 // @ts-ignore
 const lucide = window.lucide;
 
-type ViewMode = "home" | "chat";
+type ViewMode = "home" | "chat" | "diagnose";
 
 const state: {
   activeDocumentId: string | null;
@@ -19,12 +22,14 @@ const state: {
   documents: DocumentSummary[];
   selectedFile: File | null;
   view: ViewMode;
+  machine: Machine | null;
 } = {
   activeDocumentId: null,
   busy: false,
   documents: [],
   selectedFile: null,
-  view: "home"
+  view: "diagnose",
+  machine: null
 };
 
 const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector);
@@ -33,8 +38,15 @@ const $$ = <T extends HTMLElement>(selector: string) => document.querySelectorAl
 // Navigation
 const navHome = $("#nav-home");
 const navChat = $("#nav-chat");
+const navDiagnose = $("#nav-diagnose");
 const homeView = $("#home-view");
 const chatView = $("#chat-view");
+const diagnoseView = $("#diagnose-view");
+
+// Machine
+const machineForm = $("#machine-form") as HTMLFormElement | null;
+const machineSaved = $("#machine-saved");
+const sidebarMachine = $("#sidebar-machine");
 
 // Settings
 const providerSelect = $("#provider-select") as HTMLSelectElement | null;
@@ -161,6 +173,16 @@ function formatSourceTables(results: Array<{ content: string; metadata: Record<s
     }
     
     const content = res.content || "";
+    if (content.includes("TEXT:\n")) {
+      const [head, body] = content.split("TEXT:\n");
+      const section = head.replace("<context>\nSECTION:", "").trim();
+      const pageLabel = pageIdx !== undefined && pageIdx !== null ? `Page ${Number(pageIdx) + 1}` : "Text";
+      htmlParts.push(
+        `<h4 class="font-bold mt-3 text-wiz-text text-xs border-b border-wiz-border pb-1 mb-2">${escapeHtml(`${pageLabel}: ${section}`)}</h4>` +
+        `<pre class="source-content !bg-wiz-bg/50 !mt-1 text-[11px] font-mono leading-normal p-2 max-h-[250px] overflow-y-auto rounded border border-wiz-border/20">${escapeHtml(body.replace("</context>", "").trim())}</pre>`
+      );
+      return;
+    }
     let contextPart = "";
     let tablePart = content;
     
@@ -224,27 +246,54 @@ function formatSourceTables(results: Array<{ content: string; metadata: Record<s
   return htmlParts.join('<hr class="border-wiz-border/40 my-4">');
 }
 
+const ACTIVE_NAV = ["bg-wiz-primary/10", "text-wiz-primary", "border", "border-wiz-primary/20"];
+const IDLE_NAV = ["text-wiz-muted", "hover:bg-wiz-panel_hover", "hover:text-wiz-text"];
+
 function switchView(view: ViewMode) {
   state.view = view;
-  
-  // Toggle nav styling
-  if (view === "home") {
-    navHome?.classList.add("bg-wiz-primary/10", "text-wiz-primary", "border", "border-wiz-primary/20");
-    navHome?.classList.remove("text-wiz-muted", "hover:bg-wiz-panel_hover", "hover:text-wiz-text");
-    navChat?.classList.remove("bg-wiz-primary/10", "text-wiz-primary", "border", "border-wiz-primary/20");
-    navChat?.classList.add("text-wiz-muted", "hover:bg-wiz-panel_hover", "hover:text-wiz-text");
-    
-    homeView?.classList.remove("hidden");
-    chatView?.classList.add("hidden");
-  } else {
-    navChat?.classList.add("bg-wiz-primary/10", "text-wiz-primary", "border", "border-wiz-primary/20");
-    navChat?.classList.remove("text-wiz-muted", "hover:bg-wiz-panel_hover", "hover:text-wiz-text");
-    navHome?.classList.remove("bg-wiz-primary/10", "text-wiz-primary", "border", "border-wiz-primary/20");
-    navHome?.classList.add("text-wiz-muted", "hover:bg-wiz-panel_hover", "hover:text-wiz-text");
-    
-    homeView?.classList.add("hidden");
-    chatView?.classList.remove("hidden");
+  const views: Array<[ViewMode, HTMLElement | null, HTMLElement | null]> = [
+    ["home", navHome, homeView],
+    ["chat", navChat, chatView],
+    ["diagnose", navDiagnose, diagnoseView]
+  ];
+  for (const [name, nav, panel] of views) {
+    const active = name === view;
+    nav?.classList.add(...(active ? ACTIVE_NAV : IDLE_NAV));
+    nav?.classList.remove(...(active ? IDLE_NAV : ACTIVE_NAV));
+    panel?.classList.toggle("hidden", !active);
   }
+}
+
+function renderSidebarMachine() {
+  if (!sidebarMachine) return;
+  const machine = state.machine;
+  const ready = state.documents.filter((d) => d.status === "completed").length;
+  sidebarMachine.innerHTML = machine
+    ? `<div class="text-[10px] tracking-wider text-wiz-muted mb-1">MACHINE</div>
+       <div class="font-semibold text-sm text-wiz-text truncate">${escapeHtml(machine.name)}</div>
+       <div class="text-wiz-muted truncate">${escapeHtml([machine.maker, machine.model].filter(Boolean).join(" ") || "CNC machine")}</div>
+       <div class="mt-2 text-wiz-muted">${ready} document${ready === 1 ? "" : "s"} ready</div>`
+    : `<div class="text-yellow-400">No machine set up yet.</div>
+       <div class="text-wiz-muted mt-1">Owner: add it under Machine &amp; documents.</div>`;
+}
+
+function fillMachineForm() {
+  if (!machineForm || !state.machine) return;
+  for (const [key, value] of Object.entries(state.machine)) {
+    const input = machineForm.elements.namedItem(key) as HTMLInputElement | null;
+    if (input) input.value = value;
+  }
+}
+
+async function loadMachine() {
+  try {
+    state.machine = await getMachine();
+  } catch (e) {
+    console.error("Could not load machine", e);
+  }
+  fillMachineForm();
+  renderSidebarMachine();
+  renderMachine(state.machine);
 }
 
 function selectDocumentAndChat(documentId: string) {
@@ -267,6 +316,7 @@ function renderDocuments() {
   
   if (processedCount) processedCount.textContent = String(processedDocs.length);
   if (totalCount) totalCount.textContent = String(state.documents.length);
+  renderSidebarMachine();
 
   // Render Sidebar List
   if (sidebarDocList) {
@@ -322,6 +372,9 @@ function renderDocuments() {
               </div>
             </div>
             
+            <button data-delete-doc="${escapeHtml(doc.id)}" title="Remove this document" class="flex h-9 w-9 items-center justify-center rounded-lg border border-wiz-border text-wiz-muted hover:text-wiz-danger hover:border-wiz-danger/40 transition flex-shrink-0">
+              <i data-lucide="trash-2" class="h-4 w-4"></i>
+            </button>
             <button data-dashboard-doc="${escapeHtml(doc.id)}" class="${!isProcessed ? 'opacity-50 cursor-not-allowed' : 'hover:bg-wiz-panel_hover'} w-36 justify-center flex items-center gap-2 rounded-lg border border-wiz-border py-2 text-sm text-wiz-muted transition flex-shrink-0 whitespace-nowrap" ${!isProcessed ? 'disabled' : ''}>
               <i data-lucide="message-square" class="h-4 w-4"></i>
               Open chat
@@ -332,6 +385,9 @@ function renderDocuments() {
 
       dashboardDocList.querySelectorAll("[data-dashboard-doc]").forEach(btn => {
         btn.addEventListener("click", () => selectDocumentAndChat((btn as HTMLElement).dataset.dashboardDoc!));
+      });
+      dashboardDocList.querySelectorAll("[data-delete-doc]").forEach(btn => {
+        btn.addEventListener("click", () => void removeDocument((btn as HTMLElement).dataset.deleteDoc!));
       });
     }
   }
@@ -356,6 +412,17 @@ async function refreshDocuments() {
   }
 }
 
+async function removeDocument(documentId: string) {
+  if (!window.confirm(`Remove "${documentId}" and its search index? Workers will no longer get answers from it.`)) return;
+  try {
+    await deleteDocument(documentId);
+    if (state.activeDocumentId === documentId) state.activeDocumentId = null;
+    await refreshDocuments();
+  } catch (err) {
+    window.alert(errorMessage(err, "Could not remove the document."));
+  }
+}
+
 function stageFile(file: File) {
   showUploadError();
   if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -373,7 +440,7 @@ function stageFile(file: File) {
 async function processSelectedFile() {
   if (!state.selectedFile || state.busy) return;
 
-  setBusy(true, `Uploading...`);
+  setBusy(true, "Reading the document (can take several minutes)...");
 
   try {
     const result = await uploadPdf(state.selectedFile, provider());
@@ -385,8 +452,8 @@ async function processSelectedFile() {
     
     await refreshDocuments();
     selectDocumentAndChat(result.document.id);
-  } catch {
-    showUploadError("Processing failed. Please check the terminal logs.");
+  } catch (err) {
+    showUploadError(errorMessage(err, "Processing failed. Please check the backend terminal."));
   } finally {
     setBusy(false);
   }
@@ -404,7 +471,7 @@ function appendMessage(role: "user" | "assistant", content: string, loading = fa
   const bgClass = isUser ? "bg-wiz-primary/20 border-wiz-primary/30" : "bg-wiz-panel border-wiz-border";
   const textClass = isUser ? "text-wiz-text" : "text-wiz-text";
   const icon = isUser ? "user" : "sparkles";
-  const name = isUser ? "You" : "TableWIZ AI";
+  const name = isUser ? "You" : "Greywiz";
   const body = loading ? `<div class="flex items-center gap-2 text-wiz-muted"><i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i> ${escapeHtml(content)}</div>` : escapeHtml(content);
 
   let sourceDropdownHtml = "";
@@ -413,7 +480,7 @@ function appendMessage(role: "user" | "assistant", content: string, loading = fa
       <details class="source-dropdown">
         <summary>
           <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          View Source Tables
+          View sources
         </summary>
         <div class="source-content scrollbar">${sourceTablesHtml}</div>
       </details>
@@ -456,7 +523,7 @@ async function sendQuery(query?: string) {
 
   if (chatInput) chatInput.value = "";
   appendMessage("user", message);
-  appendMessage("assistant", "Analyzing source tables to generate grounded answer...", true);
+  appendMessage("assistant", "Searching the document...", true);
 
   setBusy(true);
   try {
@@ -471,7 +538,7 @@ async function sendQuery(query?: string) {
     );
   } catch (err) {
     console.error("Query execution failed:", err);
-    replaceLastAssistantMessage("Query failed. Please check backend logs or try a different question.");
+    replaceLastAssistantMessage(errorMessage(err, "Query failed. Please check backend logs or try a different question."));
   } finally {
     setBusy(false);
     if (chatInput) chatInput.focus();
@@ -482,7 +549,28 @@ function bindEvents() {
   // Navigation
   navHome?.addEventListener("click", () => switchView("home"));
   navChat?.addEventListener("click", () => {
-    if (state.activeDocumentId) switchView("chat");
+    if (state.activeDocumentId) {
+      switchView("chat");
+      return;
+    }
+    const firstReady = state.documents.find((d) => d.status === "completed");
+    if (firstReady) selectDocumentAndChat(firstReady.id);
+    else switchView("home");
+  });
+  navDiagnose?.addEventListener("click", () => switchView("diagnose"));
+
+  machineForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(machineForm).entries()) as unknown as Machine;
+    try {
+      state.machine = await saveMachine(data);
+      renderSidebarMachine();
+      renderMachine(state.machine);
+      machineSaved?.classList.remove("hidden");
+      window.setTimeout(() => machineSaved?.classList.add("hidden"), 2500);
+    } catch (err) {
+      window.alert(errorMessage(err, "Could not save the machine."));
+    }
   });
 
   // PDF Panel Collapsible handlers
@@ -546,6 +634,8 @@ function bindEvents() {
 }
 
 // Init
-switchView("home");
+switchView("diagnose");
 bindEvents();
+initDiagnose(provider);
 void refreshDocuments();
+void loadMachine();

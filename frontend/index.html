@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TableWIZ | AI Document Intelligence</title>
+    <title>Greywiz | CNC Fault Assistant</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,7 +12,7 @@
       rel="stylesheet"
     />
     <!-- Add Lucide for icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -124,25 +124,32 @@
         <!-- Brand -->
         <div class="flex items-center gap-3 px-2 mb-8">
           <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary/20 text-wiz-primary border border-wiz-primary/30">
-            <i data-lucide="sparkles" class="h-4 w-4"></i>
+            <i data-lucide="wrench" class="h-4 w-4"></i>
           </div>
           <div>
-            <h1 class="text-sm font-bold tracking-wide">TableWIZ</h1>
-            <p class="text-[10px] text-wiz-muted tracking-wider">AI Document Intelligence</p>
+            <h1 class="text-sm font-bold tracking-wide">Greywiz</h1>
+            <p class="text-[10px] text-wiz-muted tracking-wider">CNC fault assistant</p>
           </div>
         </div>
 
         <!-- Navigation -->
-        <nav class="space-y-1 mb-8">
+        <nav class="space-y-1 mb-6">
+          <button id="nav-diagnose" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-wiz-muted hover:bg-wiz-panel_hover hover:text-wiz-text">
+            <i data-lucide="camera" class="h-4 w-4"></i>
+            Report a problem
+          </button>
           <button id="nav-chat" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors bg-wiz-primary/10 text-wiz-primary border border-wiz-primary/20">
             <i data-lucide="message-square" class="h-4 w-4"></i>
-            Grounded chat workspace
+            Ask the manual
           </button>
           <button id="nav-home" class="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-wiz-muted transition-colors hover:bg-wiz-panel_hover hover:text-wiz-text">
-            <i data-lucide="home" class="h-4 w-4"></i>
-            Home
+            <i data-lucide="folder-cog" class="h-4 w-4"></i>
+            Machine &amp; documents
           </button>
         </nav>
+
+        <!-- Machine card (Sidebar) -->
+        <div id="sidebar-machine" class="mb-6 rounded-xl border border-wiz-border bg-wiz-panel/60 p-3 text-xs"></div>
 
         <!-- Document List (Sidebar) -->
         <div class="flex flex-col flex-1 min-h-0">
@@ -166,16 +173,16 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-wiz-primary/10 text-wiz-primary border border-wiz-primary/20 mb-4">
                   <i data-lucide="upload-cloud" class="h-6 w-6"></i>
                 </div>
-                <h2 class="text-2xl font-bold mb-2">Upload document</h2>
+                <h2 class="text-2xl font-bold mb-2">Add machine documents</h2>
                 <p class="text-sm text-wiz-muted leading-relaxed">
-                  Add a PDF and TableWIZ will extract tables, summarize them, and create a document-specific chat index.
+                  Upload the manual, alarm list or service notes for this CNC machine. Greywiz reads the text and tables page by page, so workers get answers that point to the exact page.
                 </p>
               </div>
 
               <div id="upload-zone" class="flex-1 rounded-xl border-2 border-dashed border-wiz-border bg-wiz-panel/50 flex flex-col items-center justify-center p-6 text-center cursor-pointer transition hover:border-wiz-primary/50 hover:bg-wiz-primary_glow">
                 <i data-lucide="file-up" class="h-8 w-8 text-wiz-muted mb-3"></i>
                 <p id="selected-file-name" class="font-semibold mb-1">Drag and drop your PDF</p>
-                <p class="text-xs text-wiz-muted">Click to browse if that feels more civilized. PDF files only.</p>
+                <p class="text-xs text-wiz-muted">Or click to browse. PDF files only. Large manuals take a few minutes.</p>
                 <input id="file-input" class="hidden" type="file" accept="application/pdf" />
               </div>
               
@@ -187,6 +194,30 @@
               </div>
             </div>
             
+            <div id="machine-panel" class="glass-panel rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-sm font-semibold text-wiz-muted tracking-wider">Your CNC machine</h3>
+                  <span id="machine-saved" class="hidden text-xs text-wiz-success">Saved</span>
+                </div>
+                <form id="machine-form" class="grid grid-cols-2 gap-3">
+                  <label class="block col-span-2"><span class="block text-xs text-wiz-muted mb-1">Name used on the shop floor *</span>
+                    <input name="name" required placeholder="e.g. VMC 1 (Bay 2)" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <label class="block"><span class="block text-xs text-wiz-muted mb-1">Maker</span>
+                    <input name="maker" placeholder="e.g. Haas" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <label class="block"><span class="block text-xs text-wiz-muted mb-1">Model</span>
+                    <input name="model" placeholder="e.g. VF-2" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <label class="block"><span class="block text-xs text-wiz-muted mb-1">Control (controller)</span>
+                    <input name="controller" placeholder="e.g. Haas NGC, Fanuc 0i-MF" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <label class="block"><span class="block text-xs text-wiz-muted mb-1">Location</span>
+                    <input name="location" placeholder="e.g. Peenya, Bengaluru" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <label class="block col-span-2"><span class="block text-xs text-wiz-muted mb-1">Notes for workers (optional)</span>
+                    <input name="notes" placeholder="e.g. Supervisor: Ravi, ext. 21" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary" /></label>
+                  <div class="col-span-2 flex justify-end">
+                    <button type="submit" class="rounded-lg bg-wiz-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90">Save machine</button>
+                  </div>
+                </form>
+            </div>
+
             <div id="settings-panel" class="glass-panel rounded-2xl p-6">
                 <h3 class="text-sm font-semibold mb-4 text-wiz-muted tracking-wider">Engine Settings</h3>
                 <div class="grid grid-cols-2 gap-4">
@@ -215,7 +246,7 @@
           <div class="flex-1 flex flex-col max-w-2xl">
             <div class="glass-panel rounded-2xl p-8 flex flex-col h-full">
               <div class="mb-6">
-                <h3 class="text-xs font-semibold tracking-wider text-wiz-muted mb-1">Document Intelligence Library</h3>
+                <h3 class="text-xs font-semibold tracking-wider text-wiz-muted mb-1">Machine knowledge base</h3>
                 <div class="flex justify-between items-end">
                   <h2 class="text-3xl font-bold">Your documents</h2>
                   <div class="flex gap-4">
@@ -229,7 +260,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-sm text-wiz-muted mt-2">Processed PDFs become selectable knowledge bases for chat.</p>
+                <p class="text-sm text-wiz-muted mt-2">Every processed document is searched when a worker reports a problem.</p>
               </div>
 
               <!-- Search/Filter Bar -->
@@ -252,6 +283,69 @@
           </div>
         </div>
 
+        <!-- DIAGNOSE VIEW -->
+        <div id="diagnose-view" class="absolute inset-0 hidden overflow-y-auto scrollbar">
+          <div class="flex flex-col xl:flex-row gap-6 p-6 lg:p-8 min-h-full">
+
+            <!-- Left: report form -->
+            <section class="w-full xl:w-[420px] flex-shrink-0 flex flex-col gap-4">
+              <div>
+                <p class="text-xs font-semibold tracking-wider text-wiz-muted mb-1">Report a problem</p>
+                <h2 class="text-2xl font-bold">What is wrong with the machine?</h2>
+                <p class="text-sm text-wiz-muted mt-1">Take a photo of the part that is not working, describe it, or both. Greywiz checks this machine's own documents and tells you the most likely cause and what to do.</p>
+              </div>
+
+              <div id="diagnose-machine" class="rounded-xl border border-wiz-border bg-wiz-panel/60 p-3 text-sm"></div>
+
+              <div class="glass-panel rounded-2xl p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold flex items-center gap-2"><span class="flex h-5 w-5 items-center justify-center rounded-full bg-wiz-primary/20 text-[11px] text-wiz-primary">1</span> Photo of the problem</h3>
+                <div id="photo-zone" class="relative rounded-xl border-2 border-dashed border-wiz-border bg-wiz-panel/50 min-h-[180px] flex flex-col items-center justify-center p-4 text-center cursor-pointer transition hover:border-wiz-primary/50">
+                  <div id="photo-empty" class="flex flex-col items-center">
+                    <i data-lucide="camera" class="h-8 w-8 text-wiz-muted mb-2"></i>
+                    <p class="font-semibold text-sm">Tap to take or choose a photo</p>
+                    <p class="text-xs text-wiz-muted mt-1">Show the button, screen, alarm or part. Get close and keep it in focus.</p>
+                  </div>
+                  <img id="photo-preview" alt="Photo of the problem" class="hidden max-h-[260px] rounded-lg object-contain" />
+                  <input id="photo-input" type="file" accept="image/*" capture="environment" class="hidden" />
+                </div>
+                <div class="flex justify-between items-center gap-3">
+                  <span id="photo-name" class="text-xs text-wiz-muted truncate">No photo added</span>
+                  <button id="photo-remove" type="button" class="hidden text-xs text-wiz-muted hover:text-wiz-danger flex-shrink-0">Remove photo</button>
+                </div>
+              </div>
+
+              <div class="glass-panel rounded-2xl p-5 flex flex-col gap-3">
+                <h3 class="text-sm font-semibold flex items-center gap-2"><span class="flex h-5 w-5 items-center justify-center rounded-full bg-wiz-primary/20 text-[11px] text-wiz-primary">2</span> Tell us what happened</h3>
+                <textarea id="problem-text" rows="4" class="w-full rounded-lg border border-wiz-border bg-wiz-panel px-3 py-2 text-sm outline-none focus:border-wiz-primary resize-none" placeholder="e.g. I press Cycle Start and nothing happens. The door is closed."></textarea>
+                <div id="problem-chips" class="flex flex-wrap gap-2">
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">A button does nothing</button>
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">Alarm on the screen</button>
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">Spindle will not start</button>
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">Coolant not coming out</button>
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">Tool change stuck</button>
+                  <button type="button" class="problem-chip rounded-full border border-wiz-border px-3 py-1 text-xs text-wiz-muted hover:border-wiz-primary/50 hover:text-wiz-text">Strange noise</button>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <button id="diagnose-button" class="w-full rounded-xl bg-wiz-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  <i data-lucide="search-check" class="h-4 w-4"></i> Find the cause
+                </button>
+                <p class="text-[11px] text-wiz-muted text-center">Add a photo, a description, or both.</p>
+                <p id="diagnose-error" class="hidden text-xs text-wiz-danger"></p>
+              </div>
+
+              <div class="glass-panel rounded-2xl p-5">
+                <h3 class="text-sm font-semibold mb-3">Recent problems on this machine</h3>
+                <div id="case-list" class="space-y-2 text-sm"></div>
+              </div>
+            </section>
+
+            <!-- Right: result -->
+            <section id="diagnosis-panel" class="flex-1 min-w-0"></section>
+          </div>
+        </div>
+
         <!-- CHAT VIEW -->
         <div id="chat-view" class="absolute inset-0 flex hidden bg-wiz-bg">
           
@@ -265,7 +359,7 @@
                   <i data-lucide="file-text" class="h-5 w-5"></i>
                 </div>
                 <div>
-                  <p class="text-[10px] font-semibold tracking-wider text-wiz-muted mb-0.5">TableWIZ Intelligence Workspace</p>
+                  <p class="text-[10px] font-semibold tracking-wider text-wiz-muted mb-0.5">Ask the manual</p>
                   <h2 id="chat-document-title" class="text-xl font-bold tracking-tight truncate max-w-[300px]">No document selected</h2>
                   <div class="flex items-center gap-3 mt-1 text-xs text-wiz-muted">
                     <span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="h-3 w-3 text-wiz-success"></i> Selected index</span>
@@ -295,7 +389,7 @@
                   </div>
                   <h3 class="text-2xl font-bold mb-3">Ask about this document</h3>
                   <p class="text-sm text-wiz-muted text-center max-w-md mb-10 leading-relaxed">
-                    Start with a specific question about the tables, values, materials, or relationships in the selected PDF.
+                    Ask a specific question about this document, such as what a button does or what an alarm means.
                   </p>
                   
                   <div class="grid grid-cols-3 gap-4 w-full max-w-2xl px-4 pointer-events-auto">
@@ -328,7 +422,7 @@
                       <div class="flex justify-between items-center px-2 pb-1">
                           <div class="flex gap-4 text-[10px] text-wiz-muted">
                              <span class="flex items-center gap-1"><i data-lucide="database" class="h-3 w-3 text-wiz-primary"></i> Scoped to selected document</span>
-                             <span class="flex items-center gap-1"><i data-lucide="check-shield" class="h-3 w-3 text-wiz-success"></i> Verify against source tables</span>
+                             <span class="flex items-center gap-1"><i data-lucide="shield-check" class="h-3 w-3 text-wiz-success"></i> Verify against source tables</span>
                           </div>
                           <button id="send-button" disabled class="flex h-8 w-8 items-center justify-center rounded-lg bg-wiz-primary text-white hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
                               <i data-lucide="send" class="h-4 w-4"></i>

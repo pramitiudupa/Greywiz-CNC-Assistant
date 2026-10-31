@@ -133,6 +133,11 @@ class MinerUConverter:
             "-p", str(pdf_path),
             "-o", str(run_dir),
             "--backend", "pipeline",
+            # MinerU's OCR defaults to Chinese; most CNC manuals here are English.
+            "--lang", os.getenv("MINERU_LANG", "en"),
+            # Formula detection costs ~8 s/page on a CPU and machine manuals rarely
+            # need equations; set MINERU_FORMULA=true for documents that do.
+            "--formula", os.getenv("MINERU_FORMULA", "false"),
         ]
 
         print_func(f"[MinerU] Running: {' '.join(cmd)}")

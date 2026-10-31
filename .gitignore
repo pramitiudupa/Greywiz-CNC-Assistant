@@ -14,3 +14,9 @@ dist/
 frontend/.env
 frontend/.env.local
 .DS_Store
+
+# Runtime data: worker photos, problem reports, machine profile
+backend/data/
+# Third-party manuals uploaded for local demos (OEM copyright)
+backend/assets/pdfs/Haas*
+backend/assets/markdown/Haas*

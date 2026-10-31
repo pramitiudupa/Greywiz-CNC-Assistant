@@ -74,3 +74,143 @@ export async function askDocument(documentId: string, message: string, retrieval
   });
   return data;
 }
+
+export const apiBaseURL = baseURL;
+
+export interface Machine {
+  name: string;
+  maker: string;
+  model: string;
+  controller: string;
+  location: string;
+  notes: string;
+}
+
+export interface DiagnosisCause {
+  title: string;
+  explanation: string;
+  confidence: "high" | "medium" | "low";
+  source_ids: string[];
+}
+
+export interface DiagnosisStep {
+  instruction: string;
+  source_ids: string[];
+  needs_technician: boolean;
+}
+
+export interface DiagnosisSource {
+  id: string;
+  kind: "document" | "past_case";
+  label: string;
+  section: string;
+  text: string;
+  cited: boolean;
+  document_id?: string;
+  page?: number | null;
+  case_id?: string;
+}
+
+export interface PhotoReading {
+  is_machine_photo: boolean;
+  part_shown: string;
+  visible_text: string[];
+  condition: string;
+  search_phrases: string[];
+  photo_quality_note: string;
+}
+
+export interface DiagnosisResult {
+  case_id?: string;
+  created_at?: string;
+  summary: string;
+  likely_cause: DiagnosisCause;
+  other_causes: DiagnosisCause[];
+  steps: DiagnosisStep[];
+  general_advice: DiagnosisStep[];
+  safety_warnings: DiagnosisStep[];
+  call_technician_if: string[];
+  manual_covers_this: boolean;
+  needs_more_detail?: boolean;
+  question_for_worker: string;
+  sources: DiagnosisSource[];
+  photo_reading: PhotoReading | null;
+  machine: Machine | null;
+  warnings: string[];
+  timings: Record<string, number>;
+}
+
+export interface CaseSummary {
+  id: string;
+  created_at: string;
+  description: string;
+  has_photo: boolean;
+  status: "open" | "fixed";
+  fix_note: string;
+  summary: string;
+}
+
+export interface CaseDetail {
+  id: string;
+  created_at: string;
+  description: string;
+  photo: string | null;
+  status: "open" | "fixed";
+  fix_note: string;
+  result: DiagnosisResult;
+}
+
+export function errorMessage(err: unknown, fallback: string) {
+  const detail = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
+  return typeof detail === "string" && detail ? detail : fallback;
+}
+
+export async function getMachine() {
+  const { data } = await api.get<{ machine: Machine | null }>("/api/machine");
+  return data.machine;
+}
+
+export async function saveMachine(machine: Machine) {
+  const { data } = await api.put<{ machine: Machine }>("/api/machine", machine);
+  return data.machine;
+}
+
+export async function diagnoseProblem(description: string, photo: File | null, provider?: string) {
+  const formData = new FormData();
+  formData.append("description", description);
+  if (photo) formData.append("photo", photo);
+  if (provider) formData.append("provider", provider);
+  const { data } = await api.post<DiagnosisResult>("/api/diagnose", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 0
+  });
+  return data;
+}
+
+export async function getCases() {
+  const { data } = await api.get<{ cases: CaseSummary[] }>("/api/cases");
+  return data.cases;
+}
+
+export async function getCase(caseId: string) {
+  const { data } = await api.get<CaseDetail>(`/api/cases/${caseId}`);
+  return data;
+}
+
+export async function updateCase(caseId: string, status: "open" | "fixed", fixNote: string) {
+  const { data } = await api.patch<CaseDetail>(`/api/cases/${caseId}`, { status, fix_note: fixNote });
+  return data;
+}
+
+export async function deleteDocument(documentId: string) {
+  await api.delete(`/api/documents/${encodeURIComponent(documentId)}`);
+}
+
+export function documentPageUrl(documentId: string, page?: number | null) {
+  const url = `${baseURL}/api/documents/${encodeURIComponent(documentId)}/pdf/origin`;
+  return page ? `${url}#page=${page}` : url;
+}
+
+export function casePhotoUrl(caseId: string) {
+  return `${baseURL}/api/cases/${caseId}/photo`;
+}

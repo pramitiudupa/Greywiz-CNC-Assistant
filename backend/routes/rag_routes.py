@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from typing import Dict, Any, List
 
-from src.parsers.table_processor import parse_bundles_from_md
+from src.parsers.table_processor import parse_bundles_from_md, parse_text_chunks
 from src.parsers.mineru_converter import MinerUConverter
 from src.parsers.vector_store import VectorStoreManager
 
@@ -61,6 +61,24 @@ def process_documents(
         if page_idx is not None:
             metadata["page_idx"] = page_idx
         metadatas.append(metadata)
+
+    text_chunks = parse_text_chunks(input_path)
+    print_func(f"[*] Found {len(text_chunks)} text sections. Adding them to the index...")
+    for i, chunk in enumerate(text_chunks):
+        section = chunk["section"] or "(no heading)"
+        chunks.append(f"<context>\nSECTION: {section}\n\nTEXT:\n{chunk['text']}\n</context>")
+        metadata = {
+            "table_id": f"text_{i}",
+            "chunk_type": "text",
+            "section": section,
+            "context_snippet": chunk["text"][:200],
+        }
+        if chunk["page_idx"] is not None:
+            metadata["page_idx"] = int(chunk["page_idx"])
+        metadatas.append(metadata)
+
+    if not chunks:
+        raise ValueError(f"No tables or text could be extracted from {input_path}.")
 
     print_func("[*] Building hybrid index (FAISS + BM25)...")
     vector_mgr.create_index(chunks, metadatas)
