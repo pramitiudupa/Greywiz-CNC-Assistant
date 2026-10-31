@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { WorkerProfile } from "./profile";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
 
@@ -97,6 +98,8 @@ export interface DiagnosisStep {
   instruction: string;
   source_ids: string[];
   needs_technician: boolean;
+  checks_cause: number;
+  from_documents?: boolean;
 }
 
 export interface DiagnosisSource {
@@ -128,6 +131,8 @@ export interface DiagnosisResult {
   other_causes: DiagnosisCause[];
   steps: DiagnosisStep[];
   general_advice: DiagnosisStep[];
+  guided_steps?: DiagnosisStep[];
+  profile?: WorkerProfile | null;
   safety_warnings: DiagnosisStep[];
   call_technician_if: string[];
   manual_covers_this: boolean;
@@ -175,9 +180,10 @@ export async function saveMachine(machine: Machine) {
   return data.machine;
 }
 
-export async function diagnoseProblem(description: string, photo: File | null, provider?: string) {
+export async function diagnoseProblem(description: string, photo: File | null, provider?: string, profile?: WorkerProfile | null) {
   const formData = new FormData();
   formData.append("description", description);
+  if (profile) formData.append("profile", JSON.stringify(profile));
   if (photo) formData.append("photo", photo);
   if (provider) formData.append("provider", provider);
   const { data } = await api.post<DiagnosisResult>("/api/diagnose", formData, {

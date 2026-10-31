@@ -149,7 +149,10 @@
         </nav>
 
         <!-- Machine card (Sidebar) -->
-        <div id="sidebar-machine" class="mb-6 rounded-xl border border-wiz-border bg-wiz-panel/60 p-3 text-xs"></div>
+        <div id="sidebar-machine" class="mb-3 rounded-xl border border-wiz-border bg-wiz-panel/60 p-3 text-xs"></div>
+
+        <!-- Who is using the app (Sidebar) -->
+        <div id="sidebar-profile" class="mb-6 rounded-xl border border-wiz-border bg-wiz-panel/60 p-3 text-xs"></div>
 
         <!-- Document List (Sidebar) -->
         <div class="flex flex-col flex-1 min-h-0">
@@ -491,6 +494,9 @@
           </div>
       </main>
     </div>
+
+    <!-- "Who are you?" questions -->
+    <div id="profile-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"></div>
 
     <!-- Initialize icons -->
     <script>

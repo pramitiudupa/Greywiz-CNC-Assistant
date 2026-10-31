@@ -10,6 +10,7 @@
     "build": "bash scripts/frontend.sh build",
     "typecheck": "bash scripts/frontend.sh typecheck",
     "setup:win": "powershell -ExecutionPolicy Bypass -File scripts/setup-windows.ps1",
-    "dev:win": "powershell -ExecutionPolicy Bypass -File scripts/dev-windows.ps1"
+    "dev:win": "powershell -ExecutionPolicy Bypass -File scripts/dev-windows.ps1",
+    "start:win": "powershell -ExecutionPolicy Bypass -File scripts/start-windows.ps1"
   }
 }

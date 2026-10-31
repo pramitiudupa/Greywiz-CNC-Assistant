@@ -13,6 +13,7 @@ import {
   getCases,
   updateCase
 } from "./api";
+import { WorkerProfile, askWhoYouAre, getProfile, levelExplanation, onProfileChange } from "./profile";
 
 // @ts-ignore
 const lucide = window.lucide;
@@ -140,6 +141,7 @@ function stepList(steps: DiagnosisStep[], sources: DiagnosisSource[]) {
         <p class="leading-relaxed">${escapeHtml(step.instruction)}</p>
         <div class="mt-1 flex flex-wrap items-center gap-1.5">
           ${step.needs_technician ? `<span class="inline-flex items-center gap-1 rounded-md border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 text-[11px] text-orange-300"><i data-lucide="hard-hat" class="h-3 w-3"></i>Technician only</span>` : ""}
+          ${step.from_documents === false ? `<span class="inline-flex items-center gap-1 rounded-md border border-yellow-500/40 bg-yellow-500/10 px-1.5 py-0.5 text-[11px] text-yellow-300"><i data-lucide="info" class="h-3 w-3"></i>Not in your documents</span>` : ""}
           ${sourceChips(step.source_ids, sources)}
         </div>
       </div>
@@ -227,16 +229,44 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       </div>
     </div>`) : "";
 
-  const cause = result.likely_cause;
+  const guided = guidedStepsOf(result);
+  const faults = [result.likely_cause, ...result.other_causes];
+  const stepsFor = (rank: number) =>
+    guided.map((s, i) => (s.checks_cause === rank ? i + 1 : 0)).filter(Boolean);
+  const [top, ...rest] = faults;
+  const topSteps = stepsFor(0);
   const causeCard = `
     <div class="rounded-2xl border border-wiz-primary/40 bg-wiz-primary/10 p-5">
-      <div class="flex items-center justify-between gap-3 mb-2">
-        <p class="text-xs font-semibold tracking-wider text-blue-300">MOST LIKELY CAUSE</p>
-        ${confidencePill(cause)}
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <p class="text-xs font-semibold tracking-wider text-blue-300">POSSIBLE FAULTS, MOST LIKELY FIRST</p>
+        <span class="text-xs text-wiz-muted">${faults.length} found</span>
       </div>
-      <h3 class="text-xl font-bold mb-2">${escapeHtml(cause.title)}</h3>
-      <p class="text-sm leading-relaxed text-wiz-text/90">${escapeHtml(cause.explanation)}</p>
-      <div class="mt-3 flex flex-wrap gap-1.5">${sourceChips(cause.source_ids, sources) || `<span class="text-xs text-wiz-muted">No page in your documents supports this directly.</span>`}</div>
+      <div class="flex gap-4">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-wiz-primary text-lg font-bold text-white flex-shrink-0">1</span>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2 mb-1"><h3 class="text-xl font-bold">${escapeHtml(top.title)}</h3>${confidencePill(top)}</div>
+          <p class="text-sm leading-relaxed text-wiz-text/90">${escapeHtml(top.explanation)}</p>
+          <div class="mt-2 flex flex-wrap items-center gap-1.5">
+            ${sourceChips(top.source_ids, sources) || `<span class="text-xs text-wiz-muted">No page in your documents supports this directly.</span>`}
+            ${topSteps.length ? `<span class="text-[11px] text-wiz-muted">· checked in step ${topSteps.join(", ")}</span>` : ""}
+          </div>
+        </div>
+      </div>
+      ${rest.length ? `<ol class="mt-4 space-y-3 border-t border-wiz-primary/20 pt-4">
+        ${rest.map((c, i) => {
+          const checked = stepsFor(i + 1);
+          return `
+          <li class="flex gap-4">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-wiz-border bg-wiz-panel text-sm font-semibold flex-shrink-0 ml-1.5">${i + 2}</span>
+            <div class="min-w-0 flex-1 text-sm">
+              <div class="flex flex-wrap items-center gap-2"><span class="font-semibold">${escapeHtml(c.title)}</span>${confidencePill(c)}</div>
+              <p class="text-wiz-muted mt-0.5">${escapeHtml(c.explanation)}</p>
+              <div class="mt-1 flex flex-wrap items-center gap-1.5">${sourceChips(c.source_ids, sources)}
+                ${checked.length ? `<span class="text-[11px] text-wiz-muted">· checked in step ${checked.join(", ")}</span>` : ""}</div>
+            </div>
+          </li>`;
+        }).join("")}
+      </ol>` : ""}
     </div>`;
 
   const needsDetail = result.needs_more_detail ? `
@@ -251,22 +281,14 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       <span>Your uploaded documents do not clearly cover this problem. Treat the answer as a starting point, and ask the owner to upload the machine's alarm list or service manual.</span>
     </div>` : "";
 
-  const stepsCard = result.steps.length ? card("What to do", "list-checks",
-    `<ol class="space-y-3 text-sm">${stepList(result.steps, sources)}</ol>`) : "";
+  const guideCard = guided.length ? `<div id="guided-steps"></div>` : "";
 
-  const generalCard = result.general_advice.length ? card("General advice (not found in your documents)", "info", `
-    <p class="text-xs text-wiz-muted mb-3">These steps are common practice but no page in your documents backs them up. Check with your supervisor first.</p>
-    <ol class="space-y-3 text-sm text-wiz-text/80">${stepList(result.general_advice, sources)}</ol>`, "border-dashed") : "";
-
-  const othersCard = result.other_causes.length ? card("Other possible causes", "git-branch", `
-    <ul class="space-y-3 text-sm">
-      ${result.other_causes.map((c) => `
-        <li class="border-b border-wiz-border/50 pb-3 last:border-0 last:pb-0">
-          <div class="flex items-center justify-between gap-2"><span class="font-medium">${escapeHtml(c.title)}</span>${confidencePill(c)}</div>
-          <p class="text-wiz-muted mt-1">${escapeHtml(c.explanation)}</p>
-          <div class="mt-1.5 flex flex-wrap gap-1.5">${sourceChips(c.source_ids, sources)}</div>
-        </li>`).join("")}
-    </ul>`) : "";
+  const allStepsCard = guided.length ? `
+    <details class="source-dropdown glass-panel rounded-2xl p-5">
+      <summary class="!mt-0">See all ${guided.length} steps at once</summary>
+      <ol class="mt-4 space-y-3 text-sm">${stepList(guided, sources)}</ol>
+      ${result.general_advice.length ? `<p class="mt-3 text-xs text-wiz-muted">Steps marked “Not in your documents” are common practice, but no page in your documents backs them up. Check with your supervisor first.</p>` : ""}
+    </details>` : "";
 
   const technicianCard = result.call_technician_if.length ? card("Stop and call a technician if", "phone-call", `
     <ul class="space-y-1.5 text-sm">${result.call_technician_if.map((t) => `<li>• ${escapeHtml(t)}</li>`).join("")}</ul>`) : "";
@@ -320,16 +342,16 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       ${needsDetail}
       ${causeCard}
       ${notCovered}
-      ${stepsCard}
-      ${generalCard}
       ${question}
-      ${othersCard}
+      ${guideCard}
+      ${allStepsCard}
       ${technicianCard}
       ${sourcesCard}
       ${fixCard}
       ${footer}
     </div>`;
   icons();
+  if (guided.length) startGuide(result, guided, sources, status);
 
   const markFixed = $("#mark-fixed");
   markFixed?.addEventListener("click", async () => {
@@ -347,6 +369,179 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
       if (statusEl) { statusEl.textContent = errorMessage(err, "Could not save."); statusEl.className = "text-xs text-wiz-danger"; }
     }
   });
+}
+
+function renderProfileCard(profile: WorkerProfile | null) {
+  const host = $("#sidebar-profile");
+  if (!host) return;
+  host.innerHTML = profile
+    ? `<div class="flex items-center justify-between mb-1">
+         <span class="text-[10px] tracking-wider text-wiz-muted">YOU</span>
+         <button id="change-profile" class="text-[11px] text-blue-300 hover:underline">Change</button>
+       </div>
+       <div class="font-semibold text-sm text-wiz-text truncate">${escapeHtml(profile.name || profile.role)}</div>
+       <div class="text-wiz-muted truncate">${escapeHtml(profile.role)}</div>
+       <div class="mt-2 inline-flex rounded-full border border-wiz-primary/30 bg-wiz-primary/10 px-2 py-0.5 text-[11px] text-blue-300" title="${escapeHtml(levelExplanation(profile.level))}">${escapeHtml(profile.level_label)}</div>`
+    : `<div class="text-wiz-muted">We don't know who you are yet.</div>
+       <button id="change-profile" class="mt-1 text-[11px] text-blue-300 hover:underline">Answer 5 questions</button>`;
+  host.querySelector("#change-profile")?.addEventListener("click", () => void askWhoYouAre(true));
+}
+
+/** Steps in the order to try them; older saved reports have no guided_steps. */
+function guidedStepsOf(result: DiagnosisResult): DiagnosisStep[] {
+  if (result.guided_steps?.length) return result.guided_steps;
+  return [
+    ...result.steps.map((s) => ({ ...s, checks_cause: s.checks_cause ?? 0, from_documents: true })),
+    ...result.general_advice.map((s) => ({ ...s, checks_cause: s.checks_cause ?? 0, from_documents: false }))
+  ];
+}
+
+type Outcome = "fixed" | "not_fixed" | "cannot" | "skipped_technician";
+const OUTCOME_LABEL: Record<Outcome, string> = {
+  fixed: "Fixed it",
+  not_fixed: "Done, still not working",
+  cannot: "Could not do it",
+  skipped_technician: "Needs a technician"
+};
+
+/**
+ * Walks the worker through the steps one at a time. Each answer is recorded;
+ * "That fixed it" marks the report fixed with the step that worked, and running
+ * out of steps produces a hand-over note for the technician.
+ */
+function startGuide(result: DiagnosisResult, steps: DiagnosisStep[], sources: DiagnosisSource[], status: string) {
+  const host = $("#guided-steps");
+  if (!host) return;
+  const faults = [result.likely_cause, ...result.other_causes];
+  const worker = getProfile();
+  const mayDoTechnicianWork = worker?.can_do_technician_work ?? false;
+  const log: Array<{ step: number; outcome: Outcome }> = [];
+  let index = 0;
+  let started = false;
+
+  const summaryLines = () => log.map(({ step, outcome }) =>
+    `Step ${step + 1} (${OUTCOME_LABEL[outcome]}): ${steps[step].instruction}`);
+
+  const save = async (state: "open" | "fixed", note: string, statusEl: HTMLElement | null) => {
+    if (!result.case_id) return;
+    try {
+      await updateCase(result.case_id, state, note);
+      if (statusEl) statusEl.textContent = state === "fixed"
+        ? "Saved to this machine's history. Greywiz will use it next time."
+        : "Saved to the report so the technician can see what was tried.";
+      await refreshCases();
+    } catch (err) {
+      if (statusEl) statusEl.textContent = errorMessage(err, "Could not save.");
+    }
+  };
+
+  const shell = (inner: string) => `
+    <div class="rounded-2xl border-2 border-wiz-primary/50 bg-wiz-panel/80 p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="footprints" class="h-4 w-4 text-wiz-primary"></i>
+        <h3 class="text-sm font-semibold">Let's fix it together, one step at a time</h3>
+      </div>
+      ${inner}
+    </div>`;
+
+  const render = () => {
+    if (!started) {
+      host.innerHTML = shell(`
+        <p class="text-sm text-wiz-muted mb-4">${steps.length} steps, starting with fault #1. After each one, tell Greywiz what happened and it will give you the next step.${status === "fixed" ? " This report is already marked fixed." : ""}</p>
+        <button data-guide-start class="w-full rounded-xl bg-wiz-primary px-5 py-3 text-sm font-semibold text-white hover:opacity-90 flex items-center justify-center gap-2">
+          <i data-lucide="play" class="h-4 w-4"></i> Guide me step by step
+        </button>`);
+    } else if (index >= steps.length) {
+      const fixedEntry = log.find((l) => l.outcome === "fixed");
+      if (fixedEntry) {
+        host.innerHTML = shell(`
+          <div class="flex items-start gap-3 mb-3">
+            <i data-lucide="party-popper" class="h-6 w-6 text-wiz-success flex-shrink-0"></i>
+            <div><p class="text-lg font-bold">Fixed at step ${fixedEntry.step + 1}.</p>
+            <p class="text-sm text-wiz-muted">${escapeHtml(steps[fixedEntry.step].instruction)}</p></div>
+          </div>
+          <p id="guide-save" class="text-xs text-wiz-success">Saving…</p>`);
+        icons();
+        const note = `Fixed by step ${fixedEntry.step + 1}: ${steps[fixedEntry.step].instruction}` +
+          (log.length > 1 ? `\nTried before: ${summaryLines().slice(0, -1).join(" | ")}` : "");
+        const fixNote = $("#fix-note") as HTMLTextAreaElement | null;
+        if (fixNote) fixNote.value = note;
+        void save("fixed", note, $("#guide-save"));
+        return;
+      }
+      const handover = [
+        `Problem: ${result.summary}`,
+        `Reported by: ${worker?.name || "worker"} (${worker?.level_label || "unknown level"})`,
+        ...summaryLines()
+      ].join("\n");
+      host.innerHTML = shell(`
+        <div class="flex items-start gap-3 mb-3">
+          <i data-lucide="phone-call" class="h-6 w-6 text-orange-400 flex-shrink-0"></i>
+          <div><p class="text-lg font-bold">Stop here and call a technician.</p>
+          <p class="text-sm text-wiz-muted">You have tried every step that is safe for you. Show the technician this list so they do not repeat it.</p></div>
+        </div>
+        <pre class="whitespace-pre-wrap rounded-lg border border-wiz-border bg-wiz-bg/60 p-3 text-xs text-wiz-text/90 mb-3">${escapeHtml(handover)}</pre>
+        <div class="flex items-center justify-between gap-2">
+          <p id="guide-save" class="text-xs text-wiz-muted"></p>
+          <button data-guide-restart class="text-xs text-wiz-muted hover:text-wiz-text">Start the steps again</button>
+        </div>`);
+      void save("open", handover, $("#guide-save"));
+    } else {
+      const step = steps[index];
+      const fault = faults[step.checks_cause] ?? faults[0];
+      const locked = step.needs_technician && !mayDoTechnicianWork;
+      host.innerHTML = shell(`
+        <div class="flex items-center justify-between text-xs text-wiz-muted mb-2">
+          <span>Step ${index + 1} of ${steps.length}</span>
+          <span>Checking fault #${step.checks_cause + 1}: ${escapeHtml(fault.title)}</span>
+        </div>
+        <div class="h-1.5 w-full rounded-full bg-wiz-border mb-5"><div class="h-1.5 rounded-full bg-wiz-primary transition-all" style="width:${(index / steps.length) * 100}%"></div></div>
+        ${locked ? `
+          <div class="rounded-xl border border-orange-500/40 bg-orange-500/10 p-4 mb-4">
+            <p class="flex items-center gap-2 font-semibold text-orange-200 mb-1"><i data-lucide="hard-hat" class="h-4 w-4"></i>This step needs a trained technician</p>
+            <p class="text-sm text-orange-100/80">${escapeHtml(step.instruction)}</p>
+            <p class="text-xs text-orange-200/70 mt-2">Do not do this yourself. Call a technician, or skip it and continue with the next safe step.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button data-outcome="skipped_technician" class="rounded-xl border border-wiz-border px-4 py-3 text-sm hover:bg-wiz-panel_hover">Skip, show the next step</button>
+            <button data-call-tech class="rounded-xl bg-orange-500/90 px-4 py-3 text-sm font-semibold text-white hover:opacity-90">Stop and call a technician</button>
+          </div>` : `
+          <p class="text-lg font-semibold leading-relaxed mb-2">${escapeHtml(step.instruction)}</p>
+          <div class="flex flex-wrap items-center gap-1.5 mb-5">
+            ${step.needs_technician ? `<span class="inline-flex items-center gap-1 rounded-md border border-orange-500/40 bg-orange-500/10 px-1.5 py-0.5 text-[11px] text-orange-300"><i data-lucide="hard-hat" class="h-3 w-3"></i>Technician step: lock out first</span>` : ""}
+            ${step.from_documents === false ? `<span class="inline-flex items-center gap-1 rounded-md border border-yellow-500/40 bg-yellow-500/10 px-1.5 py-0.5 text-[11px] text-yellow-300"><i data-lucide="info" class="h-3 w-3"></i>Not in your documents: check with your supervisor</span>` : ""}
+            ${sourceChips(step.source_ids, sources)}
+          </div>
+          <p class="text-xs text-wiz-muted mb-2">Did you do it? What happened?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button data-outcome="fixed" class="rounded-xl bg-wiz-success/90 px-4 py-3 text-sm font-semibold text-white hover:opacity-90">✓ That fixed it</button>
+            <button data-outcome="not_fixed" class="rounded-xl bg-wiz-primary px-4 py-3 text-sm font-semibold text-white hover:opacity-90">Done, still not working</button>
+            <button data-outcome="cannot" class="rounded-xl border border-wiz-border px-4 py-3 text-sm text-wiz-muted hover:text-wiz-text hover:bg-wiz-panel_hover">I can't do this step</button>
+          </div>`}
+        ${index > 0 ? `<button data-guide-back class="mt-3 text-xs text-wiz-muted hover:text-wiz-text">← Previous step</button>` : ""}`);
+    }
+    icons();
+
+    host.querySelector("[data-guide-start]")?.addEventListener("click", () => { started = true; render(); });
+    host.querySelector("[data-guide-restart]")?.addEventListener("click", () => { index = 0; log.length = 0; render(); });
+    host.querySelector("[data-guide-back]")?.addEventListener("click", () => { log.pop(); index -= 1; render(); });
+    host.querySelector("[data-call-tech]")?.addEventListener("click", () => {
+      log.push({ step: index, outcome: "skipped_technician" });
+      index = steps.length;
+      render();
+    });
+    host.querySelectorAll<HTMLElement>("[data-outcome]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const outcome = btn.dataset.outcome as Outcome;
+        log.push({ step: index, outcome });
+        index = outcome === "fixed" ? steps.length : index + 1;
+        render();
+        host.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+  };
+
+  render();
 }
 
 function timeAgo(iso: string) {
@@ -417,7 +612,8 @@ async function runDiagnosis() {
   renderLoading(!!state.photo);
   const photoUrl = state.photoUrl;
   try {
-    const result = await diagnoseProblem(description, state.photo, getProvider());
+    const profile = getProfile() ?? await askWhoYouAre(false);
+    const result = await diagnoseProblem(description, state.photo, getProvider(), profile);
     state.activeCaseId = result.case_id ?? null;
     renderResult(result, result.case_id && state.photo ? casePhotoUrl(result.case_id) : photoUrl, description);
     await refreshCases();
@@ -455,6 +651,9 @@ export function initDiagnose(providerGetter: () => string | undefined) {
     });
   });
   diagnoseButton?.addEventListener("click", () => void runDiagnosis());
+  onProfileChange(renderProfileCard);
+  renderProfileCard(getProfile());
+  if (!getProfile()) void askWhoYouAre(false);
   renderEmpty();
   void refreshCases();
 }

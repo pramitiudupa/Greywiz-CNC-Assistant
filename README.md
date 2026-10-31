@@ -18,6 +18,22 @@ came from.
    and moves any uncited step into a separate "General advice (not found in your
    documents)" box. Safety warnings are always shown first.
 
+**Who are you?** On first use the app asks five questions (job, CNC experience,
+training, alarm experience, lockout/electrical authorisation) and places the person
+as *New to CNC*, *Skilled operator* or *Maintenance professional*. Answers are
+worded for that level, and technician-only steps are locked for anyone not
+authorised to open covers or electrics.
+
+**Ranked faults, guided slowly.** Every plausible fault is ranked, most likely
+first, and each step says which fault it tests. "Guide me step by step" shows one
+step at a time with *That fixed it / Done, still not working / I can't do this
+step*; a fix is saved to the report, and running out of safe steps produces a
+hand-over list for the technician.
+
+**We do not build an LLM.** Greywiz uses a hosted model (Google Gemini) through its
+API for reading photos and writing answers; our code does the retrieval, the
+source checking and the guided workflow around it.
+
 Each report is saved under `backend/data/cases/`. When a worker writes what actually
 fixed it and clicks **Mark as fixed**, that note is used for similar problems later.
 
@@ -32,6 +48,12 @@ Requires Python 3.12 (`py -3.12`) and Node.js. From this folder:
 ```powershell
 npm run setup:win   # one time: creates backend\.venv, installs everything
 npm run dev:win     # starts backend (8000) and frontend (5173)
+```
+
+For a demo, build once and serve everything from one address:
+
+```powershell
+npm run start:win   # builds the frontend, then serves the app at http://127.0.0.1:8000
 ```
 
 Then open http://127.0.0.1:5173. Put your `GOOGLE_API_KEY` in `backend/.env`

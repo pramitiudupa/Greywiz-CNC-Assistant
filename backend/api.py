@@ -402,6 +402,7 @@ async def diagnose_problem(
     description: str = Form(""),
     photo: Optional[UploadFile] = File(None),
     provider: Optional[str] = Form(None),
+    profile: str = Form(""),
 ):
     """Find the likely cause of a machine problem from a photo and/or description."""
     photo_bytes, photo_ext = None, ".jpg"
@@ -420,7 +421,7 @@ async def diagnose_problem(
 
     try:
         result = await asyncio.to_thread(
-            diagnose, description, photo_bytes, OUTPUT_BASE, provider
+            diagnose, description, photo_bytes, OUTPUT_BASE, provider, _parse_profile(profile)
         )
     except (RuntimeError, ValueError) as e:
         raise HTTPException(400, str(e))
@@ -430,6 +431,24 @@ async def diagnose_problem(
 
     case = diagnosis_store.create_case(description.strip(), photo_bytes, photo_ext, result)
     return {"case_id": case["id"], "created_at": case["created_at"], **result}
+
+
+PROFILE_FIELDS = ("name", "role", "experience", "training", "alarms", "electrical", "level", "level_label")
+
+
+def _parse_profile(raw: str) -> dict | None:
+    """Keep only known worker-profile fields, as short strings."""
+    if not raw.strip():
+        return None
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        raise HTTPException(400, "Worker profile is not valid JSON.")
+    if not isinstance(data, dict):
+        raise HTTPException(400, "Worker profile must be an object.")
+    profile = {k: str(data.get(k) or "")[:80] for k in PROFILE_FIELDS}
+    profile["can_do_technician_work"] = bool(data.get("can_do_technician_work"))
+    return profile
 
 
 @app.get("/api/cases")
@@ -485,3 +504,13 @@ async def update_case(case_id: str, body: CaseUpdate):
         raise HTTPException(404, "Case not found.")
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+# ── Built frontend ───────────────────────────────────────────────────────
+# After `npm run build`, the app is served from this same server at "/", so
+# a demo needs one process and one address. Mounted last so /api/* wins.
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if FRONTEND_DIST.is_dir():
+    from fastapi.staticfiles import StaticFiles
+
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
