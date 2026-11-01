@@ -1,120 +1,94 @@
-# Greywiz demo script — one CNC machine at a company
+# Greywiz demo script — one CNC machine, one fault
 
-**Story:** a company has one Haas VF-2 CNC mill. The owner loads whatever
-documents they have. When the machine stops, anyone on the floor can report it
-with a photo and/or a few words, and Greywiz finds the cause in *that machine's
-own documents* and guides them step by step. A trainee and a maintenance
-technician get different answers to the same fault.
+**Story:** a company has one Haas VF-2 CNC mill ("VMC 1"). The owner loaded the
+documents they have. The machine stops with **Alarm 120 – Low Air Pressure**.
+Anyone on the floor reports it with a photo and/or one sentence, and Greywiz
+finds the cause in *that machine's own documents* and guides them step by
+step — in simple words for a trainee, in technical terms for a technician.
 
-Total time: about 12 minutes.
+About 10 minutes.
+
+---
+
+## What is loaded
+
+| | |
+|---|---|
+| Machine | VMC 1 · Haas VF-2 · Haas Next Generation Control (NGC) · Peenya, Bengaluru |
+| Document 1 | Haas VF Mill Manual – Safety, Pendant, Operation (51 pages of the official Haas NGC operator's manual) |
+| Document 2 | Haas VF Series Service Manual – Troubleshooting, Alarms & Maintenance (official Haas archive, pages 2–41 and 200–203), added through "Is anything missing?" with the owner's consent |
+| Demo photo | `demo/glitch-alarm-120-low-air-pressure-SIMULATED.jpg` — a real Haas control panel photo with a simulated alarm on the screen |
+
+## The one sentence to type (same for every person)
+
+> Machine stopped and the screen shows alarm 120 low air pressure. What should I do?
+
+Type it exactly. Greywiz has a saved, checked answer for this sentence with
+and without the photo, for all three kinds of person, so the demo answers
+instantly and the same way every time (the screen says "showing the saved
+answer"). Any other wording is answered live by the AI.
 
 ---
 
-## Before the demo (do this the day before)
+## Before you present
 
-1. Start the app: `npm run start:win` in the project folder, then open
-   http://127.0.0.1:8000
-2. On **Machine & documents**:
-   - Machine: *VMC 1 · Haas · VF-2 · Haas Next Generation Control (NGC) · Peenya, Bengaluru*
-   - Documents already processed (processing takes 5–20 minutes each on a laptop, so never do it live):
-     - **Haas VF Mill Manual – Safety, Pendant, Operation** (51 pages of the official Haas NGC operator's manual)
-     - **Haas VF Series Service Manual – Troubleshooting, Alarms & Maintenance** (added through the "Is anything missing?" panel, with consent)
-3. Have the demo photo ready: `demo/glitch-alarm-120-low-air-pressure-SIMULATED.jpg`
-   (a real Haas control panel photo with a **simulated** alarm drawn on the screen).
-4. **Gemini quota:** a free-tier key allows about 20 requests per model per day,
-   and each report uses 2. Greywiz switches between 5 Gemini models
-   automatically, but for demo day **enable billing on the key** (cost is a few
-   rupees) or use a fresh key.
-5. Open the app once in a fresh browser tab right before you present, so it
-   starts with the "Who are you?" questions.
-
----
+1. Start: `npm run start:win` in the project folder → open http://127.0.0.1:8000
+2. Open it in a **fresh browser tab** so it starts with "Who are you?".
+3. Search runs on the laptop (no internet needed for it). Live answers and the
+   3D model need internet and Gemini quota; the saved demo answers do not.
 
 ## The script
 
-### 1. The owner's side — "the company puts in whatever it has" (2 min)
+### 1. The owner's side (2 min) — Machine & documents
+- Show the machine card and the two documents. Point at *"From Haas Automation
+  (official), added with Kiran (owner)'s consent"* on the service manual.
+- **Is anything missing?** — all five document types ticked. Click **Add…** on
+  the optional Haas maintenance manual to show the consent card, then **Not now**:
+  *"Nothing is downloaded without consent, and only from the maker's official site."*
 
-Open **Machine & documents**.
+### 2. A trainee (4 min)
+- **Who are you?** → *Helper or trainee · Less than 6 months · No* → "New to CNC".
+- **Report a problem** → add the photo → type the sentence → **Find the cause**.
+- Show: *What we see in your photo* (reads "120 LOW AIR PRESSURE") → ranked faults
+  (1 low incoming air pressure, 2 low lubrication oil, 3 full oil drain bucket) →
+  **Where we looked** → **Guide me step by step**:
+  1. Check the air gauge at the back reads 85 psi
+  2. Check the clear oil tank level
+  3. Empty the old-oil bucket if full
+  4. Press the orange [RESET] button
+  → *"Stop here and call a technician"* with a hand-over list if nothing worked.
 
-- Show the machine card and the two documents. Point at the service manual's
-  line: *"From Haas Automation (official), added with Kiran (owner)'s consent."*
-- Show **Is anything missing?** Before the service manual was added, it said
-  *Missing: Alarm list, Troubleshooting guide, Maintenance schedule, Electrical
-  diagrams* and offered official Haas documents for them. Now everything is ticked.
-- Click **Add…** on *Haas Mill Maintenance Manual* to show the consent card
-  ("Greywiz will download … from haascnc.com, the machine maker's official
-  site …"), then click **Not now**. Say: *"Nothing is downloaded without
-  consent, and only from validated official sources."*
-- Mention the upload box accepts **photos of paper manual pages** too.
+### 3. A maintenance technician (3 min)
+- Click **Change** under "You" → *Maintenance technician · More than 5 years · Yes*
+  → "Maintenance professional".
+- Same photo + same sentence → **Find the cause**.
+- Show the difference: technical steps (regulator at 85 psi, water trap, way lube
+  pump, pressure switch), lockout steps unlocked, page references to the alarm
+  table (service manual p. 25) and maintenance schedule (p. 42).
+- Optional: **Make a 3D model** of the photo (~1 min, needs internet).
 
-### 2. A trainee reports the fault (4 min)
-
-Open a fresh tab → **Who are you?** → answer:
-*Helper or trainee · Less than 6 months · No* → "New to CNC".
-
-**Report a problem:**
-- Photo: `glitch-alarm-120-low-air-pressure-SIMULATED.jpg`
-- Words (type exactly, like a worker would):
-
-  > machine stopped in the middle of the job and the screen is showing red alarm. what do i do
-
-Click **Find the cause** (≈40 s). Then show:
-- **What we see in your photo:** it reads *"120 LOW AIR PRESSURE"* off the screen.
-- **Possible faults, most likely first:** low shop air supply / closed valve, then an air leak.
-- **Where we looked:** both manuals searched; *"120"* found on the service manual's alarm page.
-- **Guide me step by step:** one step at a time; click *Done, still not working*
-  to move on. The technician step (internal solenoids) is **locked**:
-  *"This step needs a trained technician."*
-- **Make a 3D model** (optional, ~1 min, needs internet): a 3D model of the
-  photographed part from an open model on the Hugging Face hub.
-
-### 3. A maintenance technician reports the same fault (3 min)
-
-Click **Change** under "You" → *Maintenance technician · More than 5 years · Yes*
-→ "Maintenance professional".
-
-Same photo, these words:
-
-> VF-2 throwing alarm 120 low air pressure mid-cycle, feed hold. Shop air at the regulator reads around 75 psi. Way lube tank level not checked yet.
-
-Point out the difference: more faults ranked (pressure switch, lube system),
-technical steps (*raise supply to 85–90 psi*, *check the Low Air diagnostic
-bit*), lockout steps unlocked, page references to the alarm table and
-maintenance schedule.
-
-### 4. Machine health — looking ahead (2 min)
-
-**Machine health** → 8 hours/day, 6 days/week → **Forecast**.
-Show *Checks coming up* (converted to calendar time, each cited to the
-maintenance schedule) and *Parts most likely to cause the next stop* (from the
-problem history). Say: *"It's an estimate for planning, and it improves as the
-shop records more fixes."*
-
-### 5. Close the loop (1 min)
-
-Back on the report → **That fixed it** in the guide (or **Mark as fixed** with a
-note). Next time anyone reports a similar problem, Greywiz cites this fix as a
-*Past fix*.
+### 4. Close (1 min)
+- In the guide click **That fixed it** — the fix is saved to the machine's history
+  and used the next time someone reports the same problem.
+- Optional: **Machine health** → Forecast (needs Gemini quota).
 
 ---
 
 ## Lines for the questions
 
-- **"Is this your own AI model?"** No. We use hosted models through APIs —
-  Google Gemini for reading photos and writing answers, and an open 3D model
-  (Tencent Hunyuan3D-2) from the Hugging Face hub. We don't train or host an LLM.
-- **"Why not just ChatGPT?"** It's built for one job: *this* machine. It only
-  answers from the company's own documents, cites the page for every step,
-  refuses steps it can't source, adapts to who is asking, and locks technician
-  work for trainees.
-- **"Where does the data come from?"** Only what the company uploads, plus
-  official documents it agrees to add. We don't feed it a dataset.
-- **"Is the alarm photo real?"** The control panel photo is real (Wikimedia
-  Commons, CC BY-SA); the alarm on the screen is simulated for the demo. Alarm
-  120 and its causes come from the real Haas service manual.
+- **"Is this your own AI model?"** No. We use hosted models through APIs (Google
+  Gemini for reading photos and writing answers) and open models from the
+  Hugging Face hub (BGE for searching the manuals on this laptop, Hunyuan3D-2 for
+  3D). We don't train an LLM.
+- **"Why not ChatGPT?"** It answers only from this machine's own documents, cites
+  the page for every step, adapts to who is asking, and locks technician work for
+  trainees.
+- **"Is the alarm photo real?"** The panel photo is real (Wikimedia Commons,
+  CC BY-SA); the alarm on the screen is simulated. Alarm 120 and its causes come
+  from the real Haas service manual.
 
 ## If something goes wrong
-
-- *"All Gemini models are out of quota"* → switch to a key with billing, restart.
-- 3D model fails → say it depends on a free public service; skip it.
-- A document stuck on "Processing" → it's still reading pages (CPU); use the ones already processed.
+- Type the sentence exactly; a different sentence needs a live AI call.
+- *"The Google AI key has used up its free limit for today"* → only live answers
+  are affected; the saved demo answers still work. Enable billing for live use.
+- 3D model fails → it depends on a free public service; skip it.

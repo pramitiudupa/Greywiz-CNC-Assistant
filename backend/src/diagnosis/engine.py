@@ -14,10 +14,13 @@ Steps (each a separate, inspectable stage):
 
 from __future__ import annotations
 
+import hashlib
 import io
+import json
 import re
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -110,6 +113,11 @@ Rules:
   Then give steps that test them one at a time, in that order, each step
   saying which fault it checks (checks_cause). The worker will be guided
   through the steps one by one, so each step must be a single action.
+- When an excerpt lists several causes for an alarm or symptom (for example
+  "low air pressure or low lube"), rank each of them as a fault and give at
+  least one check for each. Aim for 4 to 6 steps in total.
+- Finish with the step that clears the alarm and tests the machine again
+  (for example pressing [RESET] once the cause is fixed), if the excerpts give it.
 - Put the safest, simplest checks first (look, reset, check settings) and
   anything involving opening covers, electrics or the spindle last, marked
   needs_technician.
@@ -212,8 +220,11 @@ KEYWORD_STOP_WORDS = {
     "stopped", "stop", "middle", "showing", "shows", "show", "active", "doing", "going",
     "suddenly", "today", "anything", "something", "started", "start", "help", "dropped",
     "below", "minimum", "clear", "fixing", "cause", "check", "program", "about", "their",
+    "the", "and", "for", "but", "not", "can", "you", "are", "was", "has", "why", "how",
+    "its", "our", "any", "get", "got", "did", "see", "now", "should", "would", "could",
+    "shows", "screen", "message", "red", "says", "saying", "came", "comes", "one", "all",
 }
-KEYWORD_PATTERN = re.compile(r"[a-z][a-z0-9-]{3,}|\d{3,5}")
+KEYWORD_PATTERN = re.compile(r"[a-z][a-z0-9-]{2,}|\d{3,5}")
 
 
 def problem_keywords(description: str, photo_reading: "PhotoReading | None") -> list[str]:
@@ -259,22 +270,87 @@ def search_documents(
             warnings.append(f"Skipped '{doc_name}': {e}")
             continue
         coverage.append({"document_id": doc_name, "keywords": keyword_hits(manager, keywords or [])})
-        for query in queries:
-            results = manager.search(query, k=EXCERPTS_PER_QUERY, enable_reranking=False)
-            for rank, doc in enumerate(results):
-                key = (doc_name, str(doc.metadata.get("table_id")))
-                entry = hits.setdefault(key, {
-                    "document_id": doc_name,
-                    "content": doc.page_content,
-                    "metadata": dict(doc.metadata),
-                    "matches": 0,
-                    "best_rank": rank,
-                })
-                entry["matches"] += 1
-                entry["best_rank"] = min(entry["best_rank"], rank)
 
-    ranked = sorted(hits.values(), key=lambda h: (-h["matches"], h["best_rank"]))
-    return ranked[:MAX_EXCERPTS], warnings, coverage
+        def add(doc, rank: int):
+            key = (doc_name, str(doc.metadata.get("table_id")))
+            entry = hits.setdefault(key, {
+                "document_id": doc_name,
+                "content": doc.page_content,
+                "metadata": dict(doc.metadata),
+                "matches": 0,
+                "best_rank": rank,
+            })
+            entry["matches"] += 1
+            entry["best_rank"] = min(entry["best_rank"], rank)
+
+        for query in queries:
+            for rank, doc in enumerate(manager.search(query, k=EXCERPTS_PER_QUERY, enable_reranking=False)):
+                add(doc, rank)
+        # An alarm number in the report is the strongest clue there is: every
+        # section that mentions it is a candidate, whatever the search ranked.
+        # Likewise any section that contains several of the problem's words
+        # ("low", "air", "pressure"), even if meaning-based search missed it.
+        for doc in manager._documents:
+            if _keyword_score(doc.page_content, keywords or []) >= 3:
+                add(doc, EXCERPTS_PER_QUERY)
+
+    candidates = list(hits.values())
+    for c in candidates:
+        c["keyword_score"] = _keyword_score(c["content"], keywords or [])
+    candidates.sort(key=lambda h: (-h["keyword_score"], -h["matches"], h["best_rank"]))
+    return _rerank(candidates[:RERANK_POOL], " ".join(queries[:3]))[:MAX_EXCERPTS], warnings, coverage
+
+
+RERANK_POOL = 24
+
+
+COMMON_MANUAL_WORDS = {"alarm", "alarms", "machine", "control", "check", "error", "fault"}
+
+
+def _keyword_score(text: str, keywords: list[str]) -> float:
+    """
+    How strongly a section matches the problem's key words. Alarm numbers
+    count most, words that appear all over a manual ("alarm") count least, and
+    the report's own phrases ("low air pressure") earn a bonus.
+    """
+    score = 0.0
+    for kw in keywords:
+        if kw.isdigit():
+            if re.search(rf"(?<!\d){kw}(?!\d)", text):
+                score += 3
+        elif re.search(r"\b" + re.escape(kw), text, re.IGNORECASE):
+            score += 0.5 if kw in COMMON_MANUAL_WORDS else 1
+    words = [k for k in keywords if not k.isdigit() and k not in COMMON_MANUAL_WORDS]
+    for first, second in zip(words, words[1:]):
+        if re.search(rf"\b{re.escape(first)}\W+{re.escape(second)}", text, re.IGNORECASE):
+            score += 2
+    return score
+
+
+_RANKER = None
+
+
+def _rerank(candidates: list[dict], query: str) -> list[dict]:
+    """
+    Order candidates with a small local cross-encoder (FlashRank, ONNX, no API).
+    Sections that share the most key words stay ahead; the reranker breaks ties
+    by meaning. Falls back to keyword order if the reranker is unavailable.
+    """
+    global _RANKER
+    if len(candidates) < 2:
+        return candidates
+    try:
+        from flashrank import Ranker, RerankRequest
+
+        if _RANKER is None:
+            _RANKER = Ranker(model_name=os.getenv("RERANKER_MODEL", "ms-marco-MiniLM-L-12-v2"))
+        passages = [{"id": i, "text": c["content"][:2000]} for i, c in enumerate(candidates)]
+        for r in _RANKER.rerank(RerankRequest(query=query, passages=passages)):
+            candidates[r["id"]]["rerank_score"] = float(r["score"])
+    except Exception as e:
+        print(f"[search] reranker unavailable ({e}); keeping keyword order")
+        return candidates
+    return sorted(candidates, key=lambda c: (-min(c["keyword_score"], 8), -c.get("rerank_score", 0.0)))
 
 
 def _excerpt_text(content: str) -> str:
@@ -365,6 +441,18 @@ def check_sources(diagnosis: Diagnosis, sources: list[dict]) -> dict:
     return result
 
 
+ANSWER_CACHE_DIR = store.DATA_DIR / "answer_cache"
+CACHE_WORDS = re.compile(r"[a-z0-9]+")
+
+
+def answer_key(description: str, photo: bytes | None, profile: dict | None) -> str:
+    """Same words (ignoring case and punctuation) + same photo + same level = same report."""
+    words = " ".join(CACHE_WORDS.findall(description.lower()))
+    photo_hash = hashlib.sha256(photo).hexdigest() if photo else "-"
+    level = (profile or {}).get("level") or "unknown"
+    return hashlib.sha256(f"{words}|{photo_hash}|{level}".encode()).hexdigest()
+
+
 def diagnose(
     description: str,
     photo: bytes | None,
@@ -372,8 +460,38 @@ def diagnose(
     provider: str | None = None,
     profile: dict | None = None,
 ) -> dict:
+    """
+    Diagnose a report, reusing the saved answer when the identical report
+    (same words, same photo, same worker level) was answered before. Reuse
+    costs no AI call, gives the same answer every time, and is shown to the
+    worker as a saved answer. Set ANSWER_CACHE=off to always ask live.
+    """
     if not description.strip() and not photo:
         raise ValueError("Add a photo of the problem or describe it in words.")
+    use_cache = os.getenv("ANSWER_CACHE", "on").lower() != "off"
+    path = ANSWER_CACHE_DIR / f"{answer_key(description, photo, profile)}.json"
+    if use_cache and path.exists():
+        result = json.loads(path.read_text(encoding="utf-8"))
+        result["reused_answer"] = {"answered_at": result.pop("answered_at", None)}
+        result["machine"] = store.load_machine()
+        result["profile"] = profile
+        return result
+
+    result = _diagnose_live(description, photo, output_base, provider, profile)
+    if use_cache:
+        ANSWER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        saved = dict(result, answered_at=datetime.now(timezone.utc).isoformat())
+        path.write_text(json.dumps(saved, ensure_ascii=False), encoding="utf-8")
+    return result
+
+
+def _diagnose_live(
+    description: str,
+    photo: bytes | None,
+    output_base: Path,
+    provider: str | None = None,
+    profile: dict | None = None,
+) -> dict:
 
     started = time.time()
     client = gemini_hub.client()

@@ -354,7 +354,8 @@ function renderResult(result: DiagnosisResult, photoUrl: string | null, descript
 
   const footer = `<p class="text-[11px] text-wiz-muted text-center">
     ${description ? `Reported: “${escapeHtml(description)}” · ` : ""}Greywiz assists; it does not replace the machine's manual or a qualified technician.
-    ${result.timings?.total ? ` · Answered in ${Number(result.timings.total).toFixed(1)} s` : ""}${result.timings?.model ? ` by ${escapeHtml(String(result.timings.model))} (Gemini API)` : ""}
+    ${result.reused_answer ? ` · Same report answered on ${escapeHtml((result.reused_answer.answered_at || "").slice(0, 10))}; showing the saved answer` : ""}
+    ${!result.reused_answer && result.timings?.total ? ` · Answered in ${Number(result.timings.total).toFixed(1)} s` : ""}${result.timings?.model ? ` by ${escapeHtml(String(result.timings.model))} (Gemini API)` : ""}
   </p>
   ${result.warnings?.length ? `<p class="text-[11px] text-yellow-400 text-center">${result.warnings.map(escapeHtml).join("<br>")}</p>` : ""}`;
 

@@ -34,6 +34,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+_LOCAL_MODELS: dict = {}
+
+
+def _local_embeddings(model_name: str):
+    """
+    Open embedding model from the Hugging Face hub, run on this CPU via ONNX
+    (FastEmbed). Loaded once per process: loading takes ~10 s, embedding is
+    milliseconds per section.
+    """
+    if model_name not in _LOCAL_MODELS:
+        from langchain_community.embeddings import FastEmbedEmbeddings
+
+        _LOCAL_MODELS[model_name] = FastEmbedEmbeddings(model_name=model_name)
+    return _LOCAL_MODELS[model_name]
+
+
 class IndexMismatchError(ValueError):
     """Saved index has no manifest, was modified, or was built with other embeddings."""
 
@@ -51,16 +67,21 @@ class VectorStoreManager:
     """
 
     def __init__(self, provider: str | None = None, model_name: str | None = None):
-        provider = (provider or os.getenv("LLM_PROVIDER", "ollama")).strip().lower()
+        # Embeddings can come from a different place than the answering LLM:
+        # EMBEDDING_PROVIDER=local runs a small open model on this machine, so
+        # search has no API quota and works offline.
+        provider = (os.getenv("EMBEDDING_PROVIDER") or provider or os.getenv("LLM_PROVIDER", "ollama")).strip().lower()
         self.provider = provider
         self.doc_embeddings = self._build_embeddings(provider, model_name, role="document")
         self.query_embeddings = self._build_embeddings(provider, model_name, role="query")
-        self.embedding_model = self.doc_embeddings.model
+        name = getattr(self.doc_embeddings, "model_name", None)
+        self.embedding_model = name if isinstance(name, str) else self.doc_embeddings.model
         self.vector_store: Optional[FAISS] = None
         self.bm25_retriever: Optional[BM25Retriever] = None
         # Keep a reference to the documents for BM25 rebuild on load_local().
         self._documents: List[Document] = []
         self._reranker = None
+        self.dense_failed = False
 
     # ── Embedding construction ──────────────────────────────────────────
 
@@ -79,6 +100,9 @@ class VectorStoreManager:
         embeddings instance. This is a known limitation; Ollama embeddings
         will still work, just without task-specific optimisation.
         """
+        if provider == "local":
+            return _local_embeddings(model_name or os.getenv("LOCAL_EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5"))
+
         if provider == "ollama":
             from langchain_ollama import OllamaEmbeddings
 
@@ -115,7 +139,7 @@ class VectorStoreManager:
         else:
             raise ValueError(
                 f"Unknown embedding provider '{provider}'. "
-                "Supported values: 'ollama', 'gemini'."
+                "Supported values: 'local', 'ollama', 'gemini'."
             )
 
     # ── Index creation ──────────────────────────────────────────────────
@@ -142,7 +166,7 @@ class VectorStoreManager:
         self.vector_store = None
         for start in range(0, len(documents), batch_size):
             batch = documents[start:start + batch_size]
-            if start:
+            if start and self.provider != "local":
                 time.sleep(float(os.getenv("EMBED_BATCH_PAUSE_SECONDS", "62")))
             self._embed_batch(batch)
 
@@ -245,7 +269,14 @@ class VectorStoreManager:
                 retrievers=[self.bm25_retriever, faiss_retriever],
                 weights=[bm25_weight, dense_weight],
             )
-            return ensemble.invoke(query)
+            try:
+                return ensemble.invoke(query)
+            except Exception as e:
+                # The meaning-based half needs the embedding model; if it is
+                # unreachable (quota, network), keyword search still answers.
+                print(f"[search] dense search failed ({str(e)[:120]}); using keyword search only")
+                self.dense_failed = True
+                return self.bm25_retriever.invoke(query)
         else:
             return faiss_retriever.invoke(query)
 

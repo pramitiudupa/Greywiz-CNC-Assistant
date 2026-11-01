@@ -12,7 +12,7 @@ class TableSummarizer:
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment variables.")
-        self.client = genai.Client(api_key=api_key)
+        self.client = gemini_hub.client()
         self.model_name = model_name
 
     def answer_query(self, query: str, context_table: str) -> str:

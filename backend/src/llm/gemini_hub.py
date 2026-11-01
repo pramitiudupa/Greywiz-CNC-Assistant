@@ -15,7 +15,7 @@ from google import genai
 from google.genai import errors, types
 
 DEFAULT_MODELS = "gemini-2.5-flash,gemini-3.5-flash,gemini-3-flash-preview,gemini-2.5-flash-lite,gemini-3.5-flash-lite"
-RETRYABLE_STATUS = {429, 500, 503}
+RETRYABLE_STATUS = {429, 500, 503, 504}
 
 
 class NoModelAvailableError(RuntimeError):
@@ -34,7 +34,15 @@ def client() -> genai.Client:
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("GOOGLE_API_KEY is not set in backend/.env.")
-    return genai.Client(api_key=api_key)
+    # One attempt per model: on a quota or overload error we move to the next
+    # model at once instead of letting the SDK back off and retry for minutes.
+    return genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(attempts=1),
+            timeout=int(os.getenv("GEMINI_TIMEOUT_MS", "90000")),
+        ),
+    )
 
 
 def generate(contents, config: types.GenerateContentConfig | None = None, gemini: genai.Client | None = None):

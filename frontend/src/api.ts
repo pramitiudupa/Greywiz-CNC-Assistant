@@ -150,6 +150,7 @@ export interface DiagnosisResult {
   call_technician_if: string[];
   manual_covers_this: boolean;
   needs_more_detail?: boolean;
+  reused_answer?: { answered_at: string | null };
   question_for_worker: string;
   sources: DiagnosisSource[];
   where_we_looked?: { keywords: string[]; documents: Array<{ document_id: string; keywords: Record<string, number[]> }> };

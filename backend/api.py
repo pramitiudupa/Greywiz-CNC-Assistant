@@ -54,6 +54,20 @@ UNSAFE_NAME_CHARS = re.compile(r"[^A-Za-z0-9 ._()-]+")
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 
+def _friendly_error(action: str, e: Exception) -> HTTPException:
+    """Turn provider errors into something a worker can act on (no raw JSON)."""
+    text = str(e)
+    if "RESOURCE_EXHAUSTED" in text or " 429" in text or text.startswith("429"):
+        return HTTPException(
+            429,
+            f"{action} could not finish: the Google AI key has used up its free limit for today. "
+            "Enable billing on the key (or use another key) and try again.",
+        )
+    if "UNAVAILABLE" in text or " 503" in text or "DEADLINE_EXCEEDED" in text or " 504" in text:
+        return HTTPException(503, f"{action} could not finish: the AI service is busy. Try again in a minute.")
+    return HTTPException(500, f"{action} failed: {text[:300]}")
+
+
 def _safe_stem(filename: str) -> str:
     """Turn an uploaded file name into a stem that cannot escape its folder."""
     stem = UNSAFE_NAME_CHARS.sub("_", Path(filename).stem).strip(" ._")
@@ -333,7 +347,7 @@ async def chat(req: ChatRequest):
     try:
         response = await asyncio.to_thread(run_query)
     except Exception as e:
-        raise HTTPException(500, f"Query failed: {e}")
+        raise _friendly_error("The answer", e)
 
     # Serialize results for JSON response
     def clean_val(v):
@@ -509,7 +523,7 @@ async def machine_health(body: HealthRequest):
         raise HTTPException(400, str(e))
     except Exception as e:
         print(f"[ERROR] Health forecast failed: {e!r}")
-        raise HTTPException(500, f"Health forecast failed: {e}")
+        raise _friendly_error("The health forecast", e)
 
 
 @app.post("/api/diagnose")
@@ -542,7 +556,7 @@ async def diagnose_problem(
         raise HTTPException(400, str(e))
     except Exception as e:
         print(f"[ERROR] Diagnosis failed: {e!r}")
-        raise HTTPException(500, f"Diagnosis failed: {e}")
+        raise _friendly_error("The diagnosis", e)
 
     case = diagnosis_store.create_case(description.strip(), photo_bytes, photo_ext, result)
     return {"case_id": case["id"], "created_at": case["created_at"], **result}

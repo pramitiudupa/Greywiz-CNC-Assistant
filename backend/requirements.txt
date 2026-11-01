@@ -31,3 +31,6 @@ uvicorn[standard]>=0.29.0
 python-multipart>=0.0.9
 langchain-classic>=1.0.0
 pillow>=10.0.0
+
+# Local search embeddings (open BGE model via ONNX; no API quota)
+fastembed>=0.4.0
